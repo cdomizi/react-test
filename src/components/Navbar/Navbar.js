@@ -17,6 +17,18 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
+// project import
+import menuItems from '../menu-items';
+import NavItem from './NavItem';
+
+console.clear();
+
+const printItems = () => {
+  for (let item of menuItems.items) {
+    for (let i of item) console.log(i.title);
+  };
+};
+
 const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -71,6 +83,10 @@ function Navbar(props) {
           </ListItem>
         ))}
       </List>
+      <Divider />
+      <List>
+          <NavItem />
+      </List>
     </div>
   );
 
@@ -110,6 +126,13 @@ function Navbar(props) {
         >
           {drawer}
         </Drawer>
+      </Box>
+      <Box component="main"
+        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+      >
+        <Toolbar>
+          Toolbar
+        </Toolbar>
       </Box>
     </Box>
   );
