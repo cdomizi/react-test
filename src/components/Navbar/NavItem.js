@@ -1,13 +1,13 @@
-import { ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
 
-function NavItem() {
+function NavItem(props) {
   return (
-    <ListItem key={text} disablePadding>
+    <ListItem disablePadding>
       <ListItemButton>
         <ListItemIcon>
-          {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+          
         </ListItemIcon>
-        <ListItemText primary={text} />
+        <ListItemText />
       </ListItemButton>
     </ListItem>
   );
