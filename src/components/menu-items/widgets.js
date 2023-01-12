@@ -10,25 +10,28 @@ const icons = {
   StorageIcon
 };
 
-const widgets = [
-  {
-    id: '0',
-    title: 'Chart',
-    icon: icons.BarChartIcon,
-    url: 'dummy/url',
-  },
-  {
-    id: '1',
-    title: 'Statistics',
-    icon: icons.QueryStatsIcon,
-    url: 'dummy/url',
-  },
-  {
-    id: '2',
-    title: 'Data',
-    icon: icons.StorageIcon,
-    url: 'dummy/url',
-  }
-]
+const widgets = {
+  id: 'group-widgets',
+  children: [
+    {
+      id: '0',
+      title: 'Chart',
+      icon: icons.BarChartIcon,
+      url: 'dummy/url',
+    },
+    {
+      id: '1',
+      title: 'Statistics',
+      icon: icons.QueryStatsIcon,
+      url: 'dummy/url',
+    },
+    {
+      id: '2',
+      title: 'Data',
+      icon: icons.StorageIcon,
+      url: 'dummy/url',
+    }
+  ]
+};
 
 export default widgets;

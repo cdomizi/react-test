@@ -5,7 +5,7 @@ import widgets from './widgets';
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-  items: [widgets, applications]
+  groups: [widgets, applications]
 };
 
 export default menuItems;

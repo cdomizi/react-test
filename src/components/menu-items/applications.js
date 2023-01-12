@@ -12,31 +12,34 @@ const icons = {
   HeadphonesIcon
 };
 
-const applications = [
-  {
-    id: '0',
-    title: 'Kanban',
-    icon: icons.ViewKanbanIcon,
-    url: 'dummy/url',
-  },
-  {
-    id: '1',
-    title: 'Chat',
-    icon: icons.ChatIcon,
-    url: 'dummy/url',
-  },
-  {
-    id: '2',
-    title: 'Calendar',
-    icon: icons.CalendarMonthIcon,
-    url: 'dummy/url',
-  },
-  {
-    id: '3',
-    title: 'Customer',
-    icon: icons.HeadphonesIcon,
-    url: 'dummy/url',
-  }
-]
+const applications = {
+  id: 'group-applications',
+  children: [
+    {
+      id: '0',
+      title: 'Kanban',
+      icon: icons.ViewKanbanIcon,
+      url: 'dummy/url',
+    },
+    {
+      id: '1',
+      title: 'Chat',
+      icon: icons.ChatIcon,
+      url: 'dummy/url',
+    },
+    {
+      id: '2',
+      title: 'Calendar',
+      icon: icons.CalendarMonthIcon,
+      url: 'dummy/url',
+    },
+    {
+      id: '3',
+      title: 'Customer',
+      icon: icons.HeadphonesIcon,
+      url: 'dummy/url',
+    }
+  ]
+};
 
 export default applications;

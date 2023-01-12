@@ -19,15 +19,23 @@ import Typography from '@mui/material/Typography';
 
 // project import
 import menuItems from '../menu-items';
-import NavItem from './NavItem';
+import NavGroup from './NavGroup';
 
 console.clear();
+console.log(menuItems.groups[0]);
 
-const printItems = () => {
-  for (let item of menuItems.items) {
-    for (let i of item) console.log(i.title);
-  };
+for (const group in menuItems.groups.groups) {
+  console.log(group.children);
+  for (const item in group) console.log(item);
 };
+
+// const printItems = () => {
+//   for (let group of menuItems.groups[0]) {
+//     for (let item in group) console.log(item.children.title);
+//   };
+// };
+
+// printItems();
 
 const drawerWidth = 240;
 
@@ -84,9 +92,6 @@ function Navbar(props) {
         ))}
       </List>
       <Divider />
-      <List>
-          <NavItem />
-      </List>
     </div>
   );
 
@@ -133,6 +138,9 @@ function Navbar(props) {
         <Toolbar>
           Toolbar
         </Toolbar>
+        <Box>
+            <NavGroup groups={menuItems}/>
+        </Box>
       </Box>
     </Box>
   );
