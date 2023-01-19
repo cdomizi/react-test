@@ -1,10 +1,9 @@
-import Button from '@mui/material/Button';
-import Navbar from './components/Navbar/Navbar';
+import Todos from './components/Todos/Todos';
 
 function App() {
   return (
     <div className="App">
-      
+      <Todos />
     </div>
   );
 }
