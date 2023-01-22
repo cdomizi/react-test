@@ -16,6 +16,7 @@ function Todos() {
   );
   
   function handleClick() {
+    setName('');
     setItems([
       ...items,
       { id: nextId, name: name}
