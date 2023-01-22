@@ -6,20 +6,18 @@ import { Button, Input, Typography } from "@mui/material";
 import data from "../../data/data";
 import TodoItem from "./TodoItem";
 
-let nextId = 0;
-
 function Todos() {
   const [name, setName] = useState('');
   const [ items, setItems ] = useState(data);
-  const todoList = items.map(item =>
-    <TodoItem key={item.id} name={item.name}/>
+  const todoList = items.map((item, index) =>
+    <TodoItem key={index} name={item}/>
   );
   
   function handleClick() {
     setName('');
     setItems([
       ...items,
-      { id: nextId, name: name}
+      name
     ]);
   }
 
