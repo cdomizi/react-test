@@ -1,14 +1,26 @@
 import { useState } from "react";
 import { Box } from "@mui/system";
-import { Button, TextField, Typography } from "@mui/material";
+import { Button, Input, Typography } from "@mui/material";
 
 // project import
 import data from "../../data/data";
 import TodoItem from "./TodoItem";
 
+let nextId = 0;
+
 function Todos() {
+  const [name, setName] = useState('');
   const [ items, setItems ] = useState(data);
-  const todoList = items.map(item => <TodoItem text={item}/>)
+  const todoList = items.map(item =>
+    <TodoItem key={item.id} name={item.name}/>
+  );
+  
+  function handleClick() {
+    setItems([
+      ...items,
+      { id: nextId, name: name}
+    ]);
+  }
 
   return (
     <Box sx={{padding: '0px 12px'}} >
@@ -16,8 +28,18 @@ function Todos() {
         Todo List
       </Typography>
 
-      <TextField id="add-item" label="New item" variant="standard" />
-      <Button variant="outlined" sx={{ margin: "12px"}}>Add</Button>
+      <Input
+        placeholder="New item"
+        value={name}
+        onChange={e => setName(e.target.value)}
+      />
+      <Button
+        variant="outlined"
+        sx={{ margin: "12px"}}
+        onClick={handleClick}
+      >
+        Add
+      </Button>
 
       {todoList}
     </Box>

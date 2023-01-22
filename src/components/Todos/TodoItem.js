@@ -7,7 +7,7 @@ function TodoItem(props) {
       <ListItemIcon>
         <CircleIcon fontSize="small" />
       </ListItemIcon>
-      <ListItemText primary={props.text} />
+      <ListItemText primary={props.name} />
     </ListItem>
   );
 }
