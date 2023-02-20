@@ -1,14 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box } from "@mui/system";
 import { Button, Input, Typography } from "@mui/material";
 
 // project import
-import data from "../../data/data";
 import TodoItem from "./TodoItem";
 
 function Todos() {
-  const [name, setName] = useState('');
-  const [ items, setItems ] = useState(data);
+  // get list from localStorage
+  const data = JSON.parse(localStorage.getItem("items"));
+  const [ items, setItems ] = useState(data || []);
+  const [ title, setTitle ] = useState("");
+
+  // update list in localStorage
+  useEffect(() => {
+    localStorage.setItem("items", JSON.stringify(items));
+  }, [items]);
+  
+  // sort todos by last created
   const reversedItems = items.map((item, index) =>
     items[items.length - index - 1]
   );
@@ -16,34 +24,39 @@ function Todos() {
     <TodoItem key={index} name={item}/>
   );
   
-  function handleClick() {
-    setName('');
+  // add a new todo
+  function onAddItem() {
+    setTitle("");
     setItems([
       ...items,
-      name
+      title
     ]);
   }
 
   return (
-    <Box sx={{padding: '0px 12px'}} >
+    <Box sx={{padding: "0px 12px"}} >
       <Typography variant="h2" gutterBottom>
         Todo List
       </Typography>
 
       <Input
         placeholder="New item"
-        value={name}
-        onChange={e => setName(e.target.value)}
+        value={title}
+        onChange={e => setTitle(e.target.value)}
       />
       <Button
         variant="outlined"
         sx={{ margin: "12px"}}
-        onClick={handleClick}
+        onClick={onAddItem}
       >
         Add
       </Button>
 
-      {todoList}
+      {
+        todoList.length ?
+          todoList :
+          <Typography>Your list is empty.</Typography>
+      }
     </Box>
   );
 }
