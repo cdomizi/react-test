@@ -9,7 +9,10 @@ import TodoItem from "./TodoItem";
 function Todos() {
   const [name, setName] = useState('');
   const [ items, setItems ] = useState(data);
-  const todoList = items.map((item, index) =>
+  const reversedItems = items.map((item, index) =>
+    items[items.length - index - 1]
+  );
+  const todoList = reversedItems.map((item, index) =>
     <TodoItem key={index} name={item}/>
   );
   
