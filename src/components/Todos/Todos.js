@@ -7,28 +7,28 @@ import TodoItem from "./TodoItem";
 
 function Todos() {
   // get list from localStorage
-  const data = JSON.parse(localStorage.getItem("items"));
-  const [ items, setItems ] = useState(data || []);
+  const data = JSON.parse(localStorage.getItem("todos"));
+  const [ todos, setTodos ] = useState(data || []);
   const [ title, setTitle ] = useState("");
 
   // update list in localStorage
   useEffect(() => {
-    localStorage.setItem("items", JSON.stringify(items));
-  }, [items]);
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
   
   // sort todos by last created
-  const reversedItems = items.map((item, index) =>
-    items[items.length - index - 1]
+  const reversedTodos = todos.map((todo, index) =>
+    todos[todos.length - index - 1]
   );
-  const todoList = reversedItems.map((item, index) =>
-    <TodoItem key={index} name={item}/>
+  const todoList = reversedTodos.map((todo, index) =>
+    <TodoItem key={index} name={todo}/>
   );
   
   // add a new todo
-  function onAddItem() {
+  function onAddTodo() {
     setTitle("");
-    setItems([
-      ...items,
+    setTodos([
+      ...todos,
       title
     ]);
   }
@@ -40,14 +40,14 @@ function Todos() {
       </Typography>
 
       <Input
-        placeholder="New item"
+        placeholder="New todo"
         value={title}
         onChange={e => setTitle(e.target.value)}
       />
       <Button
         variant="outlined"
         sx={{ margin: "12px"}}
-        onClick={onAddItem}
+        onClick={onAddTodo}
       >
         Add
       </Button>
