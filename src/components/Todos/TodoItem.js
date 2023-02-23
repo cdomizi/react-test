@@ -4,34 +4,26 @@ import {
   ListItemIcon,
   ListItemText,
   IconButton,
-  Tooltip
+  Tooltip,
 } from "@mui/material";
 
 // mui icons
-import CircleIcon from '@mui/icons-material/Circle';
-import DeleteIcon from '@mui/icons-material/Delete';
+import CircleIcon from "@mui/icons-material/Circle";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function TodoItem(props) {
-  
-  const onDeleteTodo = () => {
-    console.log('delete item')
-  };
-
   return (
     <ListItem>
       <ListItemIcon>
         <CircleIcon fontSize="small" />
       </ListItemIcon>
-      <ListItemText
-        primary={props.name}
-        sx={{ flexGrow: 0 }}
-      />
+      <ListItemText primary={props.name} sx={{ flexGrow: 0 }} />
       <Tooltip title="Delete">
         <IconButton
           aria-label="delete"
           size="small"
-          sx={{ ml: 2}}
-          onClick={onDeleteTodo}
+          sx={{ ml: 2 }}
+          onClick={props.onDeleteTodo}
         >
           <DeleteIcon fontSize="small" />
         </IconButton>
