@@ -17,7 +17,7 @@ function TodoItem(props) {
       <ListItemIcon>
         <CircleIcon fontSize="small" />
       </ListItemIcon>
-      <ListItemText primary={props.name} sx={{ flexGrow: 0 }} />
+      <ListItemText primary={props.value} sx={{ flexGrow: 0 }} />
       <Tooltip title="Delete">
         <IconButton
           aria-label="delete"

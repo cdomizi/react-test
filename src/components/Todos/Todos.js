@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { nanoid } from "nanoid";
 import { Box } from "@mui/system";
 import { Button, Input, Typography } from "@mui/material";
 
@@ -24,20 +25,23 @@ function Todos() {
   const todoList = reversedTodos.map((todo, index) => (
     <TodoItem
       key={index}
-      name={todo}
-      onDeleteTodo={() => handleDeleteTodo(todo)}
+      value={todo.title}
+      onDeleteTodo={() => handleDeleteTodo(todo.id)}
     />
   ));
 
   // add a new todo
   function handleAddTodo() {
+    const todo = {};
+    todo.id = nanoid(12);
+    todo.title = title;
     setTitle("");
-    setTodos([...todos, title]);
+    setTodos([...todos, todo]);
   }
 
   // delete a todo
-  function handleDeleteTodo(title) {
-    const newTodos = todos.filter((todo) => todo !== title);
+  function handleDeleteTodo(id) {
+    const newTodos = todos.filter((todo) => todo.id !== id);
     setTodos(newTodos);
   }
 
