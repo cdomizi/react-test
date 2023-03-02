@@ -1,21 +1,34 @@
-import { Routes, Route } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+// project import
 import Layout from "./routes/Layout";
+import ErrorPage from "./components/Error/ErrorPage";
+import Main from "./components/Main/Main";
+import Products from "./components/Products/Products";
 
 // mui components
 import { CssBaseline, Box } from "@mui/material";
 
-// project import
-import Main from "./components/Main/Main";
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    errorElement: <ErrorPage />,
+    children: [
+      { index: true, element: <Main /> },
+      {
+        path: "products",
+        element: <Products />,
+      },
+    ],
+  },
+]);
 
 function App() {
   return (
     <Box className="App">
       <CssBaseline />
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Main />} />
-        </Route>
-      </Routes>
+      <RouterProvider router={router} />
     </Box>
   );
 }

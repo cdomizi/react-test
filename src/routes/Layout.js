@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import TopBar from "../components/TopBar/TopBar";
 
-function Layout({ children }) {
+function Layout() {
   const [state, setState] = useState(false);
   const toggleDrawer = (open) => (event) => {
     if (

@@ -16,7 +16,16 @@ function TopBar({ onToggle }) {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap component="div">
+        <Typography
+          href="/"
+          variant="h6"
+          noWrap
+          component="a"
+          sx={{
+            color: "inherit",
+            textDecoration: "none",
+          }}
+        >
           React Test
         </Typography>
       </Toolbar>
