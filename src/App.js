@@ -1,30 +1,21 @@
-import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import Layout from "./routes/Layout";
+
+// mui components
 import { CssBaseline, Box } from "@mui/material";
 
 // project import
 import Main from "./components/Main/Main";
-import Navbar from "./components/Navbar/Navbar";
-import TopBar from "./components/TopBar/TopBar";
 
 function App() {
-  const [state, setState] = useState(false);
-  const toggleDrawer = (open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-
-    setState(open);
-  };
-
   return (
     <Box className="App">
       <CssBaseline />
-      <TopBar onToggle={toggleDrawer} />
-      <Navbar open={state} onToggle={toggleDrawer} />
-      <Main />
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Main />} />
+        </Route>
+      </Routes>
     </Box>
   );
 }

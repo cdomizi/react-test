@@ -1,3 +1,6 @@
+// project import
+import menuItems from "../menu-items";
+
 // mui components
 import {
   Divider,
@@ -35,13 +38,10 @@ function Navbar({ open, onToggle }) {
     >
       <Divider />
       <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <ListItem key={text} disablePadding>
+        {menuItems.groups.map((group, index) => (
+          <ListItem key={index} disablePadding>
             <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText primary={group.id} />
             </ListItemButton>
           </ListItem>
         ))}
