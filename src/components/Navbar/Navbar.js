@@ -48,6 +48,13 @@ function Navbar({ open, onToggle }) {
       </List>
       <Divider />
       <List>
+        <ListItem>
+          <ListItemIcon>
+            <MailIcon />
+          </ListItemIcon>
+          <ListItemText primary="Products"></ListItemText>
+        </ListItem>
+        <Divider />
         {["All mail", "Trash", "Spam"].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton>
