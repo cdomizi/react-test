@@ -1,5 +1,10 @@
 import { useState, useMemo, createContext } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  RouterProvider,
+  Route,
+} from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 // project import
@@ -11,20 +16,17 @@ import Products from "./components/Products/Products";
 // mui components
 import { CssBaseline, Box, useMediaQuery } from "@mui/material";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Layout />,
-    errorElement: <ErrorPage />,
-    children: [
-      { index: true, element: <Main /> },
-      {
-        path: "products",
-        element: <Products />,
-      },
-    ],
-  },
-]);
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Main />} />
+        <Route path="products" element={<Products />} />
+      </Route>
+      <Route path="*" element={<ErrorPage />} />
+    </>
+  )
+);
 
 const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
