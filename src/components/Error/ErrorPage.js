@@ -10,9 +10,10 @@ function ErrorPage() {
   return (
     <Box p={3}>
       <Typography variant="h2" gutterBottom>
-        {`${error.status}: ${error.statusText}`}
+        {(error.status && `${error.status}`) || "Unexpected Error"}
+        {error.statusText && `: ${error.statusText}`}
       </Typography>
-      <Typography>{`${error.data && error.data}`}</Typography>
+      <Typography>{`${error.data || `Sorry, an error occurred.`}`}</Typography>
     </Box>
   );
 }
