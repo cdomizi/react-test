@@ -1,10 +1,20 @@
+import { useContext } from "react";
+import { useTheme } from "@mui/material/styles";
+import { ColorModeContext } from "../../App";
+
 // mui components
 import { AppBar, Toolbar, Typography, IconButton } from "@mui/material";
 
 // mui icons
-import { Menu as MenuIcon } from "@mui/icons-material";
+import {
+  Menu as MenuIcon,
+  Brightness4 as Brightness4Icon,
+  Brightness7 as Brightness7Icon,
+} from "@mui/icons-material";
 
 function TopBar({ onToggle }) {
+  const theme = useTheme();
+  const colorMode = useContext(ColorModeContext);
   return (
     <AppBar component="nav" position="fixed">
       <Toolbar>
@@ -28,6 +38,17 @@ function TopBar({ onToggle }) {
         >
           React Test
         </Typography>
+        <IconButton
+          onClick={colorMode.toggleColorMode}
+          color="inherit"
+          sx={{ marginLeft: "auto" }}
+        >
+          {theme.palette.mode === "dark" ? (
+            <Brightness7Icon />
+          ) : (
+            <Brightness4Icon />
+          )}
+        </IconButton>
       </Toolbar>
     </AppBar>
   );
