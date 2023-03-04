@@ -18,13 +18,12 @@ import { CssBaseline, Box, useMediaQuery } from "@mui/material";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <>
-      <Route path="/" element={<Layout />}>
+    <Route path="/" element={<Layout />} errorElement={<ErrorPage />}>
+      <Route errorElement={<ErrorPage />}>
         <Route index element={<Main />} />
         <Route path="products" element={<Products />} />
       </Route>
-      <Route path="*" element={<ErrorPage />} />
-    </>
+    </Route>
   )
 );
 
