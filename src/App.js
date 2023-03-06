@@ -1,31 +1,12 @@
 import { useState, useMemo, createContext } from "react";
-import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  RouterProvider,
-  Route,
-} from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { RouterProvider } from "react-router-dom";
 
 // project import
-import Layout from "./routes/Layout";
-import ErrorPage from "./components/Error/ErrorPage";
-import Main from "./components/Main/Main";
-import Products from "./components/Products/Products";
+import MainRoutes from "./routes/MainRoutes";
 
-// mui components
+// mui
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CssBaseline, Box, useMediaQuery } from "@mui/material";
-
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route path="/" element={<Layout />} errorElement={<ErrorPage />}>
-      <Route errorElement={<ErrorPage />}>
-        <Route index element={<Main />} />
-        <Route path="products" element={<Products />} />
-      </Route>
-    </Route>
-  )
-);
 
 const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
@@ -56,7 +37,7 @@ function App() {
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <RouterProvider router={router} />
+          <RouterProvider router={MainRoutes} />
         </ThemeProvider>
       </ColorModeContext.Provider>
     </Box>
