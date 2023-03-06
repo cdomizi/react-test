@@ -14,7 +14,7 @@ import {
   Brightness7 as Brightness7Icon,
 } from "@mui/icons-material";
 
-function TopBar({ open, onToggle, menuItems }) {
+function TopBar({ onToggle, menuItems }) {
   const theme = useTheme();
   const colorMode = useContext(ColorModeContext);
   return (

@@ -2,7 +2,7 @@
 import NavItem from "./NavItem";
 
 // mui components
-import { Drawer, List } from "@mui/material";
+import { Drawer, List, Typography, Divider } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -32,6 +32,8 @@ function Navbar({ open, onToggle, menuItems, window }) {
         },
       }}
     >
+      <Typography variant="h6" sx={{ my: 3 }} />
+      <Divider />
       <List>{items}</List>
     </Drawer>
   );
