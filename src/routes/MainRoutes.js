@@ -15,7 +15,11 @@ const MainRoutes = createBrowserRouter(
     <Route path="/" element={<RootLayout />} errorElement={<ErrorPage />}>
       <Route errorElement={<ErrorPage />}>
         <Route index element={<Home />} />
-        <Route path="products" element={<Products />} />
+        <Route
+          path="products"
+          element={<Products />}
+          errorElement={<ErrorPage />}
+        />
       </Route>
     </Route>
   )

@@ -1,9 +1,11 @@
 import { useContext } from "react";
-import { useTheme } from "@mui/material/styles";
 import { ColorModeContext } from "../../App";
 
+import MenuItem from "./MenuItem";
+
 // mui components
-import { AppBar, Toolbar, Typography, IconButton } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { Box, AppBar, Toolbar, Typography, IconButton } from "@mui/material";
 
 // mui icons
 import {
@@ -12,16 +14,16 @@ import {
   Brightness7 as Brightness7Icon,
 } from "@mui/icons-material";
 
-function TopBar({ onToggle }) {
+function TopBar({ open, onToggle, menuItems }) {
   const theme = useTheme();
   const colorMode = useContext(ColorModeContext);
   return (
-    <AppBar component="nav" position="fixed">
+    <AppBar component="nav">
       <Toolbar>
         <IconButton
           color="inherit"
           edge="start"
-          sx={{ mr: 2 }}
+          sx={{ display: { sm: "none" }, mr: 2 }}
           onClick={onToggle(true)}
         >
           <MenuIcon />
@@ -34,21 +36,23 @@ function TopBar({ onToggle }) {
           sx={{
             color: "inherit",
             textDecoration: "none",
+            flexGrow: 1,
           }}
         >
           React Test
         </Typography>
-        <IconButton
-          onClick={colorMode.toggleColorMode}
-          color="inherit"
-          sx={{ marginLeft: "auto" }}
-        >
-          {theme.palette.mode === "dark" ? (
-            <Brightness7Icon />
-          ) : (
-            <Brightness4Icon />
-          )}
-        </IconButton>
+        <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          {menuItems.map((item) => (
+            <MenuItem key={item.id} title={item.title} url={item.url} />
+          ))}
+          <IconButton onClick={colorMode.toggleColorMode} color="inherit">
+            {theme.palette.mode === "dark" ? (
+              <Brightness7Icon />
+            ) : (
+              <Brightness4Icon />
+            )}
+          </IconButton>
+        </Box>
       </Toolbar>
     </AppBar>
   );

@@ -1,5 +1,4 @@
 // project import
-import menuItems from "../../menu-items";
 import NavItem from "./NavItem";
 
 // mui components
@@ -7,7 +6,9 @@ import { Drawer, List } from "@mui/material";
 
 const drawerWidth = 240;
 
-function Navbar({ open, onToggle }) {
+function Navbar({ open, onToggle, menuItems, window }) {
+  const container =
+    window !== undefined ? () => window().document.body : undefined;
   const items = menuItems.map((item) => (
     <NavItem key={item.id} title={item.title} url={item.url} icon={item.icon} />
   ));
@@ -15,6 +16,13 @@ function Navbar({ open, onToggle }) {
   return (
     <Drawer
       component="nav"
+      container={container}
+      variant="temporary"
+      open={open}
+      onClose={onToggle(false)}
+      ModalProps={{
+        keepMounted: true,
+      }}
       sx={{
         width: drawerWidth,
         flexShrink: 0,
@@ -23,9 +31,6 @@ function Navbar({ open, onToggle }) {
           boxSizing: "border-box",
         },
       }}
-      anchor="left"
-      open={open}
-      onClose={onToggle(false)}
     >
       <List>{items}</List>
     </Drawer>
