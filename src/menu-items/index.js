@@ -1,7 +1,11 @@
-import { Storefront as StorefrontIcon } from "@mui/icons-material";
+import {
+  Storefront as StorefrontIcon,
+  FormatListBulleted as FormatListBulletedIcon,
+} from "@mui/icons-material";
 
 const icons = {
   StorefrontIcon,
+  FormatListBulletedIcon,
 };
 
 // project import
@@ -11,6 +15,12 @@ const menuItems = [
     title: "products",
     url: "/products",
     icon: icons.StorefrontIcon,
+  },
+  {
+    id: 1,
+    title: "todos",
+    url: "/todos",
+    icon: icons.FormatListBulletedIcon,
   },
 ];
 

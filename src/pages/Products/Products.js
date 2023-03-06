@@ -34,14 +34,14 @@ function Products() {
   }, [data, number, product]);
 
   return (
-    <Box sx={{ padding: "0px 12px" }}>
-      <Typography variant="h2" align="center" gutterBottom>
+    <Box sx={{ padding: "0px 12px", textAlign: "center" }}>
+      <Typography variant="h2" gutterBottom>
         Products
       </Typography>
       <Button
-        variant="outlined"
+        variant="contained"
         onClick={handleClick}
-        sx={{ margin: "0px 0px 18px 0px" }}
+        sx={{ margin: "0px 0px 18px 0px", borderRadius: "1.25rem" }}
       >
         Get Random Product
       </Button>

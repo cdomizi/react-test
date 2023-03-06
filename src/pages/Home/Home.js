@@ -26,7 +26,7 @@ const Home = () => {
       <Typography variant="h5" mb={10}>
         Browse our website
       </Typography>
-      <Stack direction="row" spacing={2}>
+      <Stack direction="row" spacing={5} justifyContent="center">
         {cards}
       </Stack>
     </Box>
