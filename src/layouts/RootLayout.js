@@ -30,7 +30,7 @@ function RootLayout() {
         onToggle={toggleDrawer}
         menuItems={menuItems}
       />
-      <Box component="main" sx={{ mt: 8, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, mt: 8, p: 3 }}>
         <Outlet />
       </Box>
     </Box>
