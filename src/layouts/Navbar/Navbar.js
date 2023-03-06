@@ -1,19 +1,17 @@
-// mui components
-import {
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
+// project import
+import menuItems from "../../menu-items";
+import NavItem from "./NavItem";
 
-// mui icons
-import { Mail as MailIcon } from "@mui/icons-material";
+// mui components
+import { Drawer, List } from "@mui/material";
 
 const drawerWidth = 240;
 
 function Navbar({ open, onToggle }) {
+  const items = menuItems.map((item) => (
+    <NavItem key={item.id} title={item.title} url={item.url} icon={item.icon} />
+  ));
+
   return (
     <Drawer
       component="nav"
@@ -29,16 +27,7 @@ function Navbar({ open, onToggle }) {
       open={open}
       onClose={onToggle(false)}
     >
-      <List>
-        <ListItem disablePadding>
-          <ListItemButton href="/products">
-            <ListItemIcon>
-              <MailIcon />
-            </ListItemIcon>
-            <ListItemText primary="Products" />
-          </ListItemButton>
-        </ListItem>
-      </List>
+      <List>{items}</List>
     </Drawer>
   );
 }

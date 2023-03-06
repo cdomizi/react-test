@@ -1,20 +1,22 @@
-import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import {
+  capitalize,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 
-function NavItem(props) {
-  const items = props.items;
-  const groupItems = items.map((item) =>
-    <ListItem key={item.id} disablePadding>
-      <ListItemButton>
-        <ListItemIcon>
-          {item.icon}
-        </ListItemIcon>
-        <ListItemText>
-          {item.title}
-        </ListItemText>
+function NavItem({ title, url, icon }) {
+  const Icon = icon;
+  const itemIcon = icon ? <Icon style={{ fontSize: "1.25rem" }} /> : false;
+  return (
+    <ListItem disablePadding>
+      <ListItemButton href={url}>
+        {itemIcon && <ListItemIcon>{itemIcon}</ListItemIcon>}
+        <ListItemText primary={capitalize(title)} />
       </ListItemButton>
     </ListItem>
   );
-  return {groupItems};
-};
+}
 
 export default NavItem;
