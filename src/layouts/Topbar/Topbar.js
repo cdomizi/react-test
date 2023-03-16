@@ -52,14 +52,14 @@ function TopBar({ onToggle, menuItems }) {
           {menuItems.map((item) => (
             <MenuItem key={item.id} title={item.title} url={item.url} />
           ))}
-          <IconButton onClick={colorMode.toggleColorMode} color="inherit">
-            {theme.palette.mode === "dark" ? (
-              <Brightness7Icon />
-            ) : (
-              <Brightness4Icon />
-            )}
-          </IconButton>
         </Box>
+        <IconButton onClick={colorMode.toggleColorMode} color="inherit">
+          {theme.palette.mode === "dark" ? (
+            <Brightness7Icon />
+          ) : (
+            <Brightness4Icon />
+          )}
+        </IconButton>
       </Toolbar>
     </AppBar>
   );
