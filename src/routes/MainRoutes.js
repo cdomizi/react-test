@@ -1,3 +1,4 @@
+import loadable from "@loadable/component";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -5,11 +6,11 @@ import {
 } from "react-router-dom";
 
 // project import
-import RootLayout from "../layouts/RootLayout";
-import ErrorPage from "../pages/Error";
-import Home from "../pages/Home/Home";
-import Products from "../pages/Products";
-import Todos from "../pages/Todos";
+const RootLayout = loadable(() => import("../layouts/RootLayout"));
+const ErrorPage = loadable(() => import("../pages/Error"));
+const Home = loadable(() => import("../pages/Home/Home"));
+const Products = loadable(() => import("../pages/Products"));
+const Todos = loadable(() => import("../pages/Todos"));
 
 const MainRoutes = createBrowserRouter(
   createRoutesFromElements(
