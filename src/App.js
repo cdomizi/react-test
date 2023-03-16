@@ -3,7 +3,6 @@ import ThemeCustomization from "./themes/ThemeCustomization";
 
 // project import
 import MainRoutes from "./routes/MainRoutes";
-import ColorModeContext from "./contexts/ColorModeContext";
 
 // mui import
 import { Box } from "@mui/material";
@@ -19,4 +18,3 @@ function App() {
 }
 
 export default App;
-export { ColorModeContext };

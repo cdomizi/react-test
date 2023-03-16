@@ -13,9 +13,12 @@ const ThemeCustomization = ({ children }) => {
   const defaultMode = useMediaQuery("(prefers-color-scheme: light)")
     ? "light"
     : "dark";
+  // check for existing color mode setting,
+  // else set it according to browser preference
   const initialState = localStorage.getItem("colorMode") || defaultMode;
   const [mode, setMode] = useState(initialState);
 
+  // update color mode setting in storage
   useLayoutEffect(() => {
     localStorage.setItem("colorMode", mode);
   }, [mode]);

@@ -13,7 +13,7 @@ function ErrorPage() {
         {(error.status && `${error.status}`) || "Unexpected Error"}
         {error.statusText && `: ${error.statusText}`}
       </Typography>
-      <Typography>{`${error.data || `Sorry, an error occurred.`}`}</Typography>
+      <Typography>{`${error.data}` || "Sorry, an error occurred."}</Typography>
     </Box>
   );
 }

@@ -8,13 +8,16 @@ import Product from "./Product";
 
 function Products() {
   const [number, setNumber] = useState(null);
+  // get product data from external API
   const data = `https://dummyjson.com/products/${number}`;
   const [product, setProduct] = useState(null);
 
+  // set random product id
   function handleClick() {
     setNumber(() => Math.ceil(Math.random() * 100));
   }
 
+  // fetch product data when a new id is provided
   useEffect(() => {
     let ignore = false;
 
