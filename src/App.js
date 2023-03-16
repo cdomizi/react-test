@@ -1,45 +1,19 @@
-import { useState, useMemo, createContext } from "react";
 import { RouterProvider } from "react-router-dom";
+import ThemeCustomization from "./themes/ThemeCustomization";
 
 // project import
 import MainRoutes from "./routes/MainRoutes";
+import ColorModeContext from "./contexts/ColorModeContext";
 
-// mui
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { CssBaseline, Box, useMediaQuery } from "@mui/material";
-
-const ColorModeContext = createContext({ toggleColorMode: () => {} });
+// mui import
+import { Box } from "@mui/material";
 
 function App() {
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const [mode, setMode] = useState(prefersDarkMode ? "dark" : "light");
-  const colorMode = useMemo(
-    () => ({
-      toggleColorMode: () => {
-        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
-      },
-    }),
-    []
-  );
-
-  const theme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode,
-        },
-      }),
-    [mode]
-  );
-
   return (
     <Box className="App">
-      <ColorModeContext.Provider value={colorMode}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <RouterProvider router={MainRoutes} />
-        </ThemeProvider>
-      </ColorModeContext.Provider>
+      <ThemeCustomization>
+        <RouterProvider router={MainRoutes} />
+      </ThemeCustomization>
     </Box>
   );
 }

@@ -1,11 +1,18 @@
 import { useContext } from "react";
-import { ColorModeContext } from "../../App";
 
+// project import
+import ColorModeContext from "../../contexts/ColorModeContext";
 import MenuItem from "./MenuItem";
 
-// mui components
-import { useTheme } from "@mui/material/styles";
-import { Box, AppBar, Toolbar, Typography, IconButton } from "@mui/material";
+// mui import
+import {
+  useTheme,
+  Box,
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+} from "@mui/material";
 
 // mui icons
 import {
