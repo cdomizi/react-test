@@ -6,10 +6,10 @@ import {
 
 // project import
 import RootLayout from "../layouts/RootLayout";
-import ErrorPage from "../pages/Error/ErrorPage";
+import ErrorPage from "../pages/Error";
 import Home from "../pages/Home/Home";
-import Products from "../pages/Products/Products";
-import Todos from "../pages/Todos/Todos";
+import Products from "../pages/Products";
+import Todos from "../pages/Todos";
 
 const MainRoutes = createBrowserRouter(
   createRoutesFromElements(

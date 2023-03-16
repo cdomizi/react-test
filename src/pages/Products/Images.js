@@ -5,7 +5,7 @@ import ImageListItem from "@mui/material/ImageListItem";
 
 function Images(props) {
   return (
-    <Box sx={{ width: 500, height: 450 }}>
+    <Box>
       <ImageList variant="masonry" vcols={3} gap={8}>
         {props.images.map((image, index) => (
           <ImageListItem key={index}>
