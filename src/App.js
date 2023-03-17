@@ -1,23 +1,19 @@
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import { RouterProvider } from "react-router-dom";
+import ThemeCustomization from "./themes/ThemeCustomization";
 
 // project import
-import Todos from './components/Todos/Todos';
+import MainRoutes from "./routes/MainRoutes";
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-  },
-});
+// mui import
+import { Box } from "@mui/material";
 
 function App() {
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <main>
-        <Todos />
-      </main>
-    </ThemeProvider>
+    <Box className="App">
+      <ThemeCustomization>
+        <RouterProvider router={MainRoutes} />
+      </ThemeCustomization>
+    </Box>
   );
 }
 
