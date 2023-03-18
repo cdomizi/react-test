@@ -18,32 +18,40 @@ function Todos() {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
-  // sort todos by last created
-  const reversedTodos = todos.map(
-    (todo, index) => todos[todos.length - index - 1]
-  );
-  const todoList = reversedTodos.map((todo, index) => (
-    <TodoItem
-      key={index}
-      value={todo.title}
-      onDeleteTodo={() => handleDeleteTodo(todo.id)}
-    />
-  ));
-
   // add a new todo
-  function handleAddTodo() {
+  const handleAddTodo = () => {
     const todo = {};
     todo.id = nanoid(12);
     todo.title = title;
     setTitle("");
-    setTodos([...todos, todo]);
-  }
+    setTodos([todo, ...todos]);
+  };
+
+  // edit a todo
+  const handleEditTodo = (editedItem) => {
+    const [id, newTitle] = editedItem;
+    const newTodos = todos.map(
+      (todo) =>
+        (todo = todo.id === id ? { ...todo, title: newTitle } : { ...todo })
+    );
+    setTodos(newTodos);
+  };
 
   // delete a todo
-  function handleDeleteTodo(id) {
+  const handleDeleteTodo = (id) => {
     const newTodos = todos.filter((todo) => todo.id !== id);
     setTodos(newTodos);
-  }
+  };
+
+  const todoList = todos.map((todo, index) => (
+    <TodoItem
+      key={index}
+      id={todo.id}
+      value={todo.title}
+      onDeleteTodo={() => handleDeleteTodo(todo.id)}
+      onEditTodo={handleEditTodo}
+    />
+  ));
 
   return (
     <Box sx={{ padding: "0px 12px" }}>
