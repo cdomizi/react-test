@@ -53,18 +53,22 @@ function Todos() {
     setTodos(newTodos);
   };
 
-  // iteratively create todo list
-  const todoList = todos.map((todo, index) => (
-    <TodoItem
-      key={index}
-      id={todo.id}
-      value={todo.title}
-      checked={todo.checked}
-      onToggleTodo={() => handleToggleTodo(todo.id, todo.checked)}
-      onDeleteTodo={() => handleDeleteTodo(todo.id)}
-      onEditTodo={handleEditTodo}
-    />
-  ));
+  // list todos
+  const todoList = todos
+    // sort by checked
+    // display completed tasks at the bottom of the list
+    .sort((a, b) => a.checked - b.checked)
+    .map((todo, index) => (
+      <TodoItem
+        key={index}
+        id={todo.id}
+        value={todo.title}
+        checked={todo.checked}
+        onToggleTodo={() => handleToggleTodo(todo.id, todo.checked)}
+        onDeleteTodo={() => handleDeleteTodo(todo.id)}
+        onEditTodo={handleEditTodo}
+      />
+    ));
 
   return (
     <Box sx={{ padding: "0px 12px" }}>
