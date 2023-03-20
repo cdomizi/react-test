@@ -22,7 +22,7 @@ function Todos() {
   const handleAddTodo = () => {
     const todo = {};
     todo.id = nanoid(12);
-    todo.title = title;
+    todo.title = title.trim();
     setTitle("");
     setTodos([todo, ...todos]);
   };
@@ -32,7 +32,8 @@ function Todos() {
     const [id, newTitle] = editedItem;
     const newTodos = todos.map(
       (todo) =>
-        (todo = todo.id === id ? { ...todo, title: newTitle } : { ...todo })
+        (todo =
+          todo.id === id ? { ...todo, title: newTitle.trim() } : { ...todo })
     );
     setTodos(newTodos);
   };

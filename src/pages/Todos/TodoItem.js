@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 
 // mui components
 import {
@@ -21,6 +21,7 @@ import {
 function TodoItem(props) {
   const [editing, setEditing] = useState(false);
   const [content, setContent] = useState(props.value);
+  const inputRef = useRef(null);
 
   useEffect(() => setContent(props.value), [props.value]);
 
@@ -29,7 +30,7 @@ function TodoItem(props) {
       <>
         {!editing ? (
           <>
-            <ListItemText primary={props.value} sx={{ flexGrow: 0 }} />
+            <ListItemText primary={props.value} sx={{ maxWidth: "13.5rem" }} />
             <Tooltip title="Edit">
               <IconButton
                 aria-label="edit"
@@ -45,7 +46,10 @@ function TodoItem(props) {
           <>
             <Input
               value={content}
+              ref={inputRef}
               onChange={(e) => setContent(e.target.value)}
+              onBlur={() => setEditing(false)}
+              autoFocus
             />
             <Tooltip title="Done">
               <IconButton
