@@ -31,7 +31,14 @@ function TodoItem(props) {
       <>
         {!editing ? (
           <>
-            <ListItemText primary={value} sx={{ maxWidth: "13.5rem" }} />
+            <ListItemText
+              primary={value}
+              sx={{
+                maxWidth: "13.5rem",
+                textDecoration: checked ? "line-through" : "inherit",
+                color: checked ? "rgba(255, 255, 255, 0.5)" : "inherit",
+              }}
+            />
             <Tooltip title="Edit">
               <IconButton
                 aria-label="edit"
@@ -65,7 +72,7 @@ function TodoItem(props) {
         )}
       </>
     );
-  }, [editing, content, id, value, onEditTodo]);
+  }, [editing, content, id, value, onEditTodo, checked]);
 
   return (
     <ListItem>
