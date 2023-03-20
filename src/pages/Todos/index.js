@@ -23,6 +23,7 @@ function Todos() {
     const todo = {};
     todo.id = nanoid(12);
     todo.title = title.trim();
+    todo.checked = false;
     setTitle("");
     setTodos([todo, ...todos]);
   };
@@ -44,11 +45,22 @@ function Todos() {
     setTodos(newTodos);
   };
 
+  const handleToggleTodo = (id, checked) => {
+    const newTodos = todos.map(
+      (todo) =>
+        (todo = todo.id === id ? { ...todo, checked: !checked } : { ...todo })
+    );
+    setTodos(newTodos);
+  };
+
+  // iteratively create todo list
   const todoList = todos.map((todo, index) => (
     <TodoItem
       key={index}
       id={todo.id}
       value={todo.title}
+      checked={todo.checked}
+      onToggleTodo={() => handleToggleTodo(todo.id, todo.checked)}
       onDeleteTodo={() => handleDeleteTodo(todo.id)}
       onEditTodo={handleEditTodo}
     />
