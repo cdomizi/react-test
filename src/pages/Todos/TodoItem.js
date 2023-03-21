@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, memo, useEffect, useRef } from "react";
 
 // mui components
 import {
@@ -18,7 +18,7 @@ import {
   Done as DoneIcon,
 } from "@mui/icons-material";
 
-function TodoItem(props) {
+const TodoItem = memo((props) => {
   const { id, value, checked, onToggleTodo, onDeleteTodo, onEditTodo } = props;
   const [editing, setEditing] = useState(false);
   const [content, setContent] = useState(value);
@@ -87,6 +87,6 @@ function TodoItem(props) {
       </Tooltip>
     </ListItem>
   );
-}
+});
 
 export default TodoItem;

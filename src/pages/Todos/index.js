@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { nanoid } from "nanoid";
 import { Box } from "@mui/system";
-import { Button, Input, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 
 // project import
+import NewTodo from "./NewTodo";
 import TodoItem from "./TodoItem";
 
 function Todos() {
@@ -11,7 +12,6 @@ function Todos() {
   const [todos, setTodos] = useState(
     () => JSON.parse(localStorage.getItem("todos")) || []
   );
-  const [title, setTitle] = useState("");
 
   // update list in localStorage
   useEffect(() => {
@@ -19,44 +19,42 @@ function Todos() {
   }, [todos]);
 
   // add a new todo
-  const handleAddTodo = () => {
+  const handleAddTodo = (value) => {
     const todo = {};
     todo.id = nanoid(12);
-    todo.title = title.trim();
+    todo.title = value.trim();
     todo.checked = false;
-    setTitle("");
     setTodos([todo, ...todos]);
   };
 
   // edit a todo
   const handleEditTodo = (editedItem) => {
-    const [id, newTitle] = editedItem;
-    const newTodos = todos.map(
+    const [id, title] = editedItem;
+    const newList = todos.map(
       (todo) =>
-        (todo =
-          todo.id === id ? { ...todo, title: newTitle.trim() } : { ...todo })
+        (todo = todo.id === id ? { ...todo, title: title.trim() } : { ...todo })
     );
-    setTodos(newTodos);
+    setTodos(newList);
   };
 
   // delete a todo
   const handleDeleteTodo = (id) => {
-    const newTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(newTodos);
+    const newList = todos.filter((todo) => todo.id !== id);
+    setTodos(newList);
   };
 
   const handleToggleTodo = (id, checked) => {
-    const newTodos = todos.map(
+    const newList = todos.map(
       (todo) =>
         (todo = todo.id === id ? { ...todo, checked: !checked } : { ...todo })
     );
-    setTodos(newTodos);
+    setTodos(newList);
   };
 
   // list todos
+  // sort by checked
+  // display completed tasks at the bottom of the list
   const todoList = todos
-    // sort by checked
-    // display completed tasks at the bottom of the list
     .sort((a, b) => a.checked - b.checked)
     .map((todo, index) => (
       <TodoItem
@@ -76,24 +74,9 @@ function Todos() {
         Todo List
       </Typography>
 
-      <Input
-        placeholder="New todo"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <Button
-        variant="outlined"
-        sx={{ margin: "12px" }}
-        onClick={handleAddTodo}
-      >
-        Add
-      </Button>
+      <NewTodo onAddTodo={handleAddTodo} />
 
-      {todoList.length ? (
-        todoList
-      ) : (
-        <Typography>Your list is empty.</Typography>
-      )}
+      {todos.length ? todoList : <Typography>Your list is empty.</Typography>}
     </Box>
   );
 }
