@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useReducer, useMemo, useEffect } from "react";
 import { nanoid } from "nanoid";
 import { Box } from "@mui/system";
 import { Typography } from "@mui/material";
@@ -7,11 +7,51 @@ import { Typography } from "@mui/material";
 import NewTodo from "./NewTodo";
 import TodoItem from "./TodoItem";
 
-function Todos() {
+const Todos = () => {
   // get list from localStorage
-  const [todos, setTodos] = useState(
-    () => JSON.parse(localStorage.getItem("todos")) || []
+  const initialTodos = useMemo(
+    () => JSON.parse(localStorage.getItem("todos")) || [],
+    []
   );
+
+  const reducer = (todos, action) => {
+    switch (action.type) {
+      case "add": {
+        return [
+          {
+            id: nanoid(12),
+            title: action.title,
+            checked: false,
+          },
+          ...todos,
+        ];
+      }
+      case "edit": {
+        return todos.map((todo) =>
+          todo.id === action.id
+            ? { ...todo, title: action.title.trim() }
+            : { ...todo }
+        );
+      }
+      case "delete": {
+        return todos.filter((todo) => todo.id !== action.id);
+      }
+      case "toggle": {
+        return todos.map(
+          (todo) =>
+            (todo =
+              todo.id === action.id
+                ? { ...todo, checked: !action.checked }
+                : { ...todo })
+        );
+      }
+      default: {
+        throw Error(`Unknown action: ${action.type}`);
+      }
+    }
+  };
+
+  const [todos, dispatch] = useReducer(reducer, initialTodos);
 
   // update list in localStorage
   useEffect(() => {
@@ -20,47 +60,34 @@ function Todos() {
 
   // add a new todo
   const handleAddTodo = (value) => {
-    const todo = {};
-    todo.id = nanoid(12);
-    todo.title = value.trim();
-    todo.checked = false;
-    setTodos([todo, ...todos]);
+    dispatch({ type: "add", title: value.trim() });
   };
 
   // edit a todo
   const handleEditTodo = (editedItem) => {
     const [id, title] = editedItem;
-    const newList = todos.map(
-      (todo) =>
-        (todo = todo.id === id ? { ...todo, title: title.trim() } : { ...todo })
-    );
-    setTodos(newList);
+    dispatch({ type: "edit", id: id, title: title });
   };
 
   // delete a todo
   const handleDeleteTodo = (id) => {
-    const newList = todos.filter((todo) => todo.id !== id);
-    setTodos(newList);
+    dispatch({ type: "delete", id: id });
   };
 
   const handleToggleTodo = (id, checked) => {
-    const newList = todos.map(
-      (todo) =>
-        (todo = todo.id === id ? { ...todo, checked: !checked } : { ...todo })
-    );
-    setTodos(newList);
+    dispatch({ type: "toggle", id: id, checked: checked });
   };
 
   const handleMoveUp = (index) => {
     const newList = [...todos];
     [newList[index], newList[index - 1]] = [newList[index - 1], newList[index]];
-    setTodos(newList);
+    console.log(newList);
   };
 
   const handleMoveDown = (index) => {
     const newList = [...todos];
     [newList[index], newList[index + 1]] = [newList[index + 1], newList[index]];
-    setTodos(newList);
+    console.log(newList);
   };
 
   // list todos
@@ -97,6 +124,6 @@ function Todos() {
       {todos.length ? todoList : <Typography>Your list is empty.</Typography>}
     </Box>
   );
-}
+};
 
 export default Todos;
