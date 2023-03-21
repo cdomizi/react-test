@@ -51,6 +51,18 @@ function Todos() {
     setTodos(newList);
   };
 
+  const handleMoveUp = (index) => {
+    const newList = [...todos];
+    [newList[index], newList[index - 1]] = [newList[index - 1], newList[index]];
+    setTodos(newList);
+  };
+
+  const handleMoveDown = (index) => {
+    const newList = [...todos];
+    [newList[index], newList[index + 1]] = [newList[index + 1], newList[index]];
+    setTodos(newList);
+  };
+
   // list todos
   // sort by checked
   // display completed tasks at the bottom of the list
@@ -59,12 +71,18 @@ function Todos() {
     .map((todo, index) => (
       <TodoItem
         key={index}
+        position={[
+          index === 0,
+          index === todos.filter((todo) => !todo.checked).length - 1,
+        ]}
         id={todo.id}
         value={todo.title}
         checked={todo.checked}
         onToggleTodo={() => handleToggleTodo(todo.id, todo.checked)}
         onDeleteTodo={() => handleDeleteTodo(todo.id)}
         onEditTodo={handleEditTodo}
+        onMoveUp={() => handleMoveUp(index)}
+        onMoveDown={() => handleMoveDown(index)}
       />
     ));
 

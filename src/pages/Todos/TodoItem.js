@@ -1,5 +1,8 @@
 import { useState, useMemo, memo, useEffect, useRef } from "react";
 
+// project import
+import UpDownArrows from "../../components/UpDownArrows";
+
 // mui components
 import {
   ListItem,
@@ -19,7 +22,17 @@ import {
 } from "@mui/icons-material";
 
 const TodoItem = memo((props) => {
-  const { id, value, checked, onToggleTodo, onDeleteTodo, onEditTodo } = props;
+  const {
+    id,
+    position,
+    value,
+    checked,
+    onToggleTodo,
+    onDeleteTodo,
+    onEditTodo,
+    onMoveUp,
+    onMoveDown,
+  } = props;
   const [editing, setEditing] = useState(false);
   const [content, setContent] = useState(value);
   const inputRef = useRef(null);
@@ -85,6 +98,12 @@ const TodoItem = memo((props) => {
           <DeleteIcon fontSize="small" />
         </IconButton>
       </Tooltip>
+      <UpDownArrows
+        position={position}
+        onMoveUp={onMoveUp}
+        onMoveDown={onMoveDown}
+        disabled={checked}
+      />
     </ListItem>
   );
 });
