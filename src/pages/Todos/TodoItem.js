@@ -30,14 +30,15 @@ const TodoItem = memo((props) => {
     onToggleTodo,
     onDeleteTodo,
     onEditTodo,
-    onMoveUp,
-    onMoveDown,
+    onMove,
   } = props;
   const [editing, setEditing] = useState(false);
   const [content, setContent] = useState(value);
   const inputRef = useRef(null);
 
   useEffect(() => setContent(value), [value]);
+
+  const handleMove = (direction) => onMove(direction, id);
 
   const todo = useMemo(() => {
     return (
@@ -100,8 +101,7 @@ const TodoItem = memo((props) => {
       </Tooltip>
       <UpDownArrows
         position={position}
-        onMoveUp={onMoveUp}
-        onMoveDown={onMoveDown}
+        moveUp={handleMove}
         disabled={checked}
       />
     </ListItem>

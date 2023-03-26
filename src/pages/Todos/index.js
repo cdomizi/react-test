@@ -14,9 +14,10 @@ const Todos = () => {
     []
   );
 
-  const reducer = (todos, action) => {
+  const todosReducer = (todos, action) => {
     switch (action.type) {
       case "add": {
+        console.log(`todos: ${todos}`);
         return [
           {
             id: nanoid(12),
@@ -45,13 +46,28 @@ const Todos = () => {
                 : { ...todo })
         );
       }
+      case "move": {
+        const index = todos.findIndex((todo) => todo.id === action.id);
+        const newList = [...todos];
+        action.moveUp
+          ? ([newList[index], newList[index - 1]] = [
+              newList[index - 1],
+              newList[index],
+            ])
+          : ([newList[index], newList[index + 1]] = [
+              newList[index + 1],
+              newList[index],
+            ]);
+        console.log(`newList: ${newList}`);
+        return newList;
+      }
       default: {
         throw Error(`Unknown action: ${action.type}`);
       }
     }
   };
 
-  const [todos, dispatch] = useReducer(reducer, initialTodos);
+  const [todos, dispatch] = useReducer(todosReducer, initialTodos);
 
   // update list in localStorage
   useEffect(() => {
@@ -78,16 +94,8 @@ const Todos = () => {
     dispatch({ type: "toggle", id: id, checked: checked });
   };
 
-  const handleMoveUp = (index) => {
-    const newList = [...todos];
-    [newList[index], newList[index - 1]] = [newList[index - 1], newList[index]];
-    console.log(newList);
-  };
-
-  const handleMoveDown = (index) => {
-    const newList = [...todos];
-    [newList[index], newList[index + 1]] = [newList[index + 1], newList[index]];
-    console.log(newList);
+  const handleMove = (moveUp, id) => {
+    dispatch({ type: "move", moveUp: moveUp, id: id });
   };
 
   // list todos
@@ -108,8 +116,7 @@ const Todos = () => {
         onToggleTodo={() => handleToggleTodo(todo.id, todo.checked)}
         onDeleteTodo={() => handleDeleteTodo(todo.id)}
         onEditTodo={handleEditTodo}
-        onMoveUp={() => handleMoveUp(index)}
-        onMoveDown={() => handleMoveDown(index)}
+        onMove={handleMove}
       />
     ));
 
