@@ -17,7 +17,6 @@ const Todos = () => {
   const todosReducer = (todos, action) => {
     switch (action.type) {
       case "add": {
-        console.log(`todos: ${todos}`);
         return [
           {
             id: nanoid(12),
@@ -58,7 +57,6 @@ const Todos = () => {
               newList[index + 1],
               newList[index],
             ]);
-        console.log(`newList: ${newList}`);
         return newList;
       }
       default: {

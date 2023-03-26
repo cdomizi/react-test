@@ -10,7 +10,7 @@ import {
   ListItemText,
   IconButton,
   Tooltip,
-  Input,
+  TextField,
   Checkbox,
 } from "@mui/material";
 
@@ -41,6 +41,16 @@ const TodoItem = memo((props) => {
   const handleMove = (direction) => onMove(direction, id);
 
   const todo = useMemo(() => {
+    const handleEdit = content.length
+      ? () => {
+          onEditTodo([id, content]);
+          setContent(value);
+          setEditing(false);
+        }
+      : () => {
+          setEditing(false);
+        };
+
     return (
       <>
         {!editing ? (
@@ -66,15 +76,12 @@ const TodoItem = memo((props) => {
           </>
         ) : (
           <>
-            <Input
+            <TextField
+              variant="standard"
               value={content}
               ref={inputRef}
               onChange={(e) => setContent(e.target.value)}
-              onBlur={() => {
-                onEditTodo([id, content]);
-                setContent(value);
-                setEditing(false);
-              }}
+              onBlur={handleEdit}
               autoFocus
             />
             <Tooltip title="Done">
@@ -86,7 +93,7 @@ const TodoItem = memo((props) => {
         )}
       </>
     );
-  }, [editing, content, id, value, onEditTodo, checked]);
+  }, [editing, content, value, id, onEditTodo, checked]);
 
   return (
     <ListItem>
