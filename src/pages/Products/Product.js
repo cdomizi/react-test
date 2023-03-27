@@ -3,7 +3,7 @@ import { Box, Chip, Typography, Rating } from "@mui/material";
 // project import
 import Images from "./Images";
 
-function Product(props) {
+const Product = (props) => {
   const discountPrice = (
     ((100 - props.discountPercentage) * props.price) /
     100

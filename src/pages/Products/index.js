@@ -6,22 +6,20 @@ import { Box, Typography, Button } from "@mui/material";
 // project import
 import Product from "./Product";
 
-function Products() {
+const Products = () => {
   const [number, setNumber] = useState(null);
   // get product data from external API
   const data = `https://dummyjson.com/products/${number}`;
   const [product, setProduct] = useState(null);
 
   // set random product id
-  function handleClick() {
-    setNumber(() => Math.ceil(Math.random() * 100));
-  }
+  const handleClick = () => setNumber(() => Math.ceil(Math.random() * 100));
 
   // fetch product data when a new id is provided
   useEffect(() => {
     let ignore = false;
 
-    async function getProduct() {
+    const getProduct = async () => {
       try {
         const res = await fetch(data);
         const json = await res.json();
@@ -34,7 +32,7 @@ function Products() {
     number && getProduct();
 
     return () => (ignore = true);
-  }, [data, number, product]);
+  }, [data, number]);
 
   return (
     <Box sx={{ padding: "0px 12px", textAlign: "center" }}>

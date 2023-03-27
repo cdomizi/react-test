@@ -36,11 +36,14 @@ const TodoItem = memo((props) => {
   const [content, setContent] = useState(value);
   const inputRef = useRef(null);
 
+  // update content as the user types
   useEffect(() => setContent(value), [value]);
 
+  // handle moving todo up/down
   const handleMove = (direction) => onMove(direction, id);
 
   const todo = useMemo(() => {
+    // edit todo only if not empty, else keep previous content
     const handleEdit = content.length
       ? () => {
           onEditTodo([id, content]);

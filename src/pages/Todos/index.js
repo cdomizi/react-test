@@ -1,11 +1,13 @@
 import { useReducer, useMemo, useEffect } from "react";
 import { nanoid } from "nanoid";
-import { Box } from "@mui/system";
-import { Typography } from "@mui/material";
 
 // project import
 import NewTodo from "./NewTodo";
 import TodoItem from "./TodoItem";
+
+// mui imoport
+import { Box } from "@mui/material";
+import { Typography } from "@mui/material";
 
 const Todos = () => {
   // get list from localStorage
@@ -66,7 +68,7 @@ const Todos = () => {
   };
 
   const [todos, dispatch] = useReducer(todosReducer, initialTodos);
-
+  
   // update list in localStorage
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
@@ -88,10 +90,12 @@ const Todos = () => {
     dispatch({ type: "delete", id: id });
   };
 
+  // check/uncheck a todo
   const handleToggleTodo = (id, checked) => {
     dispatch({ type: "toggle", id: id, checked: checked });
   };
 
+  // move todos up/down
   const handleMove = (moveUp, id) => {
     dispatch({ type: "move", moveUp: moveUp, id: id });
   };

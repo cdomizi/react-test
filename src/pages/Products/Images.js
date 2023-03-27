@@ -1,9 +1,8 @@
-import * as React from "react";
 import Box from "@mui/material/Box";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 
-function Images(props) {
+const Images = (props) => {
   return (
     <Box>
       <ImageList variant="masonry" vcols={3} gap={8}>

@@ -6,11 +6,18 @@ import { Button, TextField } from "@mui/material";
 const NewTodo = memo((props) => {
   const [title, setTitle] = useState("");
   const [error, setError] = useState(false);
-  const handleSubmit = title.length ? (() => {
-    setError(false);
-    props.onAddTodo(title);
-    setTitle("");
-  }) : () => setError(true);
+
+  // add todo only if not empty
+  const handleSubmit = title.length
+    ? () => {
+        setError(false);
+        props.onAddTodo(title);
+        setTitle("");
+      }
+    : () => {
+        setError(true);
+      };
+
   return (
     <>
       <TextField
