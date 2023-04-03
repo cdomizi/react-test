@@ -62,13 +62,13 @@ const Todos = () => {
         return newList;
       }
       default: {
-        throw Error(`Unknown action: ${action.type}`);
+        throw new Error(`Unknown action: ${action.type}`);
       }
     }
   };
 
   const [todos, dispatch] = useReducer(todosReducer, initialTodos);
-  
+
   // update list in localStorage
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));

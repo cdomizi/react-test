@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // mui components
 import { Box, Typography, Button } from "@mui/material";
@@ -7,48 +7,83 @@ import { Box, Typography, Button } from "@mui/material";
 import Product from "./Product";
 
 const Products = () => {
+  const [loading, setLoading] = useState(false);
   const [number, setNumber] = useState(null);
-  // get product data from external API
+  // product data from external API
   const data = `https://dummyjson.com/products/${number}`;
   const [product, setProduct] = useState(null);
+  // AbortController to abort fetch request
+  const controllerRef = useRef(null);
 
   // set random product id
-  const handleClick = () => setNumber(() => Math.ceil(Math.random() * 100));
+  const handleFetchData = () => {
+    setLoading(true);
+    setNumber(() => Math.ceil(Math.random() * 100));
+  };
+
+  // abort fetch product data request
+  const handleStopFetching = () => {
+    controllerRef && controllerRef.current?.abort();
+    setLoading(false);
+  };
 
   // fetch product data when a new id is provided
   useEffect(() => {
-    let ignore = false;
-
+    const abortController = new AbortController();
+    controllerRef.current = abortController;
     const getProduct = async () => {
       try {
-        const res = await fetch(data);
+        const res = await fetch(data, { signal: controllerRef.current.signal });
         const json = await res.json();
-        !ignore && setProduct(json);
+        setProduct(json);
+        setLoading(false);
       } catch (e) {
-        console.error(`Error while fetching product: ${e}`);
+        controllerRef.current.signal.aborted
+          ? console.log("The user aborted the request.")
+          : console.error(`Error while fetching product data: ${e}`) &&
+            setLoading(false);
       }
-    }
+    };
 
-    number && getProduct();
+    number && setTimeout(getProduct, 3000);
 
-    return () => (ignore = true);
-  }, [data, number]);
+    return function cleanup() {
+      abortController.abort();
+    };
+  }, [data, number, controllerRef]);
 
   return (
-    <Box sx={{ padding: "0px 12px", textAlign: "center" }}>
+    <Box sx={{ py: 3, textAlign: "center" }}>
       <Typography variant="h2" gutterBottom>
         Products
       </Typography>
       <Button
         variant="contained"
-        onClick={handleClick}
-        sx={{ margin: "0px 0px 18px 0px", borderRadius: "1.25rem" }}
+        onClick={handleFetchData}
+        sx={{
+          mb: 3,
+          borderRadius: "1.25rem",
+          display: loading ? "none" : "default",
+        }}
       >
         Get Random Product
       </Button>
-      <Box>{product && <Product {...product} />}</Box>
+      <Button
+        variant="contained"
+        onClick={handleStopFetching}
+        sx={{
+          mb: 3,
+          borderRadius: "1.25rem",
+          display: loading ? "default" : "none",
+        }}
+      >
+        Stop
+      </Button>
+      <Box>
+        {(loading || product) && <Product loading={loading} {...product} />}
+      </Box>
     </Box>
   );
-}
+};
 
 export default Products;
