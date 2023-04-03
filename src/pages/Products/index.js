@@ -45,7 +45,7 @@ const Products = () => {
       }
     };
 
-    number && setTimeout(getProduct, 3000);
+    number && getProduct();
 
     return function cleanup() {
       abortController.abort();
