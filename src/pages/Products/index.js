@@ -35,7 +35,12 @@ const Products = () => {
       try {
         const res = await fetch(data, { signal: controllerRef.current.signal });
         const json = await res.json();
-        setProduct(json);
+        // do not set the product if the user stops the request
+        if (controllerRef.current.signal?.aborted) {
+          return;
+        } else {
+          setProduct(json);
+        }
         setLoading(false);
       } catch (e) {
         controllerRef.current.signal.aborted
@@ -62,6 +67,7 @@ const Products = () => {
         onClick={handleFetchData}
         sx={{
           mb: 3,
+          width: "14rem",
           borderRadius: "1.25rem",
           display: loading ? "none" : "default",
         }}
@@ -73,6 +79,7 @@ const Products = () => {
         onClick={handleStopFetching}
         sx={{
           mb: 3,
+          width: "14rem",
           borderRadius: "1.25rem",
           display: loading ? "default" : "none",
         }}
