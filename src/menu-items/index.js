@@ -1,10 +1,12 @@
 import {
   Storefront as StorefrontIcon,
+  Inventory as InventoryIcon,
   FormatListBulleted as FormatListBulletedIcon,
 } from "@mui/icons-material";
 
 const icons = {
   StorefrontIcon,
+  InventoryIcon,
   FormatListBulletedIcon,
 };
 
@@ -18,6 +20,12 @@ const menuItems = [
   },
   {
     id: 1,
+    title: "inventory",
+    url: "/inventory",
+    icon: icons.InventoryIcon,
+  },
+  {
+    id: 2,
     title: "todos",
     url: "/todos",
     icon: icons.FormatListBulletedIcon,
