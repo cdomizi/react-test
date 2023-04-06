@@ -6,7 +6,7 @@ import Navbar from "./Navbar/Navbar";
 import Topbar from "./Topbar/Topbar";
 import menuItems from "../menu-items";
 
-// mui component
+// mui components
 import { Box } from "@mui/material";
 
 function RootLayout() {

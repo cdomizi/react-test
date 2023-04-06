@@ -1,3 +1,7 @@
+// project import
+import ProductTable from "./ProductTable";
+
+// mui components
 import { Box, Typography } from "@mui/material";
 
 const Inventory = () => {
@@ -6,6 +10,7 @@ const Inventory = () => {
       <Typography variant="h2" gutterBottom>
         Inventory
       </Typography>
+      <ProductTable />
     </Box>
   );
 };

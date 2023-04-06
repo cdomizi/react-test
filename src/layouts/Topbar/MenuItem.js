@@ -9,7 +9,7 @@ const MenuItem = ({ title, url }) => {
       sx={{
         color: "inherit",
         textDecoration: "none",
-        mr: 2,
+        mr: 4,
       }}
     >
       {title.toUpperCase()}

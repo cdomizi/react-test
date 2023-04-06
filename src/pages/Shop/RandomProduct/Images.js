@@ -1,6 +1,4 @@
-import Box from "@mui/material/Box";
-import ImageList from "@mui/material/ImageList";
-import ImageListItem from "@mui/material/ImageListItem";
+import { Box, ImageList, ImageListItem } from "@mui/material";
 
 const Images = (props) => {
   return (
@@ -19,6 +17,6 @@ const Images = (props) => {
       </ImageList>
     </Box>
   );
-}
+};
 
 export default Images;
