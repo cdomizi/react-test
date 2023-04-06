@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import { Box, Typography, Button } from "@mui/material";
 
 // project import
-import Product from "./Product";
+import RandomProduct from "./RandomProduct/RandomProduct";
 
-const Products = () => {
+const Shop = () => {
   const [loading, setLoading] = useState(false);
   const [number, setNumber] = useState(null);
   // product data from external API
@@ -60,7 +60,7 @@ const Products = () => {
   return (
     <Box sx={{ py: 3, textAlign: "center" }}>
       <Typography variant="h2" gutterBottom>
-        Products
+        Shop
       </Typography>
       <Button
         variant="contained"
@@ -87,10 +87,12 @@ const Products = () => {
         Stop
       </Button>
       <Box>
-        {(loading || product) && <Product loading={loading} {...product} />}
+        {(loading || product) && (
+          <RandomProduct loading={loading} {...product} />
+        )}
       </Box>
     </Box>
   );
 };
 
-export default Products;
+export default Shop;

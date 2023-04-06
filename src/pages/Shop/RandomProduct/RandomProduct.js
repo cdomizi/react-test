@@ -3,7 +3,7 @@ import { Box, Chip, Typography, Rating, Stack, Skeleton } from "@mui/material";
 // project import
 import Images from "./Images";
 
-const Product = (props) => {
+const RandomProduct = (props) => {
   const discountPrice = (
     ((100 - props.discountPercentage) * props.price) /
     100
@@ -91,4 +91,4 @@ const Product = (props) => {
   );
 };
 
-export default Product;
+export default RandomProduct;

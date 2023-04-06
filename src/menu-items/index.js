@@ -12,8 +12,8 @@ const icons = {
 const menuItems = [
   {
     id: 0,
-    title: "products",
-    url: "/products",
+    title: "shop",
+    url: "/shop",
     icon: icons.StorefrontIcon,
   },
   {
