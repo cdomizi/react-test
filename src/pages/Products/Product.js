@@ -12,15 +12,15 @@ const Product = (props) => {
   const productSkeleton = (
     <>
       <Stack spacing={{ xs: 1, sm: 2 }} mt={8}>
-        <Skeleton variant="text" sx={{ fontSize: "1rem", maxWidth: "20%" }} />
-        <Skeleton variant="text" sx={{ fontSize: "3rem", maxWidth: "40%" }} />
-        <Skeleton variant="text" sx={{ fontSize: "3rem", maxWidth: "15%" }} />
-        <Skeleton variant="text" sx={{ fontSize: "1rem", maxWidth: "30%" }} />
-        <Skeleton variant="text" sx={{ fontSize: "1rem", maxWidth: "25%" }} />
-        <Skeleton variant="text" sx={{ fontSize: "1rem", maxWidth: "35%" }} />
+        <Skeleton variant="text" sx={{ fontSize: "1rem", maxWidth: "10rem" }} />
+        <Skeleton variant="text" sx={{ fontSize: "3rem", maxWidth: "20rem" }} />
+        <Skeleton variant="text" sx={{ fontSize: "3rem", maxWidth: "7rem" }} />
+        <Skeleton variant="text" sx={{ fontSize: "1rem", maxWidth: "9rem" }} />
+        <Skeleton variant="text" sx={{ fontSize: "1rem", maxWidth: "8rem" }} />
+        <Skeleton variant="text" sx={{ fontSize: "1rem", maxWidth: "22rem" }} />
         <Stack direction="row" spacing={{ xs: 1, sm: 2 }}>
-          <Skeleton variant="rectangular" width="49%" height="18rem" />
-          <Skeleton variant="rectangular" width="49%" height="18rem" />
+          <Skeleton variant="rectangular" width="49%" height="20rem" />
+          <Skeleton variant="rectangular" width="49%" height="20rem" />
         </Stack>
         <Stack direction="row" spacing={{ xs: 1, sm: 2 }}>
           <Skeleton variant="rectangular" width="49%" height="20rem" />
