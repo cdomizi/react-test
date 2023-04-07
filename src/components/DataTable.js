@@ -11,18 +11,30 @@ import {
 const DataTable = (props) => {
   return (
     <TableContainer component={Paper}>
-      <Table>
+      <Table xs={{ minWidth: `${props?.minWidth}` }}>
         <TableHead>
           <TableRow>
-            {props.columns.map((column, index) => {
-              return <TableCell key={index}>{column}</TableCell>;
-            })}
+            {props.headers.map((header, index) => (
+              <TableCell key={index}>{header}</TableCell>
+            ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          <TableRow>
-            <TableCell>Content</TableCell>
-          </TableRow>
+          {props.data ? (
+            props.data.map((row, index) => (
+              <TableRow key={index}>
+                {Object.values(row)
+                  .filter((item) => !item.hidden)
+                  .map((item, index) => (
+                    <TableCell key={index}>{`${item.value}`}</TableCell>
+                  ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={props.headers.length}>No Data</TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </TableContainer>
