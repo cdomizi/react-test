@@ -103,18 +103,16 @@ const ProductTable = () => {
   }, [products]);
 
   const ProductTable = useMemo(() => {
-    return columns ? (
+    return (
       <DataTable
         minWidth="700px"
         headers={columns.headers}
         data={columns.data}
+        loading={loading}
+        pagination={{ skip, limit }}
       />
-    ) : (
-      <>
-        <p>loading...</p>
-      </>
     );
-  }, [columns]);
+  }, [loading, columns, skip, limit]);
 
   return ProductTable;
 };
