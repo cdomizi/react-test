@@ -19,10 +19,12 @@ const ProductTable = () => {
         const json = await data.json();
         setProducts(json.products);
         setLoading(false);
-      } catch (e) {
+      } catch (error) {
         // prevent logging errors on cleanup
         if (!abortController.signal.aborted) {
-          console.error(`Error while fetching product data: ${e}`);
+          console.error(
+            `${error.status} - Error while fetching product data: ${error}`
+          );
           setLoading(false);
         }
       }
