@@ -1,4 +1,9 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 
 // mui components
 import {
@@ -17,7 +22,7 @@ import {
 } from "@mui/material";
 
 const DataTable = (props) => {
-  const { minWidth, headers, data, loading, error } = props;
+  const { minWidth, data, columns, loading, error } = props;
   const [visibleRows, setVisibleRows] = useState(data || null);
   const [page, setPage] = useState(0);
   const defaultRowsPerPage = 10;
@@ -54,13 +59,19 @@ const DataTable = (props) => {
     [data]
   );
 
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
   // display skeleton rows on loading
   const SkeletonTable = useMemo(
     () => (
       <>
         {[...Array(defaultRowsPerPage)].map((_, index) => (
           <TableRow key={index}>
-            {[...Array(headers.length)].map((_, index) => (
+            {[...Array(table.getFlatHeaders().length)].map((_, index) => (
               <TableCell key={index}>
                 <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
               </TableCell>
@@ -69,7 +80,7 @@ const DataTable = (props) => {
         ))}
       </>
     ),
-    [headers]
+    [table]
   );
 
   return (
@@ -80,30 +91,40 @@ const DataTable = (props) => {
           size={useMediaQuery("(min-width:600px)") ? "medium" : "small"}
         >
           <TableHead>
-            <TableRow>
-              {headers.map((header, index) => (
-                <TableCell key={index}>
-                  <strong>{header}</strong>
-                </TableCell>
-              ))}
-            </TableRow>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableCell key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
           </TableHead>
           <TableBody>
             {loading ? (
               SkeletonTable
-            ) : visibleRows ? (
-              visibleRows.map((row, index) => (
-                <TableRow key={index}>
-                  {Object.values(row)
-                    .filter((item) => !item.hidden)
-                    .map((item, index) => (
-                      <TableCell key={index}>{item.value}</TableCell>
-                    ))}
+            ) : visibleRows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))
             ) : error ? (
               <TableRow>
-                <TableCell colSpan={headers.length}>
+                <TableCell colSpan={table.getFlatHeaders().length}>
                   <Alert severity="error">
                     <AlertTitle>Error</AlertTitle>
                     Sorry, an error occurred while loading the data.
@@ -112,7 +133,7 @@ const DataTable = (props) => {
               </TableRow>
             ) : (
               <TableRow>
-                <TableCell colSpan={headers.length}>
+                <TableCell colSpan={table.getFlatHeaders().length}>
                   <Alert severity="info">
                     <AlertTitle>No Data</AlertTitle>
                     No records available.
