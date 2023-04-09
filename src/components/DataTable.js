@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 
 const DataTable = (props) => {
-  const { minWidth, headers, data, loading } = props;
+  const { minWidth, headers, data, loading, error } = props;
   const [visibleRows, setVisibleRows] = useState(data || null);
   const [page, setPage] = useState(0);
   const defaultRowsPerPage = 10;
@@ -101,12 +101,21 @@ const DataTable = (props) => {
                     ))}
                 </TableRow>
               ))
+            ) : error ? (
+              <TableRow>
+                <TableCell colSpan={headers.length}>
+                  <Alert severity="error">
+                    <AlertTitle>Error</AlertTitle>
+                    Sorry, an error occurred while loading the data.
+                  </Alert>
+                </TableCell>
+              </TableRow>
             ) : (
               <TableRow>
                 <TableCell colSpan={headers.length}>
                   <Alert severity="info">
                     <AlertTitle>No Data</AlertTitle>
-                    There are no records available.
+                    No records available.
                   </Alert>
                 </TableCell>
               </TableRow>

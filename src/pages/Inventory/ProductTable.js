@@ -1,40 +1,18 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, memo } from "react";
 
 // project import
+import useFetch from "../../hooks/useFetch";
 import DataTable from "../../components/DataTable";
 
-const ProductTable = () => {
-  const [loading, setLoading] = useState(false);
+const ProductTable = memo(() => {
   const [products, setProducts] = useState(null);
 
-  useEffect(() => {
-    // initialize AbortController for cleanup
-    const abortController = new AbortController();
-    const getProducts = async () => {
-      setLoading(true);
-      try {
-        const data = await fetch(`https://dummyjson.com/products`, {
-          signal: abortController.signal,
-        });
-        const json = await data.json();
-        setProducts(json.products);
-        setLoading(false);
-      } catch (error) {
-        // prevent logging errors on cleanup
-        if (!abortController.signal.aborted) {
-          console.error(
-            `${error.status} - Error while fetching product data: ${error}`
-          );
-          setLoading(false);
-        }
-      }
-    };
-    getProducts();
+  // fetch data from external api
+  const { loading, error, data } = useFetch("https://dummyjson.com/products");
 
-    return function cleanup() {
-      abortController.abort();
-    };
-  }, []);
+  useEffect(() => {
+    setProducts(data?.products);
+  }, [data]);
 
   // product table headers
   const columns = useMemo(() => {
@@ -122,11 +100,12 @@ const ProductTable = () => {
         headers={columns.headers}
         data={columns.data}
         loading={loading}
+        error={error}
       />
     );
-  }, [loading, columns]);
+  }, [loading, error, columns]);
 
   return ProductTable;
-};
+});
 
 export default ProductTable;
