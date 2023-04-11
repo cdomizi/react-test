@@ -20,6 +20,10 @@ const ProductTable = memo(() => {
   // create table columns
   const columnHelper = createColumnHelper();
   const columns = [
+    columnHelper.accessor("id", {
+      header: () => "ID",
+      cell: (info) => info.getValue(),
+    }),
     columnHelper.accessor("title", {
       header: () => "Title",
       cell: (info) => info.getValue(),
@@ -61,6 +65,7 @@ const ProductTable = memo(() => {
       columns={columns}
       loading={loading}
       error={error}
+      orderBy={"id"}
     />
   );
 });

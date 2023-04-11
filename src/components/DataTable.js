@@ -2,6 +2,7 @@ import { useMemo, useCallback, useState, useEffect } from "react";
 import {
   useReactTable,
   getCoreRowModel,
+  getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
 
@@ -19,6 +20,7 @@ import {
   Alert,
   AlertTitle,
   useMediaQuery,
+  TableSortLabel,
 } from "@mui/material";
 
 const DataTable = (props) => {
@@ -30,12 +32,17 @@ const DataTable = (props) => {
     error,
     defaultRowsPerPage = 10,
     rowsPerPageOptions = [5, 10, 25],
+    orderBy = null,
+    defaultOrder = false,
   } = props;
 
   const [{ pageIndex, pageSize }, setPagination] = useState({
     pageIndex: 0,
     pageSize: defaultRowsPerPage,
   });
+
+  const defaultSorting = [{ id: orderBy, desc: defaultOrder }];
+  const [sorting, setSorting] = useState(defaultSorting ?? []);
 
   const [visibleRows, setVisibleRows] = useState(null);
 
@@ -59,10 +66,13 @@ const DataTable = (props) => {
     pageCount: data?.length ?? -1,
     state: {
       pagination,
+      sorting,
     },
+    onSortingChange: setSorting,
     onPaginationChange: setPagination,
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   });
 
   const handlePageChange = useCallback(
@@ -124,13 +134,23 @@ const DataTable = (props) => {
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableCell key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                  <TableCell
+                    key={header.id}
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    <TableSortLabel
+                      active={sorting[0]?.id === header.id}
+                      direction={
+                        header.column.getIsSorted() === "desc" ? "desc" : "asc"
+                      }
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableSortLabel>
                   </TableCell>
                 ))}
               </TableRow>
