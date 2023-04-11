@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useRef } from "react";
 
 const initialState = { loading: false, error: undefined, data: undefined };
 
@@ -34,6 +34,7 @@ const fetchReducer = (state, action) => {
 };
 
 const useFetch = (url, options) => {
+  const cache = useRef({});
   const [state, dispatch] = useReducer(fetchReducer, initialState);
 
   useEffect(() => {
@@ -45,6 +46,12 @@ const useFetch = (url, options) => {
     // Fetch data
     const fetchData = async () => {
       dispatch({ type: ACTIONS.LOADING });
+
+      // If a cache exists for this url, return it
+      if (cache.current[url]) {
+        dispatch({ type: "fetched", payload: cache.current[url] });
+        return;
+      }
 
       try {
         const response = await fetch(url, {
@@ -58,6 +65,7 @@ const useFetch = (url, options) => {
         }
 
         const data = await response.json();
+        cache.current[url] = data;
         dispatch({
           type: ACTIONS.SUCCESS,
           payload: data,
@@ -65,11 +73,11 @@ const useFetch = (url, options) => {
       } catch (error) {
         if (!abortController.signal.aborted) {
           console.error(`Error while fetching data: ${error.message}`);
+          dispatch({
+            type: ACTIONS.ERROR,
+            payload: error,
+          });
         }
-        dispatch({
-          type: ACTIONS.ERROR,
-          payload: error,
-        });
       }
     };
     fetchData();

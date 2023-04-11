@@ -14,7 +14,7 @@ const ProductTable = memo(() => {
 
   // set products upon fetching data
   useEffect(() => {
-    setTimeout(setProducts(data?.products), 2500);
+    setProducts(data?.products);
   }, [data]);
 
   // create table columns
@@ -34,7 +34,7 @@ const ProductTable = memo(() => {
     }),
     columnHelper.accessor("rating", {
       header: () => "Rating",
-      cell: (info) => `${info.getValue()}/5`,
+      cell: (info) => `${parseFloat(info.getValue()).toFixed(2)}`,
     }),
     columnHelper.accessor("price", {
       header: () => "Price",

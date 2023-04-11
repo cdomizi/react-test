@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useMemo, useCallback, useState, useEffect } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -22,54 +22,81 @@ import {
 } from "@mui/material";
 
 const DataTable = (props) => {
-  const { minWidth, data, columns, loading, error } = props;
-  const [visibleRows, setVisibleRows] = useState(data || null);
-  const [page, setPage] = useState(0);
-  const defaultRowsPerPage = 10;
-  const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
+  const {
+    minWidth,
+    data,
+    columns,
+    loading,
+    error,
+    defaultRowsPerPage = 10,
+    rowsPerPageOptions = [5, 10, 25],
+  } = props;
 
-  // only show the first 10 rows by default
+  const [{ pageIndex, pageSize }, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: defaultRowsPerPage,
+  });
+
+  const [visibleRows, setVisibleRows] = useState(null);
+
+  // set default rows per page when first rendering the table
   useEffect(() => {
-    const initialRows = data?.slice(0, 10) || 0;
+    const initialRows = data?.slice(0, defaultRowsPerPage);
     setVisibleRows(initialRows);
-  }, [data]);
+  }, [data, defaultRowsPerPage]);
 
-  const handleChangePage = useCallback(
+  const pagination = useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize]
+  );
+
+  const table = useReactTable({
+    data: visibleRows ?? [],
+    columns,
+    pageCount: data?.length ?? -1,
+    state: {
+      pagination,
+    },
+    onPaginationChange: setPagination,
+    manualPagination: true,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  const handlePageChange = useCallback(
     (event, newPage) => {
-      setPage(newPage);
+      table.setPageIndex(newPage);
       const updatedRows = data.slice(
-        newPage * rowsPerPage,
-        newPage * rowsPerPage + rowsPerPage
+        newPage * pageSize,
+        newPage * pageSize + pageSize
       );
 
       setVisibleRows(updatedRows);
     },
-    [data, rowsPerPage]
+    [table, data, pageSize]
   );
 
-  const handleChangeRowsPerPage = useCallback(
+  const handleRowsPerPageChange = useCallback(
     (event) => {
-      const updatedRowsPerPage = parseInt(event.target.value, 10);
-      setRowsPerPage(updatedRowsPerPage);
-      setPage(0);
-      const updatedRows = data.slice(0, updatedRowsPerPage);
+      const newRowsPerPage = parseInt(event.target.value, 10);
+      table.setPageSize(newRowsPerPage);
+      const updatedRows = data?.slice(
+        0 * newRowsPerPage,
+        0 * newRowsPerPage + newRowsPerPage
+      );
 
       setVisibleRows(updatedRows);
     },
-    [data]
+    [table, data]
   );
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
 
   // display skeleton rows on loading
   const SkeletonTable = useMemo(
     () => (
       <>
-        {[...Array(defaultRowsPerPage)].map((_, index) => (
+        {[...Array(pageSize)].map((_, index) => (
           <TableRow key={index}>
             {[...Array(table.getFlatHeaders().length)].map((_, index) => (
               <TableCell key={index}>
@@ -80,15 +107,18 @@ const DataTable = (props) => {
         ))}
       </>
     ),
-    [table]
+    [table, pageSize]
   );
 
   return (
     <Paper>
       <TableContainer>
         <Table
-          xs={{ minWidth: `${minWidth || "auto"}` }}
-          size={useMediaQuery("(min-width:600px)") ? "medium" : "small"}
+          xs={{ minWidth: `${minWidth ?? "auto"}` }}
+          size={
+            // automatically set table padding based on screen width
+            useMediaQuery("(min-width:600px)") ? "medium" : "small"
+          }
         >
           <TableHead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -107,51 +137,51 @@ const DataTable = (props) => {
             ))}
           </TableHead>
           <TableBody>
-            {loading ? (
-              SkeletonTable
-            ) : visibleRows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+            {loading && !data && SkeletonTable}
+            {!loading &&
+              (error ? (
+                <TableRow>
+                  <TableCell colSpan={table.getFlatHeaders().length}>
+                    <Alert severity="error">
+                      <AlertTitle>Error</AlertTitle>
+                      Sorry, an error occurred while getting the data.
+                    </Alert>
+                  </TableCell>
                 </TableRow>
-              ))
-            ) : error ? (
-              <TableRow>
-                <TableCell colSpan={table.getFlatHeaders().length}>
-                  <Alert severity="error">
-                    <AlertTitle>Error</AlertTitle>
-                    Sorry, an error occurred while loading the data.
-                  </Alert>
-                </TableCell>
-              </TableRow>
-            ) : (
-              <TableRow>
-                <TableCell colSpan={table.getFlatHeaders().length}>
-                  <Alert severity="info">
-                    <AlertTitle>No Data</AlertTitle>
-                    No records available.
-                  </Alert>
-                </TableCell>
-              </TableRow>
-            )}
+              ) : !data?.length ? (
+                <TableRow>
+                  <TableCell colSpan={table.getFlatHeaders().length}>
+                    <Alert severity="info">
+                      <AlertTitle>No Data</AlertTitle>
+                      No records available.
+                    </Alert>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
         component="div"
-        count={data?.length || 0}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[5, 10, 25]}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
+        count={data?.length ?? 0}
+        page={table.getState().pagination.pageIndex}
+        rowsPerPage={table.getState().pagination.pageSize}
+        rowsPerPageOptions={rowsPerPageOptions}
+        onPageChange={handlePageChange}
+        onRowsPerPageChange={handleRowsPerPageChange}
       />
     </Paper>
   );
