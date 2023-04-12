@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Box, Typography, Button } from "@mui/material";
 
 // project import
-import RandomProduct from "./RandomProduct/RandomProduct";
+import RandomProduct from "./RandomProduct";
 
 const Shop = () => {
   const [loading, setLoading] = useState(false);

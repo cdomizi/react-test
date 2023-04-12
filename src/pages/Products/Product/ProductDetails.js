@@ -1,11 +1,11 @@
 import { Box, Chip, Typography, Rating, Stack, Skeleton } from "@mui/material";
 
 // project import
-import Images from "./Images";
+import Images from "../../../components/Images";
 
-const RandomProduct = (props) => {
+const ProductDetails = ({ loading, data }) => {
   const discountPrice = (
-    ((100 - props.discountPercentage) * props.price) /
+    ((100 - data?.discountPercentage) * data?.price) /
     100
   ).toFixed(2);
 
@@ -30,18 +30,18 @@ const RandomProduct = (props) => {
     </>
   );
 
-  const productData = (
+  const Details = (
     <>
-      <Typography variant="h6">{props.brand}</Typography>
+      <Typography variant="h6">{data?.brand}</Typography>
       <Typography variant="h4" gutterBottom>
-        {props.title}
+        {data?.title}
       </Typography>
       <Box mb={2}>
-        <Chip label={props.category} variant="outlined" />
+        <Chip label={data?.category} variant="outlined" />
       </Box>
-      <Rating value={props.rating} precision={0.5} readOnly />
+      <Rating value={data?.rating} precision={0.5} readOnly />
       <Box display="inline" ml={1}>
-        {props.rating}
+        {data?.rating}
         <Typography
           sx={{
             display: "inline",
@@ -54,7 +54,7 @@ const RandomProduct = (props) => {
         </Typography>
       </Box>
       <Typography paragraph variant="button" gutterBottom>
-        {props.stock ? "in stock" : "out of stock"}
+        {data?.stock ? "in stock" : "out of stock"}
       </Typography>
       <Typography
         variant="h6"
@@ -63,7 +63,7 @@ const RandomProduct = (props) => {
           color: "text.disabled",
         }}
       >
-        <s>€ {props.price}.00</s>
+        <s>€ {data?.price}.00</s>
       </Typography>
       <Typography
         ml={2}
@@ -72,23 +72,23 @@ const RandomProduct = (props) => {
           color: "#d32f2f",
         }}
       >
-        - {props.discountPercentage}%
+        - {data?.discountPercentage}%
       </Typography>
       <Typography variant="h4" sx={{ color: "success.main" }} gutterBottom>
         € {discountPrice}
       </Typography>
       <Typography paragraph gutterBottom>
-        {props.description}
+        {data?.description}
       </Typography>
-      <Images images={props.images} />
+      <Images images={data?.images} altText={data?.title} />
     </>
   );
 
   return (
     <Box textAlign="initial" mt={8}>
-      {props.loading ? productSkeleton : productData}
+      {loading ? productSkeleton : Details}
     </Box>
   );
 };
 
-export default RandomProduct;
+export default ProductDetails;
