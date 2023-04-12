@@ -1,7 +1,7 @@
 import { Box, Chip, Typography, Rating, Stack, Skeleton } from "@mui/material";
 
 // project import
-import Images from "../../components/Images";
+import PicsList from "../../components/PicsList";
 
 const RandomProduct = (props) => {
   const discountPrice = (
@@ -80,7 +80,7 @@ const RandomProduct = (props) => {
       <Typography paragraph gutterBottom>
         {props.description}
       </Typography>
-      <Images images={props.images} altText={props.title} />
+      <PicsList images={props.images} altText={props.title} />
     </>
   );
 

@@ -1,5 +1,6 @@
 import { useEffect, useState, memo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
+import { useNavigate } from "react-router-dom";
 
 // project import
 import useFetch from "../../hooks/useFetch";
@@ -7,6 +8,7 @@ import DataTable from "../../components/DataTable";
 import formatMoney from "../../utils/formatMoney";
 
 const ProductsTable = memo(() => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState(null);
 
   // fetch data from external api
@@ -58,6 +60,11 @@ const ProductsTable = memo(() => {
     }),
   ];
 
+  // go to product page on row click
+  const handleRowClick = (event, rowData) => {
+    navigate(`${rowData.id}`);
+  };
+
   return (
     <DataTable
       minWidth="700px"
@@ -66,6 +73,8 @@ const ProductsTable = memo(() => {
       loading={loading}
       error={error}
       orderBy={"id"}
+      rowHover={true}
+      onRowClick={handleRowClick}
     />
   );
 });

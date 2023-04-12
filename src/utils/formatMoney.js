@@ -2,10 +2,10 @@ const formatMoney = (value, currency) => {
   const decimalValue = parseFloat(value).toFixed(2);
   switch (currency) {
     case "dollars": {
-      return `$ ${decimalValue}`;
+      return `$\u00A0${decimalValue}`;
     }
     case "euros": {
-      return `€ ${decimalValue}`;
+      return `€\u00A0${decimalValue}`;
     }
     default: {
       console.error(`Unknown currency: ${currency}`);

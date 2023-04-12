@@ -1,7 +1,7 @@
 import { Box, Chip, Typography, Rating, Stack, Skeleton } from "@mui/material";
 
 // project import
-import Images from "../../../components/Images";
+import PicsList from "../../../components/PicsList";
 
 const ProductDetails = ({ loading, data }) => {
   const discountPrice = (
@@ -80,7 +80,7 @@ const ProductDetails = ({ loading, data }) => {
       <Typography paragraph gutterBottom>
         {data?.description}
       </Typography>
-      <Images images={data?.images} altText={data?.title} />
+      <PicsList images={data?.images} altText={data?.title} />
     </>
   );
 

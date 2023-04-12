@@ -34,6 +34,8 @@ const DataTable = (props) => {
     rowsPerPageOptions = [5, 10, 25],
     orderBy = null,
     defaultOrder = false,
+    rowHover = false,
+    onRowClick = null,
   } = props;
 
   const [{ pageIndex, pageSize }, setPagination] = useState({
@@ -179,7 +181,12 @@ const DataTable = (props) => {
                 </TableRow>
               ) : (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
+                  <TableRow
+                    key={row.id}
+                    hover={rowHover}
+                    sx={{ cursor: rowHover ? "pointer" : "default" }}
+                    onClick={(event) => onRowClick(event, row.original)}
+                  >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
                         {flexRender(
