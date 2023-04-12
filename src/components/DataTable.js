@@ -34,7 +34,7 @@ const DataTable = (props) => {
     rowsPerPageOptions = [5, 10, 25],
     orderBy = null,
     defaultOrder = false,
-    rowHover = false,
+    clickable = false,
     onRowClick = null,
   } = props;
 
@@ -139,9 +139,12 @@ const DataTable = (props) => {
                   <TableCell
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
+                    align="center"
+                    sx={{ fontWeight: "bold", textTransform: "uppercase" }}
                   >
                     <TableSortLabel
                       active={sorting[0]?.id === header.id}
+                      hideSortIcon
                       direction={
                         header.column.getIsSorted() === "desc" ? "desc" : "asc"
                       }
@@ -183,12 +186,15 @@ const DataTable = (props) => {
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
-                    hover={rowHover}
-                    sx={{ cursor: rowHover ? "pointer" : "default" }}
+                    hover={clickable}
+                    sx={{ cursor: clickable ? "pointer" : "default" }}
                     onClick={(event) => onRowClick(event, row.original)}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        align={cell.column.columnDef.align ?? "center"}
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
