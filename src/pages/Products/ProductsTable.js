@@ -6,7 +6,7 @@ import useFetch from "../../hooks/useFetch";
 import DataTable from "../../components/DataTable";
 import formatMoney from "../../utils/formatMoney";
 
-const ProductTable = memo(() => {
+const ProductsTable = memo(() => {
   const [products, setProducts] = useState(null);
 
   // fetch data from external api
@@ -70,4 +70,4 @@ const ProductTable = memo(() => {
   );
 });
 
-export default ProductTable;
+export default ProductsTable;

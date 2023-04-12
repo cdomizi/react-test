@@ -10,7 +10,7 @@ const RootLayout = loadable(() => import("../layouts/RootLayout"));
 const ErrorPage = loadable(() => import("../pages/Error"));
 const Home = loadable(() => import("../pages/Home/Home"));
 const Shop = loadable(() => import("../pages/Shop"));
-const Inventory = loadable(() => import("../pages/Inventory"));
+const Products = loadable(() => import("../pages/Products"));
 const Todos = loadable(() => import("../pages/Todos"));
 
 const MainRoutes = createBrowserRouter(
@@ -19,7 +19,7 @@ const MainRoutes = createBrowserRouter(
       <Route errorElement={<ErrorPage />}>
         <Route index element={<Home />} />
         <Route path="shop" element={<Shop />} />
-        <Route path="Inventory" element={<Inventory />} />
+        <Route path="Products" element={<Products />} />
         <Route path="todos" element={<Todos />} />
       </Route>
     </Route>

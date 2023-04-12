@@ -20,8 +20,8 @@ const menuItems = [
   },
   {
     id: 1,
-    title: "inventory",
-    url: "/inventory",
+    title: "products",
+    url: "/products",
     icon: icons.InventoryIcon,
   },
   {

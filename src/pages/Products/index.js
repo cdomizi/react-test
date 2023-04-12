@@ -1,18 +1,18 @@
 // project import
-import ProductTable from "./ProductTable";
+import ProductsTable from "./ProductsTable";
 
 // mui components
 import { Box, Typography } from "@mui/material";
 
-const Inventory = () => {
+const Products = () => {
   return (
     <Box sx={{ py: 3, textAlign: "center" }}>
       <Typography variant="h2" gutterBottom>
-        Inventory
+        Products
       </Typography>
-      <ProductTable />
+      <ProductsTable />
     </Box>
   );
 };
 
-export default Inventory;
+export default Products;
