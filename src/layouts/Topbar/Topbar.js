@@ -4,7 +4,7 @@ import { useContext } from "react";
 import ColorModeContext from "../../contexts/ColorModeContext";
 import MenuItem from "./MenuItem";
 
-// mui import
+// mui components
 import {
   useTheme,
   Box,

@@ -4,7 +4,7 @@ import ThemeCustomization from "./themes/ThemeCustomization";
 // project import
 import MainRoutes from "./routes/MainRoutes";
 
-// mui import
+// mui components
 import { Box } from "@mui/material";
 
 function App() {

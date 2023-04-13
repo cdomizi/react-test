@@ -1,7 +1,7 @@
 import { useState, useMemo, useLayoutEffect } from "react";
 import ColorModeContext from "../contexts/ColorModeContext";
 
-// mui import
+// mui components
 import {
   ThemeProvider,
   createTheme,

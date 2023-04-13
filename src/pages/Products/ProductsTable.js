@@ -7,7 +7,8 @@ import useFetch from "../../hooks/useFetch";
 import DataTable from "../../components/DataTable";
 import formatMoney from "../../utils/formatMoney";
 
-import { Typography } from "@mui/material";
+// mui components
+import { Card, Typography } from "@mui/material";
 
 const ProductsTable = memo(() => {
   const navigate = useNavigate();
@@ -89,16 +90,18 @@ const ProductsTable = memo(() => {
   };
 
   return (
-    <DataTable
-      minWidth="700px"
-      data={products}
-      columns={columns}
-      loading={loading}
-      error={error}
-      orderBy={"id"}
-      clickable={true}
-      onRowClick={handleRowClick}
-    />
+    <Card>
+      <DataTable
+        minWidth="700px"
+        data={products}
+        columns={columns}
+        loading={loading}
+        error={error}
+        orderBy={"id"}
+        clickable={true}
+        onRowClick={handleRowClick}
+      />
+    </Card>
   );
 });
 

@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useMemo, useCallback, useState, useEffect } from "react";
 import {
   useReactTable,
@@ -218,6 +219,20 @@ const DataTable = (props) => {
       />
     </Paper>
   );
+};
+
+DataTable.propTypes = {
+  minWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  data: PropTypes.array,
+  columns: PropTypes.array,
+  loading: PropTypes.bool,
+  error: PropTypes.string,
+  defaultRowsPerPage: PropTypes.number,
+  rowsPerPageOptions: PropTypes.array,
+  orderBy: PropTypes.string,
+  defaultOrder: PropTypes.bool,
+  clickable: PropTypes.bool,
+  onRowClick: PropTypes.func,
 };
 
 export default DataTable;

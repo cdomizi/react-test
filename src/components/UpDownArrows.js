@@ -1,4 +1,4 @@
-// mui import
+// mui components
 import { Stack, IconButton } from "@mui/material";
 import { ArrowDropUp as ArrowDropUpIcon } from "@mui/icons-material";
 import { ArrowDropDown as ArrowDropDownIcon } from "@mui/icons-material";

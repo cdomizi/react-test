@@ -1,6 +1,6 @@
 import { useState, memo } from "react";
 
-//mui import
+//mui components
 import { Button, TextField } from "@mui/material";
 
 const NewTodo = memo((props) => {
@@ -27,11 +27,7 @@ const NewTodo = memo((props) => {
         error={error}
         helperText={error && "This field can't be empty."}
       />
-      <Button
-        variant="outlined"
-        sx={{ margin: "12px" }}
-        onClick={handleSubmit}
-      >
+      <Button variant="outlined" sx={{ margin: "12px" }} onClick={handleSubmit}>
         Add
       </Button>
     </>
