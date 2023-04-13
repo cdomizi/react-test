@@ -8,7 +8,16 @@ import DataTable from "../../components/DataTable";
 import formatMoney from "../../utils/formatMoney";
 
 // mui components
-import { Card, Typography } from "@mui/material";
+import {
+  Button,
+  Card,
+  Divider,
+  FormControl,
+  Typography,
+  Box,
+  Stack,
+  TextField,
+} from "@mui/material";
 
 const ProductsTable = memo(() => {
   const navigate = useNavigate();
@@ -89,8 +98,33 @@ const ProductsTable = memo(() => {
     navigate(`${rowData.id}`);
   };
 
+  const [value, setValue] = useState("");
+
+  const TableFilters = useMemo(() => {
+    return (
+      <Box component="form" sx={{ flexGrow: 1, py: "2rem", px: "1rem" }}>
+        <Stack direction="row">
+          <FormControl>
+            <TextField
+              label="Global Search"
+              value={value}
+              onChange={(e) => {
+                setValue(e.target.value);
+              }}
+            />
+          </FormControl>
+          <Button type="submit" variant="contained" sx={{ marginLeft: "auto" }}>
+            Apply
+          </Button>
+        </Stack>
+      </Box>
+    );
+  }, [value, setValue]);
+
   return (
     <Card>
+      {TableFilters}
+      <Divider />
       <DataTable
         minWidth="700px"
         data={products}
@@ -98,6 +132,7 @@ const ProductsTable = memo(() => {
         loading={loading}
         error={error}
         orderBy={"id"}
+        searchFilter={value}
         clickable={true}
         onRowClick={handleRowClick}
       />
