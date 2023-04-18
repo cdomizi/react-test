@@ -3,6 +3,7 @@ import { useMemo, useCallback, useState, useEffect } from "react";
 import {
   useReactTable,
   getCoreRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   getFilteredRowModel,
   flexRender,
@@ -32,7 +33,6 @@ const DataTable = (props) => {
     columns,
     loading,
     error,
-    defaultRowsPerPage = 10,
     rowsPerPageOptions = [5, 10, 25],
     orderBy = null,
     searchFilters,
@@ -41,11 +41,6 @@ const DataTable = (props) => {
     onRowClick = null,
   } = props;
 
-  const [{ pageIndex, pageSize }, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: defaultRowsPerPage,
-  });
-
   const defaultSorting = [{ id: orderBy, desc: defaultOrder }];
   const [sorting, setSorting] = useState(defaultSorting ?? []);
 
@@ -53,72 +48,42 @@ const DataTable = (props) => {
   const [globalFilter, setGlobalFilter] = useState("");
   useEffect(() => setGlobalFilter(searchFilters), [searchFilters]);
 
-  const [visibleRows, setVisibleRows] = useState(null);
-
-  // set default rows per page when first rendering the table
-  useEffect(() => {
-    const initialRows = data?.slice(0, defaultRowsPerPage);
-    setVisibleRows(initialRows);
-  }, [data, defaultRowsPerPage]);
-
-  const pagination = useMemo(
-    () => ({
-      pageIndex,
-      pageSize,
-    }),
-    [pageIndex, pageSize]
-  );
-
   const table = useReactTable({
-    data: visibleRows ?? [],
+    data: data ?? [],
     columns,
     pageCount: data?.length ?? -1,
     state: {
-      pagination,
       sorting,
       globalFilter,
     },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     getFilteredRowModel: getFilteredRowModel(),
-    onPaginationChange: setPagination,
-    manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   const handlePageChange = useCallback(
     (event, newPage) => {
       table.setPageIndex(newPage);
-      const updatedRows = data.slice(
-        newPage * pageSize,
-        newPage * pageSize + pageSize
-      );
-
-      setVisibleRows(updatedRows);
     },
-    [table, data, pageSize]
+    [table]
   );
 
   const handleRowsPerPageChange = useCallback(
     (event) => {
       const newRowsPerPage = parseInt(event.target.value, 10);
       table.setPageSize(newRowsPerPage);
-      const updatedRows = data?.slice(
-        0 * newRowsPerPage,
-        0 * newRowsPerPage + newRowsPerPage
-      );
-
-      setVisibleRows(updatedRows);
     },
-    [table, data]
+    [table]
   );
 
   // display skeleton rows on loading
   const SkeletonTable = useMemo(
     () => (
       <>
-        {[...Array(pageSize)].map((_, index) => (
+        {[...Array(table.getState().pagination.pageSize)].map((_, index) => (
           <TableRow key={index}>
             {[...Array(table.getFlatHeaders().length)].map((_, index) => (
               <TableCell key={index}>
@@ -129,7 +94,7 @@ const DataTable = (props) => {
         ))}
       </>
     ),
-    [table, pageSize]
+    [table]
   );
 
   return (
@@ -219,7 +184,7 @@ const DataTable = (props) => {
       </TableContainer>
       <TablePagination
         component="div"
-        count={data?.length ?? 0}
+        count={table.getPrePaginationRowModel().rows?.length ?? 0}
         page={table.getState().pagination.pageIndex}
         rowsPerPage={table.getState().pagination.pageSize}
         rowsPerPageOptions={rowsPerPageOptions}
@@ -236,7 +201,6 @@ DataTable.propTypes = {
   columns: PropTypes.array,
   loading: PropTypes.bool,
   error: PropTypes.string,
-  defaultRowsPerPage: PropTypes.number,
   rowsPerPageOptions: PropTypes.array,
   orderBy: PropTypes.string,
   searchFilters: PropTypes.string,
