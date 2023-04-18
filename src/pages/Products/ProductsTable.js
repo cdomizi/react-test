@@ -97,24 +97,54 @@ const ProductsTable = memo(() => {
     navigate(`${rowData.id}`);
   };
 
+  // table filters
   const [globalSearch, setglobalSearch] = useState("");
+  const [productsFilters, setProductsFilters] = useState(null);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const output = {};
+    formData.forEach((value, key) => (output[key] = value));
+    setProductsFilters(formData);
+  };
 
   const TableFilters = useMemo(() => {
     return (
-      <Box component="form" sx={{ flexGrow: 1, py: "2rem", px: "1rem" }}>
-        <Stack direction="row">
+      <Stack
+        direction="row"
+        divider={<Divider orientation="vertical" flexItem />}
+        spacing={2}
+        sx={{ flexGrow: 1, py: "2rem", px: "1rem", alignItems: "baseline" }}
+      >
+        <TextField
+          label="Global Search"
+          value={globalSearch}
+          onChange={(e) => {
+            setglobalSearch(e.target.value);
+          }}
+        />
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            display: "flex",
+            flexGrow: 1,
+            flexFlow: "row wrap",
+            alignItems: "baseline",
+          }}
+        >
           <TextField
-            label="Global Search"
-            value={globalSearch}
-            onChange={(e) => {
-              setglobalSearch(e.target.value);
-            }}
+            margin="normal"
+            id="category"
+            label="Category"
+            name="category"
           />
           <Button type="submit" variant="contained" sx={{ marginLeft: "auto" }}>
             Apply
           </Button>
-        </Stack>
-      </Box>
+        </Box>
+      </Stack>
     );
   }, [globalSearch, setglobalSearch]);
 
@@ -130,6 +160,7 @@ const ProductsTable = memo(() => {
         error={error}
         orderBy={"id"}
         globalSearch={globalSearch}
+        filters={productsFilters}
         clickable={true}
         onRowClick={handleRowClick}
       />
