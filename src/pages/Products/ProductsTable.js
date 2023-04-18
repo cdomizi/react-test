@@ -98,7 +98,7 @@ const ProductsTable = memo(() => {
     navigate(`${rowData.id}`);
   };
 
-  const [value, setValue] = useState("");
+  const [globalSearch, setglobalSearch] = useState("");
 
   const TableFilters = useMemo(() => {
     return (
@@ -107,9 +107,9 @@ const ProductsTable = memo(() => {
           <FormControl>
             <TextField
               label="Global Search"
-              value={value}
+              value={globalSearch}
               onChange={(e) => {
-                setValue(e.target.value);
+                setglobalSearch(e.target.value);
               }}
             />
           </FormControl>
@@ -119,7 +119,7 @@ const ProductsTable = memo(() => {
         </Stack>
       </Box>
     );
-  }, [value, setValue]);
+  }, [globalSearch, setglobalSearch]);
 
   return (
     <Card>
@@ -132,7 +132,7 @@ const ProductsTable = memo(() => {
         loading={loading}
         error={error}
         orderBy={"id"}
-        searchFilter={value}
+        searchFilters={globalSearch}
         clickable={true}
         onRowClick={handleRowClick}
       />

@@ -4,6 +4,7 @@ import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
+  getFilteredRowModel,
   flexRender,
 } from "@tanstack/react-table";
 
@@ -34,6 +35,7 @@ const DataTable = (props) => {
     defaultRowsPerPage = 10,
     rowsPerPageOptions = [5, 10, 25],
     orderBy = null,
+    searchFilters,
     defaultOrder = false,
     clickable = false,
     onRowClick = null,
@@ -46,6 +48,10 @@ const DataTable = (props) => {
 
   const defaultSorting = [{ id: orderBy, desc: defaultOrder }];
   const [sorting, setSorting] = useState(defaultSorting ?? []);
+
+  // global filter
+  const [globalFilter, setGlobalFilter] = useState("");
+  useEffect(() => setGlobalFilter(searchFilters), [searchFilters]);
 
   const [visibleRows, setVisibleRows] = useState(null);
 
@@ -70,8 +76,11 @@ const DataTable = (props) => {
     state: {
       pagination,
       sorting,
+      globalFilter,
     },
     onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    getFilteredRowModel: getFilteredRowModel(),
     onPaginationChange: setPagination,
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
@@ -230,6 +239,7 @@ DataTable.propTypes = {
   defaultRowsPerPage: PropTypes.number,
   rowsPerPageOptions: PropTypes.array,
   orderBy: PropTypes.string,
+  searchFilters: PropTypes.string,
   defaultOrder: PropTypes.bool,
   clickable: PropTypes.bool,
   onRowClick: PropTypes.func,
