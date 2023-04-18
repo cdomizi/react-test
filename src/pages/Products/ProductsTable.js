@@ -12,7 +12,6 @@ import {
   Button,
   Card,
   Divider,
-  FormControl,
   Typography,
   Box,
   Stack,
@@ -104,15 +103,13 @@ const ProductsTable = memo(() => {
     return (
       <Box component="form" sx={{ flexGrow: 1, py: "2rem", px: "1rem" }}>
         <Stack direction="row">
-          <FormControl>
-            <TextField
-              label="Global Search"
-              value={globalSearch}
-              onChange={(e) => {
-                setglobalSearch(e.target.value);
-              }}
-            />
-          </FormControl>
+          <TextField
+            label="Global Search"
+            value={globalSearch}
+            onChange={(e) => {
+              setglobalSearch(e.target.value);
+            }}
+          />
           <Button type="submit" variant="contained" sx={{ marginLeft: "auto" }}>
             Apply
           </Button>
@@ -132,7 +129,7 @@ const ProductsTable = memo(() => {
         loading={loading}
         error={error}
         orderBy={"id"}
-        searchFilters={globalSearch}
+        globalSearch={globalSearch}
         clickable={true}
         onRowClick={handleRowClick}
       />

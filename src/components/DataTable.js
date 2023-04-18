@@ -35,7 +35,7 @@ const DataTable = (props) => {
     error,
     rowsPerPageOptions = [5, 10, 25],
     orderBy = null,
-    searchFilters,
+    globalSearch,
     defaultOrder = false,
     clickable = false,
     onRowClick = null,
@@ -46,7 +46,7 @@ const DataTable = (props) => {
 
   // global filter
   const [globalFilter, setGlobalFilter] = useState("");
-  useEffect(() => setGlobalFilter(searchFilters), [searchFilters]);
+  useEffect(() => setGlobalFilter(globalSearch), [globalSearch]);
 
   const table = useReactTable({
     data: data ?? [],
