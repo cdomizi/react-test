@@ -4,19 +4,11 @@ import { useNavigate } from "react-router-dom";
 
 // project import
 import useFetch from "../../hooks/useFetch";
-import DataTable from "../../components/DataTable";
 import formatMoney from "../../utils/formatMoney";
+import DataTable from "../../components/DataTable";
 
 // mui components
-import {
-  Button,
-  Card,
-  Divider,
-  Typography,
-  Box,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { Card, Typography } from "@mui/material";
 
 const ProductsTable = memo(() => {
   const navigate = useNavigate();
@@ -46,32 +38,39 @@ const ProductsTable = memo(() => {
       columnHelper.accessor("id", {
         header: () => "ID",
         cell: (info) => info.getValue(),
+        enableColumnFilter: false,
       }),
       columnHelper.accessor("title", {
         header: () => "Title",
         cell: (info) => info.getValue(),
+        enableColumnFilter: true,
       }),
       columnHelper.accessor("brand", {
         header: () => "Brand",
         cell: (info) => info.getValue(),
+        enableColumnFilter: true,
       }),
       columnHelper.accessor("category", {
         header: () => "Category",
         cell: (info) => info.getValue(),
+        enableColumnFilter: true,
       }),
       columnHelper.accessor("rating", {
         header: () => "Rating",
         cell: (info) => `${parseFloat(info.getValue()).toFixed(2)}`,
+        enableColumnFilter: false,
         align: "right",
       }),
       columnHelper.accessor("price", {
         header: () => "Price",
         cell: (info) => formatMoney(info.getValue(), "dollars"),
+        enableColumnFilter: false,
         align: "right",
       }),
       columnHelper.accessor("discountPercentage", {
         header: () => "Discount",
         cell: (info) => `${info.getValue()}%`,
+        enableColumnFilter: false,
         align: "right",
       }),
       columnHelper.accessor("stock", {
@@ -81,11 +80,13 @@ const ProductsTable = memo(() => {
             {info.getValue()}
           </Typography>
         ),
+        enableColumnFilter: false,
         align: "right",
       }),
       columnHelper.accessor("description", {
         header: () => "Description",
         cell: (info) => info.getValue(),
+        enableColumnFilter: false,
         align: "left",
       }),
     ],
@@ -98,81 +99,12 @@ const ProductsTable = memo(() => {
   };
 
   // table filters
-  const [globalSearch, setglobalSearch] = useState("");
-  const [productsFilters, setProductsFilters] = useState(null);
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    // format data according to DataTable filter format
-    const filtersArray = [];
-    formData.forEach((value, key) =>
-      filtersArray.push({ id: key, value: value })
-    );
-    // only set non-empty filters
-    setProductsFilters(filtersArray.filter((filter) => filter.value.length));
-  };
-
-  const handleReset = (event) => {
-    setProductsFilters(null);
-  };
-
-  const TableFilters = useMemo(() => {
-    return (
-      <Stack
-        direction="row"
-        divider={<Divider orientation="vertical" flexItem />}
-        spacing={2}
-        sx={{ flexGrow: 1, py: "2rem", px: "1rem", alignItems: "baseline" }}
-      >
-        <TextField
-          label="Global Search"
-          value={globalSearch}
-          onChange={(e) => {
-            setglobalSearch(e.target.value);
-          }}
-        />
-        <Box
-          component="form"
-          onSubmit={handleSubmit}
-          onReset={handleReset}
-          sx={{
-            display: "flex",
-            flexGrow: 1,
-            flexFlow: "row wrap",
-            alignItems: "baseline",
-            gap: 2,
-          }}
-        >
-          <TextField
-            margin="normal"
-            id="brand"
-            label="Brand"
-            name="brand"
-            InputLabelProps={{ shrink: true }}
-          />
-          <TextField
-            margin="normal"
-            id="category"
-            label="Category"
-            name="category"
-            InputLabelProps={{ shrink: true }}
-          />
-          <Button type="submit" variant="contained" sx={{ marginLeft: "auto" }}>
-            Apply
-          </Button>
-          <Button type="reset" variant="contained" sx={{ marginLeft: "auto" }}>
-            Reset
-          </Button>
-        </Box>
-      </Stack>
-    );
-  }, [globalSearch, setglobalSearch]);
+  const productsFilters = useMemo(() => {
+    return { fields: null, globalSearch: true };
+  }, []);
 
   return (
     <Card>
-      {TableFilters}
-      <Divider />
       <DataTable
         minWidth="700px"
         data={products}
@@ -180,8 +112,7 @@ const ProductsTable = memo(() => {
         loading={loading}
         error={error}
         orderBy={"id"}
-        globalSearch={globalSearch}
-        filters={productsFilters}
+        filterFields={productsFilters}
         clickable={true}
         onRowClick={handleRowClick}
       />

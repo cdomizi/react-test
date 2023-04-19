@@ -12,6 +12,7 @@ import {
   Toolbar,
   Typography,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 
 // mui icons
@@ -53,13 +54,17 @@ function TopBar({ onToggle, menuItems }) {
             <MenuItem key={item.id} title={item.title} url={item.url} />
           ))}
         </Box>
-        <IconButton onClick={colorMode.toggleColorMode} color="inherit">
-          {theme.palette.mode === "dark" ? (
-            <Brightness7Icon />
-          ) : (
-            <Brightness4Icon />
-          )}
-        </IconButton>
+        <Tooltip
+          title={theme.palette.mode === "dark" ? "Light Mode" : "Dark Mode"}
+        >
+          <IconButton onClick={colorMode.toggleColorMode} color="inherit">
+            {theme.palette.mode === "dark" ? (
+              <Brightness7Icon />
+            ) : (
+              <Brightness4Icon />
+            )}
+          </IconButton>
+        </Tooltip>
       </Toolbar>
     </AppBar>
   );
