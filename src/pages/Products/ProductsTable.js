@@ -104,9 +104,17 @@ const ProductsTable = memo(() => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const output = {};
-    formData.forEach((value, key) => (output[key] = value));
-    setProductsFilters(formData);
+    // format data according to DataTable filter format
+    const filtersArray = [];
+    formData.forEach((value, key) =>
+      filtersArray.push({ id: key, value: value })
+    );
+    // only set non-empty filters
+    setProductsFilters(filtersArray.filter((filter) => filter.value.length));
+  };
+
+  const handleReset = (event) => {
+    setProductsFilters(null);
   };
 
   const TableFilters = useMemo(() => {
@@ -127,21 +135,34 @@ const ProductsTable = memo(() => {
         <Box
           component="form"
           onSubmit={handleSubmit}
+          onReset={handleReset}
           sx={{
             display: "flex",
             flexGrow: 1,
             flexFlow: "row wrap",
             alignItems: "baseline",
+            gap: 2,
           }}
         >
+          <TextField
+            margin="normal"
+            id="brand"
+            label="Brand"
+            name="brand"
+            InputLabelProps={{ shrink: true }}
+          />
           <TextField
             margin="normal"
             id="category"
             label="Category"
             name="category"
+            InputLabelProps={{ shrink: true }}
           />
           <Button type="submit" variant="contained" sx={{ marginLeft: "auto" }}>
             Apply
+          </Button>
+          <Button type="reset" variant="contained" sx={{ marginLeft: "auto" }}>
+            Reset
           </Button>
         </Box>
       </Stack>

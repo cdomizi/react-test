@@ -36,7 +36,7 @@ const DataTable = (props) => {
     rowsPerPageOptions = [5, 10, 25],
     orderBy = null,
     globalSearch,
-    filters = null,
+    filters = [],
     defaultOrder = false,
     clickable = false,
     onRowClick = null,
@@ -49,7 +49,11 @@ const DataTable = (props) => {
   const [globalFilter, setGlobalFilter] = useState("");
   useEffect(() => setGlobalFilter(globalSearch), [globalSearch]);
 
-  useEffect(() => console.log(filters), [filters]);
+  // column filter
+  const [columnFilters, setColumnFilters] = useState(
+    filters?.length ? [...filters] : []
+  );
+  useEffect(() => setColumnFilters(filters), [filters]);
 
   const table = useReactTable({
     data: data ?? [],
@@ -57,9 +61,11 @@ const DataTable = (props) => {
     pageCount: data?.length ?? -1,
     state: {
       sorting,
+      columnFilters,
       globalFilter,
     },
     onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     getFilteredRowModel: getFilteredRowModel(),
     getCoreRowModel: getCoreRowModel(),
@@ -207,7 +213,7 @@ DataTable.propTypes = {
   rowsPerPageOptions: PropTypes.array,
   orderBy: PropTypes.string,
   searchFilters: PropTypes.string,
-  filters: PropTypes.object,
+  filters: PropTypes.array,
   defaultOrder: PropTypes.bool,
   clickable: PropTypes.bool,
   onRowClick: PropTypes.func,
