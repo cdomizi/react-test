@@ -166,7 +166,7 @@ const DataTable = (props) => {
                     </Alert>
                   </TableCell>
                 </TableRow>
-              ) : (
+              ) : table.getPrePaginationRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
@@ -187,6 +187,16 @@ const DataTable = (props) => {
                     ))}
                   </TableRow>
                 ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={table.getFlatHeaders().length}>
+                    <Alert severity="info">
+                      <AlertTitle>No Results Found</AlertTitle>
+                      Sorry, no items match your search. Please try again with a
+                      different query.
+                    </Alert>
+                  </TableCell>
+                </TableRow>
               ))}
           </TableBody>
         </Table>
