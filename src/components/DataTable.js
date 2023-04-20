@@ -129,12 +129,8 @@ const DataTable = (props) => {
 
   return (
     <>
-      {(globalSearch || !!enabledFilters?.length) && (
-        <>
-          {Filters}
-          <Divider />
-        </>
-      )}
+      {Filters}
+      <Divider />
       <Paper>
         <TableContainer>
           <Table
