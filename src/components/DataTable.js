@@ -37,7 +37,7 @@ const DataTable = (props) => {
     error,
     rowsPerPageOptions = [5, 10, 25],
     orderBy = null,
-    filterFields = [],
+    globalSearch = false,
     defaultOrder = false,
     clickable = false,
     onRowClick = null,
@@ -86,20 +86,27 @@ const DataTable = (props) => {
   );
 
   // filters section
-  const filteredColumns = columns.filter((column) => column.enableColumnFilter);
-  // map over filtered columns to provide accessor and label,
-  // then pass them to TableFilters as `filters` props
+  const filteredColumns = table
+    .getFlatHeaders()
+    .filter((header) => header.column.getCanFilter());
+  const enabledFilters = useMemo(() => [], []);
+  filteredColumns.forEach((header) =>
+    enabledFilters.push({
+      id: header.id,
+      label: header.column.columnDef.header(),
+    })
+  );
   const Filters = useMemo(
     () => (
       <TableFilters
-        filters={filterFields?.fields}
+        filters={enabledFilters}
         onFiltersSubmit={(filters) => setColumnFilters(filters)}
         onFiltersReset={() => setColumnFilters([])}
-        globalSearch={filterFields?.globalSearch}
+        globalSearch={globalSearch}
         onGlobalSearch={(value) => setGlobalFilter(value)}
       />
     ),
-    [filterFields]
+    [enabledFilters, globalSearch]
   );
 
   // display skeleton rows on loading
@@ -122,8 +129,12 @@ const DataTable = (props) => {
 
   return (
     <>
-      {(filterFields?.globalSearch || filterFields?.fields) && Filters}
-      <Divider />
+      {(globalSearch || !!enabledFilters?.length) && (
+        <>
+          {Filters}
+          <Divider />
+        </>
+      )}
       <Paper>
         <TableContainer>
           <Table
@@ -242,7 +253,7 @@ DataTable.propTypes = {
   error: PropTypes.string,
   rowsPerPageOptions: PropTypes.array,
   orderBy: PropTypes.string,
-  filterFields: PropTypes.object,
+  globalSearch: PropTypes.bool,
   defaultOrder: PropTypes.bool,
   clickable: PropTypes.bool,
   onRowClick: PropTypes.func,

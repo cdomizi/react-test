@@ -43,7 +43,7 @@ const TableFilters = ({
     <Stack
       direction="row"
       divider={
-        globalSearch && filters ? (
+        globalSearch && filters?.length ? (
           <Divider orientation="vertical" flexItem />
         ) : (
           false
@@ -72,21 +72,17 @@ const TableFilters = ({
           gap: 2,
         }}
       >
-        {/* cycle through `filters` and create an input for each element */}
-        <TextField
-          margin="normal"
-          id="brand"
-          name="brand"
-          label="Brand"
-          InputLabelProps={{ shrink: true }}
-        />
-        <TextField
-          margin="normal"
-          id="category"
-          name="category"
-          label="Category"
-          InputLabelProps={{ shrink: true }}
-        />
+        {filters &&
+          filters?.map((filter) => (
+            <TextField
+              key={filter.id}
+              margin="normal"
+              id={filter.id}
+              name={filter.id}
+              label={filter.label}
+              InputLabelProps={{ shrink: true }}
+            />
+          ))}
         <Tooltip title="Apply Filters" sx={{ marginLeft: "auto" }}>
           <IconButton type="submit" color="primary" size="large">
             <FilterAltIcon fontSize="inherit" />

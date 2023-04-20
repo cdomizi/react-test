@@ -98,11 +98,6 @@ const ProductsTable = memo(() => {
     navigate(`${rowData.id}`);
   };
 
-  // table filters
-  const productsFilters = useMemo(() => {
-    return { fields: null, globalSearch: true };
-  }, []);
-
   return (
     <Card>
       <DataTable
@@ -112,7 +107,7 @@ const ProductsTable = memo(() => {
         loading={loading}
         error={error}
         orderBy={"id"}
-        filterFields={productsFilters}
+        globalSearch={true}
         clickable={true}
         onRowClick={handleRowClick}
       />
