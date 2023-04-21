@@ -57,7 +57,7 @@ const TableFilters = ({
           variant="contained"
           sx={{ marginLeft: "auto", height: "fit-content" }}
         >
-          New Product
+          New Item
         </Button>
       </Box>
       {!!filters?.length && (

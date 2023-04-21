@@ -29,6 +29,9 @@ import {
   Tooltip,
   IconButton,
   Snackbar,
+  Drawer,
+  Typography,
+  Button,
 } from "@mui/material";
 
 // mui icons
@@ -60,12 +63,18 @@ const DataTable = (props) => {
   // column filter
   const [columnFilters, setColumnFilters] = useState([]);
 
+  // edit drawer status
+  const [editDrawerOpen, setEditDrawerOpen] = useState({
+    open: false,
+    payload: null,
+  });
+
   // snackbar status
   const [openSnackbar, setOpenSnackbar] = useState({
     open: false,
     vertical: "top",
     horizontal: "center",
-    success: false,
+    success: true,
     message: null,
   });
 
@@ -103,37 +112,41 @@ const DataTable = (props) => {
   );
 
   // handle edit button click
-  const handleOnEdit = async (event, rowData) => {
+  const handleOnEdit = useCallback(async (event, rowData) => {
     event.stopPropagation();
-    onEdit(rowData);
-  };
+    setEditDrawerOpen({ open: true, payload: rowData });
+  }, []);
+
   // handle delete button click
-  const handleOnDelete = async (event, rowData) => {
-    event.stopPropagation();
-    const response = await onDelete(rowData?.id);
-    if (response.length) {
-      // display confirmation message if the request was successful
-      setOpenSnackbar({
-        ...openSnackbar,
-        open: true,
-        success: true,
-        message: `${response || "Item"} deleted successfully!`,
-      });
-    } else {
-      // display error message if the request failed
-      console.error(
-        `Error while deleting the item: ${response?.status ?? ""} ${
-          response?.statusText ?? ""
-        }`
-      );
-      setOpenSnackbar({
-        ...openSnackbar,
-        open: true,
-        success: false,
-        message: `Sorry! Unable to delete the item.`,
-      });
-    }
-  };
+  const handleOnDelete = useCallback(
+    async (event, rowData) => {
+      event.stopPropagation();
+      const response = await onDelete(rowData?.id);
+      if (response.length) {
+        // display confirmation message if the request was successful
+        setOpenSnackbar({
+          ...openSnackbar,
+          open: true,
+          success: true,
+          message: `${response || "Item"} deleted successfully!`,
+        });
+      } else {
+        // display error message if the request failed
+        console.error(
+          `Error while deleting the item: ${response?.status ?? ""} ${
+            response?.statusText ?? ""
+          }`
+        );
+        setOpenSnackbar({
+          ...openSnackbar,
+          open: true,
+          success: false,
+          message: `Sorry! Unable to delete the item.`,
+        });
+      }
+    },
+    [onDelete, openSnackbar]
+  );
 
   // filters section
   const filteredColumns = table
@@ -175,6 +188,25 @@ const DataTable = (props) => {
       </>
     ),
     [table]
+  );
+
+  const EditDrawer = useMemo(
+    () => (
+      <Drawer
+        anchor="right"
+        open={editDrawerOpen?.open || false}
+        onClose={() => setEditDrawerOpen({ open: false, payload: null })}
+      >
+        <Typography variant="h4">New Item</Typography>
+        <Button
+          variant="contained"
+          onClick={() => onEdit(editDrawerOpen.payload)}
+        >
+          Save Edits
+        </Button>
+      </Drawer>
+    ),
+    [editDrawerOpen, onEdit]
   );
 
   return (
@@ -344,6 +376,7 @@ const DataTable = (props) => {
           </Alert>
         </Snackbar>
       </Paper>
+      {onEdit && EditDrawer}
     </>
   );
 };
