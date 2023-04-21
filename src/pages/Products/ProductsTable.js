@@ -98,6 +98,20 @@ const ProductsTable = memo(() => {
     navigate(`${rowData.id}`);
   };
 
+  // delete product
+  const handleDeleteProduct = async (productId) => {
+    const data = await fetch(`https://dummyjson.com/products/${productId}`, {
+      method: "DELETE",
+    });
+    const json = await data.json();
+    console.log(`product deleted: ${json}`);
+  };
+
+  // edit product
+  const handleEditProduct = (payload) => {
+    console.log(payload);
+  };
+
   return (
     <Card>
       <DataTable
@@ -110,6 +124,8 @@ const ProductsTable = memo(() => {
         globalSearch={true}
         clickable={true}
         onRowClick={handleRowClick}
+        onEdit={handleEditProduct}
+        onDelete={handleDeleteProduct}
       />
     </Card>
   );

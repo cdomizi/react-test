@@ -26,7 +26,12 @@ import {
   AlertTitle,
   useMediaQuery,
   TableSortLabel,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
+
+// mui icons
+import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 
 const DataTable = (props) => {
   const {
@@ -41,6 +46,8 @@ const DataTable = (props) => {
     defaultOrder = false,
     clickable = false,
     onRowClick = null,
+    onEdit = null,
+    onDelete = null,
   } = props;
 
   const defaultSorting = [{ id: orderBy, desc: defaultOrder }];
@@ -84,6 +91,17 @@ const DataTable = (props) => {
     },
     [table]
   );
+
+  // handle edit button click
+  const handleOnEdit = (event, rowData) => {
+    event.stopPropagation();
+    onEdit(rowData);
+  };
+  // handle delete button click
+  const handleOnDelete = (event, rowData) => {
+    event.stopPropagation();
+    onDelete(rowData?.id);
+  };
 
   // filters section
   const filteredColumns = table
@@ -168,6 +186,7 @@ const DataTable = (props) => {
                       </TableSortLabel>
                     </TableCell>
                   ))}
+                  <TableCell />
                 </TableRow>
               ))}
             </TableHead>
@@ -204,6 +223,18 @@ const DataTable = (props) => {
                         <TableCell
                           key={cell.id}
                           align={cell.column.columnDef.align ?? "center"}
+                          sx={{
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            textOverflow: "ellipsis",
+                            maxWidth: {
+                              xs: "8rem",
+                              sm: "9rem",
+                              md: "10rem",
+                              lg: "12rem",
+                              xl: "15rem",
+                            },
+                          }}
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
@@ -211,6 +242,26 @@ const DataTable = (props) => {
                           )}
                         </TableCell>
                       ))}
+                      <TableCell sx={{ whiteSpace: "nowrap" }}>
+                        <Tooltip
+                          title="Edit"
+                          onClick={(event) => handleOnEdit(event, row.original)}
+                        >
+                          <IconButton>
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip
+                          title="Delete"
+                          onClick={(event) =>
+                            handleOnDelete(event, row.original)
+                          }
+                        >
+                          <IconButton>
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
@@ -253,6 +304,8 @@ DataTable.propTypes = {
   defaultOrder: PropTypes.bool,
   clickable: PropTypes.bool,
   onRowClick: PropTypes.func,
+  onEdit: PropTypes.func,
+  onDelete: PropTypes.func,
 };
 
 export default DataTable;
