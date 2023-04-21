@@ -42,10 +42,10 @@ const Shop = () => {
           setProduct(json);
         }
         setLoading(false);
-      } catch (e) {
+      } catch (error) {
         controllerRef.current.signal.aborted
           ? console.log("The user aborted the request.")
-          : console.error(`Error while fetching product data: ${e}`) &&
+          : console.error(`Error while fetching product data: ${error}`) &&
             setLoading(false);
       }
     };

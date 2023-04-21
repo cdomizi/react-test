@@ -28,6 +28,7 @@ import {
   TableSortLabel,
   Tooltip,
   IconButton,
+  Snackbar,
 } from "@mui/material";
 
 // mui icons
@@ -58,6 +59,15 @@ const DataTable = (props) => {
 
   // column filter
   const [columnFilters, setColumnFilters] = useState([]);
+
+  // snackbar status
+  const [openSnackbar, setOpenSnackbar] = useState({
+    open: false,
+    vertical: "top",
+    horizontal: "center",
+    success: false,
+    message: null,
+  });
 
   const table = useReactTable({
     data: data ?? [],
@@ -93,14 +103,36 @@ const DataTable = (props) => {
   );
 
   // handle edit button click
-  const handleOnEdit = (event, rowData) => {
+  const handleOnEdit = async (event, rowData) => {
     event.stopPropagation();
     onEdit(rowData);
   };
   // handle delete button click
-  const handleOnDelete = (event, rowData) => {
+  const handleOnDelete = async (event, rowData) => {
     event.stopPropagation();
-    onDelete(rowData?.id);
+    const response = await onDelete(rowData?.id);
+    if (response.length) {
+      // display confirmation message if the request was successful
+      setOpenSnackbar({
+        ...openSnackbar,
+        open: true,
+        success: true,
+        message: `${response || "Item"} deleted successfully!`,
+      });
+    } else {
+      // display error message if the request failed
+      console.error(
+        `Error while deleting the item: ${response?.status ?? ""} ${
+          response?.statusText ?? ""
+        }`
+      );
+      setOpenSnackbar({
+        ...openSnackbar,
+        open: true,
+        success: false,
+        message: `Sorry! Unable to delete the item.`,
+      });
+    }
   };
 
   // filters section
@@ -186,7 +218,7 @@ const DataTable = (props) => {
                       </TableSortLabel>
                     </TableCell>
                   ))}
-                  <TableCell />
+                  {(onEdit || onDelete) && <TableCell />}
                 </TableRow>
               ))}
             </TableHead>
@@ -242,26 +274,34 @@ const DataTable = (props) => {
                           )}
                         </TableCell>
                       ))}
-                      <TableCell sx={{ whiteSpace: "nowrap" }}>
-                        <Tooltip
-                          title="Edit"
-                          onClick={(event) => handleOnEdit(event, row.original)}
-                        >
-                          <IconButton>
-                            <EditIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip
-                          title="Delete"
-                          onClick={(event) =>
-                            handleOnDelete(event, row.original)
-                          }
-                        >
-                          <IconButton>
-                            <DeleteIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
+                      {(onEdit || onDelete) && (
+                        <TableCell sx={{ whiteSpace: "nowrap" }}>
+                          {onEdit && (
+                            <Tooltip
+                              title="Edit"
+                              onClick={(event) =>
+                                handleOnEdit(event, row.original)
+                              }
+                            >
+                              <IconButton>
+                                <EditIcon />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                          {onDelete && (
+                            <Tooltip
+                              title="Delete"
+                              onClick={(event) =>
+                                handleOnDelete(event, row.original)
+                              }
+                            >
+                              <IconButton>
+                                <DeleteIcon />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))
                 ) : (
@@ -287,6 +327,22 @@ const DataTable = (props) => {
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleRowsPerPageChange}
         />
+        <Snackbar
+          open={openSnackbar.open}
+          autoHideDuration={4000}
+          anchorOrigin={{
+            vertical: openSnackbar.vertical,
+            horizontal: openSnackbar.horizontal,
+          }}
+          onClose={() => setOpenSnackbar({ ...openSnackbar, open: false })}
+        >
+          <Alert
+            onClose={() => setOpenSnackbar({ ...openSnackbar, open: false })}
+            severity={openSnackbar.success ? "success" : "error"}
+          >
+            {openSnackbar.message}
+          </Alert>
+        </Snackbar>
       </Paper>
     </>
   );

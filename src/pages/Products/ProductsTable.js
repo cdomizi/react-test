@@ -100,11 +100,18 @@ const ProductsTable = memo(() => {
 
   // delete product
   const handleDeleteProduct = async (productId) => {
-    const data = await fetch(`https://dummyjson.com/products/${productId}`, {
-      method: "DELETE",
-    });
-    const json = await data.json();
-    console.log(`product deleted: ${json}`);
+    const response = await fetch(
+      `https://dummyjson.com/products/${productId}`,
+      {
+        method: "DELETE",
+      }
+    );
+    if (response.ok) {
+      const json = await response.json();
+      const productTitle = json?.title;
+      // return product name to display on product confirmation message
+      return productTitle;
+    } else return response;
   };
 
   // edit product
