@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 // project import
 import useFetch from "../../hooks/useFetch";
 import formatMoney from "../../utils/formatMoney";
-import DataTable from "../../components/DataTable";
+import DataTable from "../../components/DataTable/DataTable";
 
 // mui components
 import { Card, Typography } from "@mui/material";

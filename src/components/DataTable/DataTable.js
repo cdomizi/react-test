@@ -9,6 +9,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import TableFilters from "./TableFilters";
+import TableDrawer from "./TableDrawer";
 
 // mui components
 import {
@@ -29,10 +30,6 @@ import {
   Tooltip,
   IconButton,
   Snackbar,
-  Drawer,
-  Typography,
-  Button,
-  Box,
 } from "@mui/material";
 
 // mui icons
@@ -202,26 +199,14 @@ const DataTable = (props) => {
 
   const EditDrawer = useMemo(
     () => (
-      <Drawer
-        anchor="right"
-        open={editDrawerOpen?.open || false}
-        onClose={() => setEditDrawerOpen({ open: false, payload: null })}
-        sx={{
-          "& .MuiDrawer-paper": { boxSizing: "border-box", width: "22rem" },
+      <TableDrawer
+        drawerOpen={editDrawerOpen}
+        onSubmit={(payload) => {
+          onEdit(payload);
+          setEditDrawerOpen(false);
         }}
-      >
-        <Box sx={{ display: "flex", flexDirection: "column", p: 3 }}>
-          <Typography variant="h4" mb={6}>
-            Edit Item
-          </Typography>
-          <Button
-            variant="contained"
-            onClick={() => onEdit(editDrawerOpen.payload)}
-          >
-            Save Edits
-          </Button>
-        </Box>
-      </Drawer>
+        onClose={() => setEditDrawerOpen(false)}
+      />
     ),
     [editDrawerOpen, onEdit]
   );
