@@ -89,6 +89,18 @@ const ProductsTable = memo(() => {
         enableColumnFilter: false,
         align: "left",
       }),
+      columnHelper.accessor("thumbnail", {
+        header: () => "Thumbnail",
+        cell: (info) => info.getValue(),
+        isVisible: false,
+        enableColumnFilter: false,
+      }),
+      columnHelper.accessor("images", {
+        header: () => "Images",
+        cell: (info) => info.getValue(),
+        isVisible: false,
+        enableColumnFilter: false,
+      }),
     ],
     [columnHelper, setColor]
   );

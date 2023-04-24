@@ -7,7 +7,7 @@ import Topbar from "./Topbar/Topbar";
 import menuItems from "../menu-items";
 
 // mui components
-import { Box } from "@mui/material";
+import { Box, Toolbar } from "@mui/material";
 
 function RootLayout() {
   const [drawerState, setDrawerState] = useState(false);
@@ -30,7 +30,8 @@ function RootLayout() {
         onToggle={toggleDrawer}
         menuItems={menuItems}
       />
-      <Box component="main" sx={{ flexGrow: 1, mt: 8, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Toolbar />
         <Outlet />
       </Box>
     </Box>

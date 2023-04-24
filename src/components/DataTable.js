@@ -32,6 +32,7 @@ import {
   Drawer,
   Typography,
   Button,
+  Box,
 } from "@mui/material";
 
 // mui icons
@@ -78,6 +79,14 @@ const DataTable = (props) => {
     message: null,
   });
 
+  const hiddenColumns = columns.reduce(
+    (obj, column) => ({
+      ...obj,
+      [column.accessorKey]: column.isVisible ?? true,
+    }),
+    {}
+  );
+
   const table = useReactTable({
     data: data ?? [],
     columns,
@@ -86,6 +95,7 @@ const DataTable = (props) => {
       sorting,
       columnFilters,
       globalFilter,
+      columnVisibility: hiddenColumns,
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -196,14 +206,21 @@ const DataTable = (props) => {
         anchor="right"
         open={editDrawerOpen?.open || false}
         onClose={() => setEditDrawerOpen({ open: false, payload: null })}
+        sx={{
+          "& .MuiDrawer-paper": { boxSizing: "border-box", width: "22rem" },
+        }}
       >
-        <Typography variant="h4">New Item</Typography>
-        <Button
-          variant="contained"
-          onClick={() => onEdit(editDrawerOpen.payload)}
-        >
-          Save Edits
-        </Button>
+        <Box sx={{ display: "flex", flexDirection: "column", p: 3 }}>
+          <Typography variant="h4" mb={6}>
+            Edit Item
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => onEdit(editDrawerOpen.payload)}
+          >
+            Save Edits
+          </Button>
+        </Box>
       </Drawer>
     ),
     [editDrawerOpen, onEdit]
@@ -307,7 +324,9 @@ const DataTable = (props) => {
                         </TableCell>
                       ))}
                       {(onEdit || onDelete) && (
-                        <TableCell sx={{ whiteSpace: "nowrap" }}>
+                        <TableCell
+                          sx={{ whiteSpace: "nowrap", textAlign: "right" }}
+                        >
                           {onEdit && (
                             <Tooltip
                               title="Edit"
