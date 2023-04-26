@@ -1,5 +1,4 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
 
 import {
   Alert,
@@ -14,11 +13,10 @@ import {
 } from "@mui/material";
 
 const TableDrawer = ({ drawerOpen, itemData, onSubmit, onClose }) => {
-  const [data, setData] = useState({});
-
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit(data);
+    const formData = new FormData(event.currentTarget);
+    onSubmit(formData);
   };
 
   // create form fields based on row data
@@ -62,7 +60,7 @@ const TableDrawer = ({ drawerOpen, itemData, onSubmit, onClose }) => {
           id={field.column.columnDef.accessorKey}
           name={field.column.columnDef.accessorKey}
           label={field.column.columnDef.header()}
-          value={field.getValue()}
+          defaultValue={field.getValue()}
           type={field.column.columnDef?.fieldFormat?.type ?? "text"}
           required={field.column.columnDef?.fieldFormat?.required ?? false}
           InputProps={
