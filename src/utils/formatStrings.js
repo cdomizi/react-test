@@ -14,4 +14,4 @@ const formatMoney = (value, currency) => {
   }
 };
 
-export default formatMoney;
+export { formatMoney };

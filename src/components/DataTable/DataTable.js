@@ -61,10 +61,14 @@ const DataTable = (props) => {
   // column filter
   const [columnFilters, setColumnFilters] = useState([]);
 
-  // edit drawer status
-  const [editDrawerOpen, setEditDrawerOpen] = useState({
-    open: false,
-    payload: null,
+  const initialDrawerStatus = useMemo(
+    () => ({ open: false, payload: null }),
+    []
+  );
+
+  // EditDrawer status
+  const [editDrawerStatus, setEditDrawerStatus] = useState({
+    ...initialDrawerStatus,
   });
 
   // snackbar status
@@ -119,10 +123,17 @@ const DataTable = (props) => {
   );
 
   // handle edit button click
-  const handleOnEdit = useCallback(async (event, rowData) => {
-    event.stopPropagation();
-    setEditDrawerOpen({ open: true, payload: rowData });
-  }, []);
+  const handleOnEdit = useCallback(
+    (event, row) => {
+      event.stopPropagation();
+      setEditDrawerStatus({
+        ...editDrawerStatus,
+        open: true,
+        payload: row.getAllCells(),
+      });
+    },
+    [editDrawerStatus]
+  );
 
   // handle delete button click
   const handleOnDelete = useCallback(
@@ -200,15 +211,16 @@ const DataTable = (props) => {
   const EditDrawer = useMemo(
     () => (
       <TableDrawer
-        drawerOpen={editDrawerOpen}
+        drawerOpen={editDrawerStatus.open}
+        itemData={editDrawerStatus.payload}
         onSubmit={(payload) => {
           onEdit(payload);
-          setEditDrawerOpen(false);
+          setEditDrawerStatus(initialDrawerStatus);
         }}
-        onClose={() => setEditDrawerOpen(false)}
+        onClose={() => setEditDrawerStatus(initialDrawerStatus)}
       />
     ),
-    [editDrawerOpen, onEdit]
+    [editDrawerStatus, initialDrawerStatus, onEdit]
   );
 
   return (
@@ -315,9 +327,7 @@ const DataTable = (props) => {
                           {onEdit && (
                             <Tooltip
                               title="Edit"
-                              onClick={(event) =>
-                                handleOnEdit(event, row.original)
-                              }
+                              onClick={(event) => handleOnEdit(event, row)}
                             >
                               <IconButton>
                                 <EditIcon />

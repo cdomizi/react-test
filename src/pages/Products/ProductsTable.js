@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 // project import
 import useFetch from "../../hooks/useFetch";
-import formatMoney from "../../utils/formatMoney";
+import { formatMoney } from "../../utils/formatStrings";
 import DataTable from "../../components/DataTable/DataTable";
 
 // mui components
@@ -39,6 +39,7 @@ const ProductsTable = memo(() => {
         header: () => "ID",
         cell: (info) => info.getValue(),
         enableColumnFilter: false,
+        fieldFormat: { display: false },
       }),
       columnHelper.accessor("title", {
         header: () => "Title",
@@ -66,12 +67,14 @@ const ProductsTable = memo(() => {
         cell: (info) => formatMoney(info.getValue(), "dollars"),
         enableColumnFilter: false,
         align: "right",
+        fieldFormat: { format: "money" },
       }),
       columnHelper.accessor("discountPercentage", {
         header: () => "Discount",
         cell: (info) => `${info.getValue()}%`,
         enableColumnFilter: false,
         align: "right",
+        fieldFormat: { format: "percentage" },
       }),
       columnHelper.accessor("stock", {
         header: () => "Stock",
@@ -82,6 +85,7 @@ const ProductsTable = memo(() => {
         ),
         enableColumnFilter: false,
         align: "right",
+        fieldFormat: { type: "number" },
       }),
       columnHelper.accessor("description", {
         header: () => "Description",
@@ -94,12 +98,14 @@ const ProductsTable = memo(() => {
         cell: (info) => info.getValue(),
         isVisible: false,
         enableColumnFilter: false,
+        fieldFormat: { format: "files" },
       }),
       columnHelper.accessor("images", {
         header: () => "Images",
-        cell: (info) => info.getValue(),
+        cell: (info) => info.getValue()[0],
         isVisible: false,
         enableColumnFilter: false,
+        fieldFormat: { format: "files" },
       }),
     ],
     [columnHelper, setColor]
