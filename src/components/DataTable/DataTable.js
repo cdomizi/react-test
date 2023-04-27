@@ -8,10 +8,12 @@ import {
   getFilteredRowModel,
   flexRender,
 } from "@tanstack/react-table";
+
+// Project imports
 import TableFilters from "./TableFilters";
 import TableDrawer from "./TableDrawer";
 
-// mui components
+// MUI components
 import {
   TableContainer,
   Table,
@@ -32,7 +34,7 @@ import {
   Snackbar,
 } from "@mui/material";
 
-// mui icons
+// MUI icons
 import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 
 const DataTable = (props) => {
@@ -55,10 +57,10 @@ const DataTable = (props) => {
   const defaultSorting = [{ id: orderBy, desc: defaultOrder }];
   const [sorting, setSorting] = useState(defaultSorting ?? []);
 
-  // global filter
+  // Global filter
   const [globalFilter, setGlobalFilter] = useState("");
 
-  // column filter
+  // Column filter
   const [columnFilters, setColumnFilters] = useState([]);
 
   const initialDrawerStatus = useMemo(
@@ -71,7 +73,7 @@ const DataTable = (props) => {
     ...initialDrawerStatus,
   });
 
-  // snackbar status
+  // Snackbar status
   const [openSnackbar, setOpenSnackbar] = useState({
     open: false,
     vertical: "top",
@@ -122,26 +124,26 @@ const DataTable = (props) => {
     [table]
   );
 
-  // handle edit button click
+  // Handle edit button click
   const handleOnEdit = useCallback(
-    (event, row) => {
+    async (event, rowData) => {
       event.stopPropagation();
       setEditDrawerStatus({
         ...editDrawerStatus,
         open: true,
-        payload: row.getAllCells(),
+        payload: rowData.getAllCells(),
       });
     },
     [editDrawerStatus]
   );
 
-  // handle delete button click
+  // Handle delete button click
   const handleOnDelete = useCallback(
     async (event, rowData) => {
       event.stopPropagation();
       const response = await onDelete(rowData?.id);
       if (response.length) {
-        // display confirmation message if the request was successful
+        // Display confirmation message if the request was successful
         setOpenSnackbar({
           ...openSnackbar,
           open: true,
@@ -149,7 +151,7 @@ const DataTable = (props) => {
           message: `${response || "Item"} deleted successfully!`,
         });
       } else {
-        // display error message if the request failed
+        // Display error message if the request failed
         console.error(
           `Error while deleting the item: ${response?.status ?? ""} ${
             response?.statusText ?? ""
@@ -166,7 +168,7 @@ const DataTable = (props) => {
     [onDelete, openSnackbar]
   );
 
-  // filters section
+  // Filters section
   const filteredColumns = table
     .getFlatHeaders()
     .filter((header) => header.column.getCanFilter());
@@ -190,7 +192,7 @@ const DataTable = (props) => {
     [enabledFilters, globalSearch]
   );
 
-  // display skeleton rows on loading
+  // Display skeleton rows on loading
   const SkeletonTable = useMemo(
     () => (
       <>
@@ -208,19 +210,47 @@ const DataTable = (props) => {
     [table]
   );
 
+  // Handle submit EditDrawer form
+  const handleOnSubmit = useCallback(
+    async (formData) => {
+      const response = await onEdit(formData);
+      setEditDrawerStatus(initialDrawerStatus);
+      if (response.length) {
+        // Display confirmation message if the request was successful
+        setOpenSnackbar({
+          ...openSnackbar,
+          open: true,
+          success: true,
+          message: `${response || "Item"} edited successfully!`,
+        });
+      } else {
+        // Display error message if the request failed
+        console.error(
+          `Error while editing the item: ${response?.status ?? ""} ${
+            response?.statusText ?? ""
+          }`
+        );
+        setOpenSnackbar({
+          ...openSnackbar,
+          open: true,
+          success: false,
+          message: `Sorry! Unable to edit the item.`,
+        });
+      }
+    },
+    [onEdit, initialDrawerStatus, openSnackbar]
+  );
+
   const EditDrawer = useMemo(
     () => (
       <TableDrawer
         drawerOpen={editDrawerStatus.open}
         itemData={editDrawerStatus.payload}
-        onSubmit={(payload) => {
-          onEdit(payload);
-          setEditDrawerStatus(initialDrawerStatus);
-        }}
+        onSubmit={(formData) => handleOnSubmit(formData)}
         onClose={() => setEditDrawerStatus(initialDrawerStatus)}
       />
     ),
-    [editDrawerStatus, initialDrawerStatus, onEdit]
+    [editDrawerStatus, initialDrawerStatus, handleOnSubmit]
   );
 
   return (
@@ -232,7 +262,7 @@ const DataTable = (props) => {
           <Table
             xs={{ minWidth: `${minWidth ?? "auto"}` }}
             size={
-              // automatically set table padding based on screen width
+              // Automatically set table padding based on screen width
               useMediaQuery("(min-width:600px)") ? "medium" : "small"
             }
           >

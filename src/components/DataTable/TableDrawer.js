@@ -20,70 +20,73 @@ const TableDrawer = ({ drawerOpen, itemData, onSubmit, onClose }) => {
   };
 
   // create form fields based on row data
-  const formFields = itemData
-    ?.filter((field) => field.column.columnDef?.fieldFormat?.display ?? true)
-    ?.map((field, index) =>
-      field.column.columnDef?.fieldFormat?.format === "files" ? (
-        <Autocomplete
-          multiple
-          key={index}
-          id="tags"
-          options={
-            typeof field.getValue() === "string"
-              ? [field.getValue()]
-              : field.getValue()
-          }
-          defaultValue={
-            typeof field.getValue() === "string"
-              ? [field.getValue()]
-              : field.getValue()
-          }
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              id={field.column.columnDef.accessorKey}
-              name={field.column.columnDef.accessorKey}
-              label={field.column.columnDef.header()}
-              InputLabelProps={{ shrink: true }}
-              margin="normal"
-              fullWidth
-            />
-          )}
-          sx={{
-            maxHeight: "10rem",
-            overflow: "auto",
-          }}
-        />
-      ) : (
-        <TextField
-          key={index}
-          id={field.column.columnDef.accessorKey}
-          name={field.column.columnDef.accessorKey}
-          label={field.column.columnDef.header()}
-          defaultValue={field.getValue()}
-          type={field.column.columnDef?.fieldFormat?.type ?? "text"}
-          required={field.column.columnDef?.fieldFormat?.required ?? false}
-          InputProps={
-            field.column.columnDef?.fieldFormat?.format === "money"
-              ? {
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }
-              : field.column.columnDef?.fieldFormat?.format === "percentage"
-              ? {
-                  endAdornment: (
-                    <InputAdornment position="start">%</InputAdornment>
-                  ),
-                }
-              : null
-          }
-          margin="normal"
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-        />
-      )
-    );
+  const formFields = itemData?.map((field, index) =>
+    field.column.columnDef?.fieldFormat?.format === "files" ? (
+      <Autocomplete
+        multiple
+        key={index}
+        id="tags"
+        options={
+          typeof field.getValue() === "string"
+            ? [field.getValue()]
+            : field.getValue()
+        }
+        defaultValue={
+          typeof field.getValue() === "string"
+            ? [field.getValue()]
+            : field.getValue()
+        }
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            id={field.column.columnDef.accessorKey}
+            name={field.column.columnDef.accessorKey}
+            label={field.column.columnDef.header()}
+            InputLabelProps={{ shrink: true }}
+            margin="normal"
+            fullWidth
+          />
+        )}
+        sx={{
+          maxHeight: "10rem",
+          overflow: "auto",
+        }}
+      />
+    ) : (
+      <TextField
+        key={index}
+        id={field.column.columnDef.accessorKey}
+        name={field.column.columnDef.accessorKey}
+        label={field.column.columnDef.header()}
+        defaultValue={field.getValue()}
+        type={field.column.columnDef?.fieldFormat?.type ?? "text"}
+        required={field.column.columnDef?.fieldFormat?.required ?? false}
+        InputProps={
+          field.column.columnDef?.fieldFormat?.format === "money"
+            ? {
+                startAdornment: (
+                  <InputAdornment position="start">$</InputAdornment>
+                ),
+              }
+            : field.column.columnDef?.fieldFormat?.format === "percentage"
+            ? {
+                endAdornment: (
+                  <InputAdornment position="start">%</InputAdornment>
+                ),
+              }
+            : null
+        }
+        margin="normal"
+        InputLabelProps={{ shrink: true }}
+        sx={{
+          display: field.column.columnDef?.fieldFormat?.hidden
+            ? "none"
+            : "inherit",
+        }}
+        fullWidth
+      />
+    )
+  );
 
   return (
     <Drawer

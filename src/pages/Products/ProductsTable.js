@@ -2,27 +2,27 @@ import { useEffect, useState, useMemo, useCallback, memo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
 
-// project import
+// Project import
 import useFetch from "../../hooks/useFetch";
 import { formatMoney } from "../../utils/formatStrings";
 import DataTable from "../../components/DataTable/DataTable";
 
-// mui components
+// MUI components
 import { Card, Typography } from "@mui/material";
 
 const ProductsTable = memo(() => {
   const navigate = useNavigate();
   const [products, setProducts] = useState(null);
 
-  // fetch data from external api
+  // Fetch data from external api
   const { loading, error, data } = useFetch("https://dummyjson.com/products");
 
-  // set products upon fetching data
+  // Set products upon fetching data
   useEffect(() => {
     setProducts(data?.products);
   }, [data]);
 
-  // set color based on stock quantity
+  // Set color based on stock quantity
   const setColor = useCallback((quantity) => {
     return quantity >= 10
       ? "success.main"
@@ -31,7 +31,7 @@ const ProductsTable = memo(() => {
       : "error.main";
   }, []);
 
-  // create table columns
+  // Create table columns
   const columnHelper = useMemo(() => createColumnHelper(), []);
   const columns = useMemo(
     () => [
@@ -39,7 +39,7 @@ const ProductsTable = memo(() => {
         header: () => "ID",
         cell: (info) => info.getValue(),
         enableColumnFilter: false,
-        fieldFormat: { display: false },
+        fieldFormat: { hidden: true },
       }),
       columnHelper.accessor("title", {
         header: () => "Title",
@@ -111,31 +111,47 @@ const ProductsTable = memo(() => {
     [columnHelper, setColor]
   );
 
-  // go to product page on row click
+  // Go to product page on row click
   const handleRowClick = (event, rowData) => {
     navigate(`${rowData.id}`);
   };
 
-  // delete product
-  const handleDeleteProduct = async (productId) => {
+  // Delete product
+  const handleDeleteProduct = useCallback(async (productId) => {
     const response = await fetch(
       `https://dummyjson.com/products/${productId}`,
       {
         method: "DELETE",
       }
     );
+
     if (response.ok) {
-      const json = await response.json();
-      const productTitle = json?.title;
-      // return product name to display on product confirmation message
+      const data = await response.json();
+      const productTitle = data?.title;
+      // Return product name to display on delete confirmation message
       return productTitle;
     } else return response;
-  };
+  }, []);
 
-  // edit product
-  const handleEditProduct = (payload) => {
-    console.log(payload);
-  };
+  // Edit product
+  const handleEditProduct = useCallback(async (formData) => {
+    const productId = formData?.get("id");
+    const response = await fetch(
+      `https://dummyjson.com/products/${productId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Object.fromEntries(formData)),
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      // Return product name to display on delete confirmation message
+      const productTitle = data?.title;
+      return productTitle;
+    } else return response;
+  }, []);
 
   return (
     <Card>
