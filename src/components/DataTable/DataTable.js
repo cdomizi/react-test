@@ -67,11 +67,14 @@ const snackbarReducer = (state, action) => {
       };
     }
     case SNACKBAR_ACTIONS.EDIT_ERROR: {
+      console.error(
+        `Error while editing the item: ${action.payload.status} - ${action.payload.statusText}`
+      );
       return {
         ...initialSnackbarStatus,
         open: true,
         success: false,
-        message: `Sorry! Unable to edit ${action.payload || "the item"}.`,
+        message: "Sorry! Unable to edit the item.",
       };
     }
     case SNACKBAR_ACTIONS.DELETE: {
@@ -83,11 +86,14 @@ const snackbarReducer = (state, action) => {
       };
     }
     case SNACKBAR_ACTIONS.DELETE_ERROR: {
+      console.error(
+        `Error while deleting the item: ${action.payload.status} - ${action.payload.statusText}`
+      );
       return {
         ...initialSnackbarStatus,
         open: true,
         success: false,
-        message: `Sorry! Unable to delete ${action.payload || "the item"}.`,
+        message: "Sorry! Unable to delete the item.",
       };
     }
     case SNACKBAR_ACTIONS.CLOSE: {
@@ -200,18 +206,13 @@ const DataTable = (props) => {
   const handleOnDelete = useCallback(
     async (event, rowData) => {
       event.stopPropagation();
-      const itemTitle = await onDelete(rowData?.id);
-      if (itemTitle.length) {
+      const response = await onDelete(rowData?.id);
+      if (response.length) {
         // Display confirmation message if the request was successful
-        dispatch({ type: SNACKBAR_ACTIONS.DELETE, payload: itemTitle });
+        dispatch({ type: SNACKBAR_ACTIONS.DELETE, payload: response });
       } else {
         // Display error message if the request failed
-        console.error(
-          `Error while deleting the item: ${itemTitle?.status ?? ""} ${
-            itemTitle?.statusText ?? ""
-          }`
-        );
-        dispatch({ type: SNACKBAR_ACTIONS.DELETE_ERROR, payload: itemTitle });
+        dispatch({ type: SNACKBAR_ACTIONS.DELETE_ERROR, payload: response });
       }
     },
     [onDelete]

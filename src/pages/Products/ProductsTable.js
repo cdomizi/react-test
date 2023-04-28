@@ -130,7 +130,10 @@ const ProductsTable = memo(() => {
       const productTitle = data?.title;
       // Return product name to display on delete confirmation message
       return productTitle;
-    } else return response;
+    } else {
+      const error = await response;
+      return error;
+    }
   }, []);
 
   // Edit product
@@ -150,7 +153,10 @@ const ProductsTable = memo(() => {
       // Return product name to display on delete confirmation message
       const productTitle = data?.title;
       return productTitle;
-    } else return response;
+    } else {
+      const error = await response;
+      return error;
+    }
   }, []);
 
   return (
