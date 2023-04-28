@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useMemo, useCallback, useState } from "react";
+import { useMemo, useCallback, useState, useReducer } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -37,6 +37,68 @@ import {
 // MUI icons
 import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 
+// Snackbar reducer actions
+const SNACKBAR_ACTIONS = {
+  EDIT: "edit",
+  EDIT_ERROR: "edit error",
+  DELETE: "delete",
+  DELETE_ERROR: "delete error",
+  CLOSE: "close",
+};
+
+// Initial snackbar status
+const initialSnackbarStatus = {
+  open: false,
+  vertical: "top",
+  horizontal: "center",
+  success: true,
+  message: null,
+};
+
+// Snackbar reducer function
+const snackbarReducer = (state, action) => {
+  switch (action.type) {
+    case SNACKBAR_ACTIONS.EDIT: {
+      return {
+        ...initialSnackbarStatus,
+        open: true,
+        success: true,
+        message: `${action.payload || "Item"} edited successfully!`,
+      };
+    }
+    case SNACKBAR_ACTIONS.EDIT_ERROR: {
+      return {
+        ...initialSnackbarStatus,
+        open: true,
+        success: false,
+        message: `Sorry! Unable to edit ${action.payload || "the item"}.`,
+      };
+    }
+    case SNACKBAR_ACTIONS.DELETE: {
+      return {
+        ...initialSnackbarStatus,
+        open: true,
+        success: true,
+        message: `${action.payload || "Item"} deleted successfully!`,
+      };
+    }
+    case SNACKBAR_ACTIONS.DELETE_ERROR: {
+      return {
+        ...initialSnackbarStatus,
+        open: true,
+        success: false,
+        message: `Sorry! Unable to delete ${action.payload || "the item"}.`,
+      };
+    }
+    case SNACKBAR_ACTIONS.CLOSE: {
+      return initialSnackbarStatus;
+    }
+    default: {
+      return state;
+    }
+  }
+};
+
 const DataTable = (props) => {
   const {
     minWidth,
@@ -73,14 +135,11 @@ const DataTable = (props) => {
     ...initialDrawerStatus,
   });
 
-  // Snackbar status
-  const [openSnackbar, setOpenSnackbar] = useState({
-    open: false,
-    vertical: "top",
-    horizontal: "center",
-    success: true,
-    message: null,
-  });
+  // Snackbar reducer
+  const [snackbarState, dispatch] = useReducer(
+    snackbarReducer,
+    initialSnackbarStatus
+  );
 
   const hiddenColumns = columns.reduce(
     (obj, column) => ({
@@ -141,31 +200,21 @@ const DataTable = (props) => {
   const handleOnDelete = useCallback(
     async (event, rowData) => {
       event.stopPropagation();
-      const response = await onDelete(rowData?.id);
-      if (response.length) {
+      const itemTitle = await onDelete(rowData?.id);
+      if (itemTitle.length) {
         // Display confirmation message if the request was successful
-        setOpenSnackbar({
-          ...openSnackbar,
-          open: true,
-          success: true,
-          message: `${response || "Item"} deleted successfully!`,
-        });
+        dispatch({ type: SNACKBAR_ACTIONS.DELETE, payload: itemTitle });
       } else {
         // Display error message if the request failed
         console.error(
-          `Error while deleting the item: ${response?.status ?? ""} ${
-            response?.statusText ?? ""
+          `Error while deleting the item: ${itemTitle?.status ?? ""} ${
+            itemTitle?.statusText ?? ""
           }`
         );
-        setOpenSnackbar({
-          ...openSnackbar,
-          open: true,
-          success: false,
-          message: `Sorry! Unable to delete the item.`,
-        });
+        dispatch({ type: SNACKBAR_ACTIONS.DELETE_ERROR, payload: itemTitle });
       }
     },
-    [onDelete, openSnackbar]
+    [onDelete]
   );
 
   // Filters section
@@ -213,32 +262,22 @@ const DataTable = (props) => {
   // Handle submit EditDrawer form
   const handleOnSubmit = useCallback(
     async (formData) => {
-      const response = await onEdit(formData);
+      const itemTitle = await onEdit(formData);
       setEditDrawerStatus(initialDrawerStatus);
-      if (response.length) {
+      if (itemTitle.length) {
         // Display confirmation message if the request was successful
-        setOpenSnackbar({
-          ...openSnackbar,
-          open: true,
-          success: true,
-          message: `${response || "Item"} edited successfully!`,
-        });
+        dispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: itemTitle });
       } else {
         // Display error message if the request failed
         console.error(
-          `Error while editing the item: ${response?.status ?? ""} ${
-            response?.statusText ?? ""
+          `Error while editing the item: ${itemTitle?.status ?? ""} ${
+            itemTitle?.statusText ?? ""
           }`
         );
-        setOpenSnackbar({
-          ...openSnackbar,
-          open: true,
-          success: false,
-          message: `Sorry! Unable to edit the item.`,
-        });
+        dispatch({ type: SNACKBAR_ACTIONS.EDIT_ERROR, payload: itemTitle });
       }
     },
-    [onEdit, initialDrawerStatus, openSnackbar]
+    [onEdit, initialDrawerStatus]
   );
 
   const EditDrawer = useMemo(
@@ -404,8 +443,8 @@ const DataTable = (props) => {
           onRowsPerPageChange={handleRowsPerPageChange}
         />
         <TableSnackbar
-          openSnackbar={openSnackbar}
-          onClose={() => setOpenSnackbar({ ...openSnackbar, open: false })}
+          openSnackbar={snackbarState}
+          onClose={() => dispatch({ type: SNACKBAR_ACTIONS.CLOSE })}
         />
       </Paper>
       {onEdit && EditDrawer}
