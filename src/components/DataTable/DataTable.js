@@ -12,6 +12,7 @@ import {
 // Project imports
 import TableFilters from "./TableFilters";
 import TableDrawer from "./TableDrawer";
+import TableSnackbar from "./TableSnackbar";
 
 // MUI components
 import {
@@ -31,7 +32,6 @@ import {
   TableSortLabel,
   Tooltip,
   IconButton,
-  Snackbar,
 } from "@mui/material";
 
 // MUI icons
@@ -403,22 +403,10 @@ const DataTable = (props) => {
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleRowsPerPageChange}
         />
-        <Snackbar
-          open={openSnackbar.open}
-          autoHideDuration={4000}
-          anchorOrigin={{
-            vertical: openSnackbar.vertical,
-            horizontal: openSnackbar.horizontal,
-          }}
+        <TableSnackbar
+          openSnackbar={openSnackbar}
           onClose={() => setOpenSnackbar({ ...openSnackbar, open: false })}
-        >
-          <Alert
-            onClose={() => setOpenSnackbar({ ...openSnackbar, open: false })}
-            severity={openSnackbar.success ? "success" : "error"}
-          >
-            {openSnackbar.message}
-          </Alert>
-        </Snackbar>
+        />
       </Paper>
       {onEdit && EditDrawer}
     </>
