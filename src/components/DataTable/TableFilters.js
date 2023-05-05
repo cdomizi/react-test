@@ -1,10 +1,10 @@
 import PropTypes from "prop-types";
 import { useCallback } from "react";
 
-// mui components
+// MUI components
 import { Box, IconButton, Stack, TextField, Tooltip } from "@mui/material";
 
-// mui icons
+// MUI icons
 import {
   FilterAlt as FilterAltIcon,
   FilterAltOff as FilterAltOffIcon,
@@ -22,19 +22,25 @@ const TableFilters = ({
     (event) => {
       event.preventDefault();
       const formData = new FormData(event.currentTarget);
-      // format data according to DataTable filter format
+      // Format data according to DataTable filter format
       const filtersArray = [];
       formData.forEach((value, key) =>
         filtersArray.push({ id: key, value: value })
       );
-      // only set non-empty filters
+      // Only set non-empty filters
       onFiltersSubmit(filtersArray.filter((filter) => filter.value.length));
     },
     [onFiltersSubmit]
   );
 
   return (
-    <Stack sx={{ py: "2rem", px: "1rem" }} spacing={1}>
+    <Stack
+      component="form"
+      onSubmit={handleSubmit}
+      onReset={onFiltersReset}
+      sx={{ py: "2rem", px: "1rem" }}
+      spacing={1}
+    >
       <Box
         sx={{ display: "flex", flexFlow: "row nowrap", alignItems: "center" }}
       >
@@ -52,9 +58,7 @@ const TableFilters = ({
       {!!filters?.length && (
         <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
           <Box
-            component="form"
-            onSubmit={handleSubmit}
-            onReset={onFiltersReset}
+            component="div"
             sx={{
               display: "flex",
               flexGrow: 1,

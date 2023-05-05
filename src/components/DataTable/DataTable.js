@@ -357,19 +357,24 @@ const DataTable = (props) => {
     [handleOnCreate]
   );
 
+  const handleFiltersReset = useCallback(() => {
+    setColumnFilters([]);
+    setGlobalFilter(null);
+  }, []);
+
   const Filters = useMemo(
     () => (
       <TableFilters
         filters={enabledFilters}
         onFiltersSubmit={(filters) => setColumnFilters(filters)}
-        onFiltersReset={() => setColumnFilters([])}
+        onFiltersReset={handleFiltersReset}
         globalSearch={globalSearch}
         onGlobalSearch={(value) => setGlobalFilter(value)}
       >
         {createItemButton}
       </TableFilters>
     ),
-    [enabledFilters, globalSearch, createItemButton]
+    [enabledFilters, globalSearch, createItemButton, handleFiltersReset]
   );
 
   // Display skeleton rows on loading
