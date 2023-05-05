@@ -20,8 +20,8 @@ const TableDrawer = ({ drawerOpen, itemData, onSubmit, onClose, edit }) => {
     onSubmit(formData);
   };
 
-  // Create add-item-form fields based on row data
-  const addFormFields = useMemo(
+  // Create new-item-form fields based on row data
+  const createFormFields = useMemo(
     () =>
       !edit
         ? itemData?.map((column, index) =>
@@ -179,7 +179,7 @@ const TableDrawer = ({ drawerOpen, itemData, onSubmit, onClose, edit }) => {
           {`${edit ? "Edit" : "New"} Item`}
         </Typography>
         <form onSubmit={handleSubmit}>
-          {(addFormFields || editFormFields) ?? (
+          {(createFormFields || editFormFields) ?? (
             <Alert severity="info">
               <AlertTitle>No Data</AlertTitle>
               The item you selected contains no data.
@@ -188,7 +188,7 @@ const TableDrawer = ({ drawerOpen, itemData, onSubmit, onClose, edit }) => {
           <Button
             variant="contained"
             type="submit"
-            disabled={!addFormFields?.length && !editFormFields?.length}
+            disabled={!createFormFields?.length && !editFormFields?.length}
             sx={{ mt: 4 }}
           >
             {`${edit ? "Save Edits" : "Add Item"}`}

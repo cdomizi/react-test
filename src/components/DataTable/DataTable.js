@@ -40,6 +40,8 @@ import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 
 // Snackbar reducer actions
 const SNACKBAR_ACTIONS = {
+  CREATE: "create",
+  CREATE_ERROR: "create error",
   EDIT: "edit",
   EDIT_ERROR: "edit error",
   DELETE: "delete",
@@ -59,6 +61,25 @@ const initialSnackbarStatus = {
 // Snackbar reducer function
 const snackbarReducer = (state, action) => {
   switch (action.type) {
+    case SNACKBAR_ACTIONS.CREATE: {
+      return {
+        ...initialSnackbarStatus,
+        open: true,
+        success: true,
+        message: `${action.payload || "Item"} created successfully!`,
+      };
+    }
+    case SNACKBAR_ACTIONS.CREATE_ERROR: {
+      console.error(
+        `Error while creating the item: ${action.payload.status} - ${action.payload.statusText}`
+      );
+      return {
+        ...initialSnackbarStatus,
+        open: true,
+        success: false,
+        message: "Sorry! Unable to create the item.",
+      };
+    }
     case SNACKBAR_ACTIONS.EDIT: {
       return {
         ...initialSnackbarStatus,
@@ -119,6 +140,7 @@ const DataTable = (props) => {
     defaultOrder = false,
     clickable = false,
     onRowClick = null,
+    onCreate = null,
     onEdit = null,
     onDelete = null,
   } = props;
@@ -143,8 +165,8 @@ const DataTable = (props) => {
     edit: true,
   });
 
-  // AddDrawer status
-  const [addDrawerStatus, setAddDrawerStatus] = useState({
+  // CreateDrawer status
+  const [createDrawerStatus, setCreateDrawerStatus] = useState({
     ...initialDrawerStatus,
   });
 
@@ -200,17 +222,17 @@ const DataTable = (props) => {
     [table]
   );
 
-  // Handle add button click
-  const handleOnAdd = useCallback(
+  // Handle create button click
+  const handleOnCreate = useCallback(
     async (event) => {
       event.stopPropagation();
-      setAddDrawerStatus({
-        ...addDrawerStatus,
+      setCreateDrawerStatus({
+        ...createDrawerStatus,
         open: true,
         payload: table.getAllFlatColumns(),
       });
     },
-    [addDrawerStatus, table]
+    [createDrawerStatus, table]
   );
 
   // Handle edit button click
@@ -231,7 +253,7 @@ const DataTable = (props) => {
     async (event, rowData) => {
       event.stopPropagation();
       const response = await onDelete(rowData?.id);
-      if (response.length) {
+      if (response?.length) {
         // Display confirmation message if the request was successful
         dispatch({ type: SNACKBAR_ACTIONS.DELETE, payload: response });
       } else {
@@ -242,22 +264,72 @@ const DataTable = (props) => {
     [onDelete]
   );
 
-  // Handle submit AddDrawer form
-  const handleOnAddSubmit = useCallback(() => {
-    console.log("handleOnAddSubmit");
-  }, []);
+  // Handle submit CreateDrawer form
+  const handleOnCreateSubmit = useCallback(
+    async (formData) => {
+      const itemTitle = await onCreate(formData);
+      setCreateDrawerStatus(initialDrawerStatus);
+      if (itemTitle?.length) {
+        // Display confirmation message if the request was successful
+        dispatch({ type: SNACKBAR_ACTIONS.CREATE, payload: itemTitle });
+      } else {
+        // Display error message if the request failed
+        console.error(
+          `Error while creating the item: ${itemTitle?.status ?? ""} ${
+            itemTitle?.statusText ?? ""
+          }`
+        );
+        dispatch({ type: SNACKBAR_ACTIONS.CREATE_ERROR, payload: itemTitle });
+      }
+    },
+    [onCreate, initialDrawerStatus]
+  );
 
-  const AddDrawer = useMemo(
+  // Handle submit EditDrawer form
+  const handleOnEditSubmit = useCallback(
+    async (formData) => {
+      const itemTitle = await onEdit(formData);
+      setEditDrawerStatus(initialDrawerStatus);
+      if (itemTitle?.length) {
+        // Display confirmation message if the request was successful
+        dispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: itemTitle });
+      } else {
+        // Display error message if the request failed
+        console.error(
+          `Error while editing the item: ${itemTitle?.status ?? ""} ${
+            itemTitle?.statusText ?? ""
+          }`
+        );
+        dispatch({ type: SNACKBAR_ACTIONS.EDIT_ERROR, payload: itemTitle });
+      }
+    },
+    [onEdit, initialDrawerStatus]
+  );
+
+  const CreateDrawer = useMemo(
     () => (
       <TableDrawer
-        drawerOpen={addDrawerStatus.open}
-        itemData={addDrawerStatus.payload}
-        onSubmit={(formData) => handleOnAddSubmit(formData)}
-        onClose={() => setAddDrawerStatus(initialDrawerStatus)}
-        edit={addDrawerStatus.edit}
+        drawerOpen={createDrawerStatus.open}
+        itemData={createDrawerStatus.payload}
+        onSubmit={(formData) => handleOnCreateSubmit(formData)}
+        onClose={() => setCreateDrawerStatus(initialDrawerStatus)}
+        edit={createDrawerStatus.edit}
       />
     ),
-    [addDrawerStatus, initialDrawerStatus, handleOnAddSubmit]
+    [createDrawerStatus, initialDrawerStatus, handleOnCreateSubmit]
+  );
+
+  const EditDrawer = useMemo(
+    () => (
+      <TableDrawer
+        drawerOpen={editDrawerStatus.open}
+        itemData={editDrawerStatus.payload}
+        onSubmit={(formData) => handleOnEditSubmit(formData)}
+        onClose={() => setEditDrawerStatus(initialDrawerStatus)}
+        edit={editDrawerStatus.edit}
+      />
+    ),
+    [editDrawerStatus, initialDrawerStatus, handleOnEditSubmit]
   );
 
   // Filters section
@@ -272,17 +344,17 @@ const DataTable = (props) => {
     return arr;
   }, [table]);
 
-  const addItemButton = useMemo(
+  const createItemButton = useMemo(
     () => (
       <Button
         variant="contained"
         sx={{ marginLeft: "auto", height: "fit-content" }}
-        onClick={handleOnAdd}
+        onClick={handleOnCreate}
       >
         New Item
       </Button>
     ),
-    [handleOnAdd]
+    [handleOnCreate]
   );
 
   const Filters = useMemo(
@@ -294,10 +366,10 @@ const DataTable = (props) => {
         globalSearch={globalSearch}
         onGlobalSearch={(value) => setGlobalFilter(value)}
       >
-        {addItemButton}
+        {createItemButton}
       </TableFilters>
     ),
-    [enabledFilters, globalSearch, addItemButton]
+    [enabledFilters, globalSearch, createItemButton]
   );
 
   // Display skeleton rows on loading
@@ -316,40 +388,6 @@ const DataTable = (props) => {
       </>
     ),
     [table]
-  );
-
-  // Handle submit EditDrawer form
-  const handleOnEditSubmit = useCallback(
-    async (formData) => {
-      const itemTitle = await onEdit(formData);
-      setEditDrawerStatus(initialDrawerStatus);
-      if (itemTitle.length) {
-        // Display confirmation message if the request was successful
-        dispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: itemTitle });
-      } else {
-        // Display error message if the request failed
-        console.error(
-          `Error while editing the item: ${itemTitle?.status ?? ""} ${
-            itemTitle?.statusText ?? ""
-          }`
-        );
-        dispatch({ type: SNACKBAR_ACTIONS.EDIT_ERROR, payload: itemTitle });
-      }
-    },
-    [onEdit, initialDrawerStatus]
-  );
-
-  const EditDrawer = useMemo(
-    () => (
-      <TableDrawer
-        drawerOpen={editDrawerStatus.open}
-        itemData={editDrawerStatus.payload}
-        onSubmit={(formData) => handleOnEditSubmit(formData)}
-        onClose={() => setEditDrawerStatus(initialDrawerStatus)}
-        edit={editDrawerStatus.edit}
-      />
-    ),
-    [editDrawerStatus, initialDrawerStatus, handleOnEditSubmit]
   );
 
   return (
@@ -507,7 +545,7 @@ const DataTable = (props) => {
           onClose={() => dispatch({ type: SNACKBAR_ACTIONS.CLOSE })}
         />
       </Paper>
-      {AddDrawer}
+      {CreateDrawer}
       {onEdit && EditDrawer}
     </>
   );
@@ -525,6 +563,7 @@ DataTable.propTypes = {
   defaultOrder: PropTypes.bool,
   clickable: PropTypes.bool,
   onRowClick: PropTypes.func,
+  onCreate: PropTypes.func,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
 };

@@ -116,19 +116,18 @@ const ProductsTable = memo(() => {
     navigate(`${rowData.id}`);
   };
 
-  // Delete product
-  const handleDeleteProduct = useCallback(async (productId) => {
-    const response = await fetch(
-      `https://dummyjson.com/products/${productId}`,
-      {
-        method: "DELETE",
-      }
-    );
+  // Create new product
+  const handleCreateProduct = useCallback(async (formData) => {
+    const response = await fetch(`https://dummyjson.com/products/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(Object.fromEntries(formData)),
+    });
 
     if (response.ok) {
       const data = await response.json();
+      // Return product name to display on new product confirmation message
       const productTitle = data?.title;
-      // Return product name to display on delete confirmation message
       return productTitle;
     } else {
       const error = await response;
@@ -150,8 +149,28 @@ const ProductsTable = memo(() => {
 
     if (response.ok) {
       const data = await response.json();
-      // Return product name to display on delete confirmation message
+      // Return product name to display on edit confirmation message
       const productTitle = data?.title;
+      return productTitle;
+    } else {
+      const error = await response;
+      return error;
+    }
+  }, []);
+
+  // Delete product
+  const handleDeleteProduct = useCallback(async (productId) => {
+    const response = await fetch(
+      `https://dummyjson.com/products/${productId}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      const productTitle = data?.title;
+      // Return product name to display on delete confirmation message
       return productTitle;
     } else {
       const error = await response;
@@ -171,6 +190,7 @@ const ProductsTable = memo(() => {
         globalSearch={true}
         clickable={true}
         onRowClick={handleRowClick}
+        onCreate={handleCreateProduct}
         onEdit={handleEditProduct}
         onDelete={handleDeleteProduct}
       />
