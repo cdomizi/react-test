@@ -2,14 +2,7 @@ import PropTypes from "prop-types";
 import { useCallback } from "react";
 
 // mui components
-import {
-  Box,
-  Button,
-  IconButton,
-  Stack,
-  TextField,
-  Tooltip,
-} from "@mui/material";
+import { Box, IconButton, Stack, TextField, Tooltip } from "@mui/material";
 
 // mui icons
 import {
@@ -23,6 +16,7 @@ const TableFilters = ({
   onFiltersSubmit,
   onFiltersReset,
   onGlobalSearch,
+  children,
 }) => {
   const handleSubmit = useCallback(
     (event) => {
@@ -53,12 +47,7 @@ const TableFilters = ({
             sx={{ justifySelf: "flex-start" }}
           />
         )}
-        <Button
-          variant="contained"
-          sx={{ marginLeft: "auto", height: "fit-content" }}
-        >
-          New Item
-        </Button>
+        {children}
       </Box>
       {!!filters?.length && (
         <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
@@ -109,6 +98,7 @@ TableFilters.propTypes = {
   onFiltersSubmit: PropTypes.func,
   onFiltersReset: PropTypes.func,
   onGlobalSearch: PropTypes.func,
+  children: PropTypes.element,
 };
 
 export default TableFilters;

@@ -32,6 +32,7 @@ import {
   TableSortLabel,
   Tooltip,
   IconButton,
+  Button,
 } from "@mui/material";
 
 // MUI icons
@@ -132,12 +133,18 @@ const DataTable = (props) => {
   const [columnFilters, setColumnFilters] = useState([]);
 
   const initialDrawerStatus = useMemo(
-    () => ({ open: false, payload: null }),
+    () => ({ open: false, payload: null, edit: false }),
     []
   );
 
   // EditDrawer status
   const [editDrawerStatus, setEditDrawerStatus] = useState({
+    ...initialDrawerStatus,
+    edit: true,
+  });
+
+  // AddDrawer status
+  const [addDrawerStatus, setAddDrawerStatus] = useState({
     ...initialDrawerStatus,
   });
 
@@ -189,6 +196,19 @@ const DataTable = (props) => {
     [table]
   );
 
+  // Handle add button click
+  const handleOnAdd = useCallback(
+    async (event) => {
+      event.stopPropagation();
+      setAddDrawerStatus({
+        ...addDrawerStatus,
+        open: true,
+        payload: table.getFlatHeaders(),
+      });
+    },
+    [addDrawerStatus, table]
+  );
+
   // Handle edit button click
   const handleOnEdit = useCallback(
     async (event, rowData) => {
@@ -218,16 +238,47 @@ const DataTable = (props) => {
     [onDelete]
   );
 
+  // Handle submit AddDrawer form
+  const handleOnAddSubmit = useCallback(() => {
+    console.log("handleOnAddSubmit");
+  }, []);
+
+  const AddDrawer = useMemo(
+    () => (
+      <TableDrawer
+        drawerOpen={addDrawerStatus.open}
+        itemData={addDrawerStatus.payload}
+        onSubmit={(formData) => handleOnAddSubmit(formData)}
+        onClose={() => setAddDrawerStatus(initialDrawerStatus)}
+        edit={addDrawerStatus.edit}
+      />
+    ),
+    [addDrawerStatus, initialDrawerStatus, handleOnAddSubmit]
+  );
+
   // Filters section
-  const filteredColumns = table
-    .getFlatHeaders()
-    .filter((header) => header.column.getCanFilter());
-  const enabledFilters = useMemo(() => [], []);
-  filteredColumns.forEach((header) =>
-    enabledFilters.push({
+  const enabledFilters = useMemo(() => {
+    const filteredColumns = table
+      .getFlatHeaders()
+      .filter((header) => header.column.getCanFilter());
+    const arr = [...filteredColumns].map((header) => ({
       id: header.id,
       label: header.column.columnDef.header(),
-    })
+    }));
+    return arr;
+  }, [table]);
+
+  const addItemButton = useMemo(
+    () => (
+      <Button
+        variant="contained"
+        sx={{ marginLeft: "auto", height: "fit-content" }}
+        onClick={handleOnAdd}
+      >
+        New Item
+      </Button>
+    ),
+    [handleOnAdd]
   );
   const Filters = useMemo(
     () => (
@@ -237,9 +288,11 @@ const DataTable = (props) => {
         onFiltersReset={() => setColumnFilters([])}
         globalSearch={globalSearch}
         onGlobalSearch={(value) => setGlobalFilter(value)}
-      />
+      >
+        {addItemButton}
+      </TableFilters>
     ),
-    [enabledFilters, globalSearch]
+    [enabledFilters, globalSearch, addItemButton]
   );
 
   // Display skeleton rows on loading
@@ -261,7 +314,7 @@ const DataTable = (props) => {
   );
 
   // Handle submit EditDrawer form
-  const handleOnSubmit = useCallback(
+  const handleOnEditSubmit = useCallback(
     async (formData) => {
       const itemTitle = await onEdit(formData);
       setEditDrawerStatus(initialDrawerStatus);
@@ -286,11 +339,12 @@ const DataTable = (props) => {
       <TableDrawer
         drawerOpen={editDrawerStatus.open}
         itemData={editDrawerStatus.payload}
-        onSubmit={(formData) => handleOnSubmit(formData)}
+        onSubmit={(formData) => handleOnEditSubmit(formData)}
         onClose={() => setEditDrawerStatus(initialDrawerStatus)}
+        edit={editDrawerStatus.edit}
       />
     ),
-    [editDrawerStatus, initialDrawerStatus, handleOnSubmit]
+    [editDrawerStatus, initialDrawerStatus, handleOnEditSubmit]
   );
 
   return (
@@ -448,6 +502,7 @@ const DataTable = (props) => {
           onClose={() => dispatch({ type: SNACKBAR_ACTIONS.CLOSE })}
         />
       </Paper>
+      {AddDrawer}
       {onEdit && EditDrawer}
     </>
   );
