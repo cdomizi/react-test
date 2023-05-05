@@ -154,12 +154,16 @@ const DataTable = (props) => {
     initialSnackbarStatus
   );
 
-  const hiddenColumns = columns.reduce(
-    (obj, column) => ({
-      ...obj,
-      [column.accessorKey]: column.isVisible ?? true,
-    }),
-    {}
+  const hiddenColumns = useMemo(
+    () =>
+      columns.reduce(
+        (obj, column) => ({
+          ...obj,
+          [column.accessorKey]: column.isVisible ?? true,
+        }),
+        {}
+      ),
+    [columns]
   );
 
   const table = useReactTable({
@@ -203,7 +207,7 @@ const DataTable = (props) => {
       setAddDrawerStatus({
         ...addDrawerStatus,
         open: true,
-        payload: table.getFlatHeaders(),
+        payload: table.getAllFlatColumns(),
       });
     },
     [addDrawerStatus, table]
@@ -280,6 +284,7 @@ const DataTable = (props) => {
     ),
     [handleOnAdd]
   );
+
   const Filters = useMemo(
     () => (
       <TableFilters
