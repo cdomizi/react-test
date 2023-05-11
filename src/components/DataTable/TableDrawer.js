@@ -28,10 +28,10 @@ const TableDrawer = (props) => {
 
   // Reset the form on submit
   useEffect(() => {
-    if (isSubmitSuccessful) {
+    if (isSubmitSuccessful || !props.drawerOpen) {
       reset();
     }
-  }, [isSubmitSuccessful, reset]);
+  }, [props.drawerOpen, isSubmitSuccessful, reset]);
 
   // Create new-item-form fields based on row data
   const createFormFields = useMemo(
@@ -51,8 +51,8 @@ const TableDrawer = (props) => {
                     id={`tags-${column.columnDef.accessorKey}`}
                     options={[]}
                     defaultValue={[]}
-                    onChange={(_, value) => field.onChange(value)}
-                    onInputChange={(_, item) => {
+                    onChange={(event, value) => field.onChange(value)}
+                    onInputChange={(event, item) => {
                       if (item) field.onChange(item);
                     }}
                     renderInput={(params) => (
@@ -78,6 +78,7 @@ const TableDrawer = (props) => {
                 control={control}
                 name={column.columnDef.accessorKey}
                 defaultValue={""}
+                rules={{ required: column.columnDef?.fieldFormat?.required }}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -148,8 +149,8 @@ const TableDrawer = (props) => {
                         ? [item?.getValue()]
                         : item?.getValue()
                     }
-                    onChange={(_, value) => field.onChange(value)}
-                    onInputChange={(_, item) => {
+                    onChange={(event, value) => field.onChange(value)}
+                    onInputChange={(event, item) => {
                       if (item) field.onChange(item);
                     }}
                     renderInput={(params) => (

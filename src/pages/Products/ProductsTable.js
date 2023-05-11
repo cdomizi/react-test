@@ -45,6 +45,7 @@ const ProductsTable = memo(() => {
         header: () => "Title",
         cell: (info) => info.getValue(),
         enableColumnFilter: true,
+        fieldFormat: { required: true },
       }),
       columnHelper.accessor("brand", {
         header: () => "Brand",
@@ -136,7 +137,7 @@ const ProductsTable = memo(() => {
 
   // Edit product
   const handleEditProduct = useCallback(async (formData) => {
-    // This specific API requires `id` to be of type String.
+    // This specific API requires `id` to be of type String
     formData.id = String(formData.id);
 
     const response = await fetch(

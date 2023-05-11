@@ -159,16 +159,8 @@ const DataTable = (props) => {
     []
   );
 
-  // EditDrawer status
-  const [editDrawerStatus, setEditDrawerStatus] = useState({
-    ...initialDrawerStatus,
-    edit: true,
-  });
-
-  // CreateDrawer status
-  const [createDrawerStatus, setCreateDrawerStatus] = useState({
-    ...initialDrawerStatus,
-  });
+  // Table drawer status
+  const [drawerStatus, setDrawerStatus] = useState(initialDrawerStatus);
 
   // Snackbar reducer
   const [snackbarState, dispatch] = useReducer(
@@ -226,26 +218,28 @@ const DataTable = (props) => {
   const handleOnCreate = useCallback(
     async (event) => {
       event.stopPropagation();
-      setCreateDrawerStatus({
-        ...createDrawerStatus,
+      setDrawerStatus({
+        ...drawerStatus,
         open: true,
+        edit: false,
         payload: table.getAllFlatColumns(),
       });
     },
-    [createDrawerStatus, table]
+    [drawerStatus, table]
   );
 
   // Handle edit button click
   const handleOnEdit = useCallback(
     async (event, rowData) => {
       event.stopPropagation();
-      setEditDrawerStatus({
-        ...editDrawerStatus,
+      setDrawerStatus({
+        ...drawerStatus,
         open: true,
+        edit: true,
         payload: rowData.getAllCells(),
       });
     },
-    [editDrawerStatus]
+    [drawerStatus]
   );
 
   // Handle delete button click
@@ -268,7 +262,7 @@ const DataTable = (props) => {
   const handleOnCreateSubmit = useCallback(
     async (formData) => {
       const itemTitle = await onCreate(formData);
-      setCreateDrawerStatus(initialDrawerStatus);
+      setDrawerStatus(initialDrawerStatus);
       if (itemTitle?.length) {
         // Display confirmation message if the request was successful
         dispatch({ type: SNACKBAR_ACTIONS.CREATE, payload: itemTitle });
@@ -289,7 +283,7 @@ const DataTable = (props) => {
   const handleOnEditSubmit = useCallback(
     async (formData) => {
       const itemTitle = await onEdit(formData);
-      setEditDrawerStatus(initialDrawerStatus);
+      setDrawerStatus(initialDrawerStatus);
       if (itemTitle?.length) {
         // Display confirmation message if the request was successful
         dispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: itemTitle });
@@ -309,27 +303,27 @@ const DataTable = (props) => {
   const CreateDrawer = useMemo(
     () => (
       <TableDrawer
-        drawerOpen={createDrawerStatus.open}
-        itemData={createDrawerStatus.payload}
+        drawerOpen={drawerStatus.open}
+        itemData={drawerStatus.payload}
         onSubmit={(formData) => handleOnCreateSubmit(formData)}
-        onClose={() => setCreateDrawerStatus(initialDrawerStatus)}
-        edit={createDrawerStatus.edit}
+        onClose={() => setDrawerStatus(initialDrawerStatus)}
+        edit={drawerStatus.edit}
       />
     ),
-    [createDrawerStatus, initialDrawerStatus, handleOnCreateSubmit]
+    [drawerStatus, initialDrawerStatus, handleOnCreateSubmit]
   );
 
   const EditDrawer = useMemo(
     () => (
       <TableDrawer
-        drawerOpen={editDrawerStatus.open}
-        itemData={editDrawerStatus.payload}
+        drawerOpen={drawerStatus.open}
+        itemData={drawerStatus.payload}
         onSubmit={(formData) => handleOnEditSubmit(formData)}
-        onClose={() => setEditDrawerStatus(initialDrawerStatus)}
-        edit={editDrawerStatus.edit}
+        onClose={() => setDrawerStatus(initialDrawerStatus)}
+        edit={drawerStatus.edit}
       />
     ),
-    [editDrawerStatus, initialDrawerStatus, handleOnEditSubmit]
+    [drawerStatus, initialDrawerStatus, handleOnEditSubmit]
   );
 
   // Filters section
@@ -550,8 +544,7 @@ const DataTable = (props) => {
           onClose={() => dispatch({ type: SNACKBAR_ACTIONS.CLOSE })}
         />
       </Paper>
-      {CreateDrawer}
-      {onEdit && EditDrawer}
+      {drawerStatus.edit ? EditDrawer : CreateDrawer}
     </>
   );
 };
