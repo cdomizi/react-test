@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 
 import {
@@ -15,11 +15,23 @@ import {
 } from "@mui/material";
 
 const TableDrawer = (props) => {
-  const { control, handleSubmit } = useForm();
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isSubmitSuccessful },
+  } = useForm();
 
   const onSubmit = (formData) => {
     props.onSubmit(formData);
   };
+
+  // Reset the form on submit
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful, reset]);
 
   // Create new-item-form fields based on row data
   const createFormFields = useMemo(

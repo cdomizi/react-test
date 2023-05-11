@@ -150,7 +150,6 @@ const ProductsTable = memo(() => {
 
     if (response.ok) {
       const data = await response.json();
-      console.log(data);
       // Return product name to display on edit confirmation message
       const productTitle = data?.title;
       return productTitle;
