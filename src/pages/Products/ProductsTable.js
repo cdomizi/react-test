@@ -98,14 +98,13 @@ const ProductsTable = memo(() => {
         cell: (info) => info.getValue(),
         isVisible: false,
         enableColumnFilter: false,
-        fieldFormat: { format: "files" },
       }),
       columnHelper.accessor("images", {
         header: () => "Images",
         cell: (info) => info.getValue()[0],
         isVisible: false,
         enableColumnFilter: false,
-        fieldFormat: { format: "files" },
+        fieldFormat: { format: "multiple" },
       }),
     ],
     [columnHelper, setColor]
@@ -121,7 +120,7 @@ const ProductsTable = memo(() => {
     const response = await fetch(`https://dummyjson.com/products/add`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(Object.fromEntries(formData)),
+      body: JSON.stringify(formData),
     });
 
     if (response.ok) {
@@ -137,18 +136,21 @@ const ProductsTable = memo(() => {
 
   // Edit product
   const handleEditProduct = useCallback(async (formData) => {
-    const productId = formData?.get("id");
+    // This specific API requires `id` to be of type String.
+    formData.id = String(formData.id);
+
     const response = await fetch(
-      `https://dummyjson.com/products/${productId}`,
+      `https://dummyjson.com/products/${formData.id}`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(Object.fromEntries(formData)),
+        body: JSON.stringify(formData),
       }
     );
 
     if (response.ok) {
       const data = await response.json();
+      console.log(data);
       // Return product name to display on edit confirmation message
       const productTitle = data?.title;
       return productTitle;
