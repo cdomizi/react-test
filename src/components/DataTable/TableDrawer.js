@@ -79,7 +79,7 @@ const TableDrawer = (props) => {
                 control={control}
                 name={column.columnDef.accessorKey}
                 defaultValue={""}
-                rules={{ required: column.columnDef?.fieldFormat?.required }}
+                rules={{ required: !!column.columnDef?.fieldFormat?.required }}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -87,7 +87,7 @@ const TableDrawer = (props) => {
                     label={column.columnDef.header()}
                     inputRef={field.ref}
                     type={column.columnDef?.fieldFormat?.type ?? "text"}
-                    required={column.columnDef?.fieldFormat?.required ?? false}
+                    required={!!column.columnDef?.fieldFormat?.required}
                     InputProps={
                       column.columnDef?.fieldFormat?.format === "money"
                         ? {
@@ -185,7 +185,7 @@ const TableDrawer = (props) => {
                     inputRef={field.ref}
                     type={item.column.columnDef?.fieldFormat?.type ?? "text"}
                     required={
-                      item.column.columnDef?.fieldFormat?.required ?? false
+                      !!item.column.columnDef?.fieldFormat?.required
                     }
                     InputProps={
                       item.column.columnDef?.fieldFormat?.format === "money"
