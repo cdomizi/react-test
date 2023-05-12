@@ -12,6 +12,7 @@ import {
   InputAdornment,
   TextField,
   Typography,
+  capitalize,
 } from "@mui/material";
 
 const TableDrawer = (props) => {
@@ -234,13 +235,13 @@ const TableDrawer = (props) => {
     >
       <Box sx={{ display: "flex", flexDirection: "column", p: 3 }}>
         <Typography variant="h4" mb={6}>
-          {`${props.edit ? "Edit" : "New"} Item`}
+          {`${props.edit ? "Edit" : "New"} ${props.dataName ? capitalize(props?.dataName?.singular) : "Item"}`}
         </Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
           {(createFormFields || editFormFields) ?? (
             <Alert severity="info">
               <AlertTitle>No Data</AlertTitle>
-              The item you selected contains no data.
+              {`The ${props?.dataName?.singular ?? "item"} you selected contains no data.`}
             </Alert>
           )}
           <Button
@@ -249,7 +250,10 @@ const TableDrawer = (props) => {
             disabled={!createFormFields?.length && !editFormFields?.length}
             sx={{ mt: 4 }}
           >
-            {`${props.edit ? "Save Edits" : "Add Item"}`}
+            {`${props.edit
+              ? "Save Edits"
+              : "Add " + (props?.dataName?.singular ?? "item")}`
+            }
           </Button>
         </form>
       </Box>
@@ -263,6 +267,7 @@ TableDrawer.propTypes = {
   onSubmit: PropTypes.func,
   onClose: PropTypes.func,
   edit: PropTypes.bool,
+  dataName: PropTypes.object,
 };
 
 export default TableDrawer;

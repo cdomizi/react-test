@@ -131,6 +131,7 @@ const DataTable = (props) => {
   const {
     minWidth,
     data,
+    dataName = null,
     columns,
     loading,
     error,
@@ -308,9 +309,10 @@ const DataTable = (props) => {
         onSubmit={(formData) => handleOnCreateSubmit(formData)}
         onClose={() => setDrawerStatus(initialDrawerStatus)}
         edit={drawerStatus.edit}
+        dataName={dataName}
       />
     ),
-    [drawerStatus, initialDrawerStatus, handleOnCreateSubmit]
+    [drawerStatus, initialDrawerStatus, handleOnCreateSubmit, dataName]
   );
 
   const EditDrawer = useMemo(
@@ -321,9 +323,10 @@ const DataTable = (props) => {
         onSubmit={(formData) => handleOnEditSubmit(formData)}
         onClose={() => setDrawerStatus(initialDrawerStatus)}
         edit={drawerStatus.edit}
+        dataName={dataName}
       />
     ),
-    [drawerStatus, initialDrawerStatus, handleOnEditSubmit]
+    [drawerStatus, initialDrawerStatus, handleOnEditSubmit, dataName]
   );
 
   // Filters section
@@ -345,10 +348,10 @@ const DataTable = (props) => {
         sx={{ marginLeft: "auto", height: "fit-content" }}
         onClick={handleOnCreate}
       >
-        New Item
+        {`New ${dataName?.singular ?? "item"}`}
       </Button>
     ),
-    [handleOnCreate]
+    [handleOnCreate, dataName]
   );
 
   const handleFiltersReset = useCallback(() => {
@@ -521,8 +524,8 @@ const DataTable = (props) => {
                     <TableCell colSpan={table.getFlatHeaders().length}>
                       <Alert severity="info">
                         <AlertTitle>No Results Found</AlertTitle>
-                        Sorry, no items match your search. Please try again with
-                        a different query.
+                        {`Sorry, no ${dataName?.plural ?? "items"} match your search. Please try again with
+                        a different query.`}
                       </Alert>
                     </TableCell>
                   </TableRow>
@@ -552,6 +555,7 @@ const DataTable = (props) => {
 DataTable.propTypes = {
   minWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   data: PropTypes.array,
+  dataName: PropTypes.object,
   columns: PropTypes.array,
   loading: PropTypes.bool,
   error: PropTypes.string,

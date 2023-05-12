@@ -12,6 +12,10 @@ import { Card, Typography } from "@mui/material";
 
 const ProductsTable = memo(() => {
   const navigate = useNavigate();
+
+  // Specify the name for table data.
+  const dataName = useMemo(() => ({singular: "product", plural: "products"}), []);
+
   const [products, setProducts] = useState(null);
 
   // Fetch data from external api
@@ -185,6 +189,7 @@ const ProductsTable = memo(() => {
       <DataTable
         minWidth="700px"
         data={products}
+        dataName={dataName}
         columns={columns}
         loading={loading}
         error={error}
