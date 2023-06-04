@@ -14,16 +14,21 @@ const ProductsTable = memo(() => {
   const navigate = useNavigate();
 
   // Specify the name for table data.
-  const dataName = useMemo(() => ({singular: "product", plural: "products"}), []);
+  const dataName = useMemo(
+    () => ({ singular: "product", plural: "products" }),
+    []
+  );
 
   const [products, setProducts] = useState(null);
 
   // Fetch data from external api
-  const { loading, error, data } = useFetch("https://dummyjson.com/products");
+  const { loading, error, data } = useFetch(
+    "http://localhost:4000/api/v1/products"
+  );
 
   // Set products upon fetching data
   useEffect(() => {
-    setProducts(data?.products);
+    setProducts(data);
   }, [data]);
 
   // Set color based on stock quantity
@@ -122,7 +127,7 @@ const ProductsTable = memo(() => {
 
   // Create new product
   const handleCreateProduct = useCallback(async (formData) => {
-    const response = await fetch(`https://dummyjson.com/products/add`, {
+    const response = await fetch(`http://localhost:4000/api/v1/products`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -145,7 +150,7 @@ const ProductsTable = memo(() => {
     formData.id = String(formData.id);
 
     const response = await fetch(
-      `https://dummyjson.com/products/${formData.id}`,
+      `http://localhost:4000/api/v1/products/${formData.id}`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -167,7 +172,7 @@ const ProductsTable = memo(() => {
   // Delete product
   const handleDeleteProduct = useCallback(async (productId) => {
     const response = await fetch(
-      `https://dummyjson.com/products/${productId}`,
+      `http://localhost:4000/api/v1/products/${productId}`,
       {
         method: "DELETE",
       }

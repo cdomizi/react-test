@@ -10,7 +10,7 @@ const Shop = () => {
   const [loading, setLoading] = useState(false);
   const [number, setNumber] = useState(null);
   // product data from external API
-  const data = `https://dummyjson.com/products/${number}`;
+  const data = `http://localhost:4000/api/v1/products/${number}`;
   const [product, setProduct] = useState(null);
   // AbortController to abort fetch request
   const controllerRef = useRef(null);
@@ -18,7 +18,7 @@ const Shop = () => {
   // set random product id
   const handleFetchData = () => {
     setLoading(true);
-    setNumber(() => Math.ceil(Math.random() * 100));
+    setNumber(() => Math.ceil(Math.random() * 10));
   };
 
   // abort fetch product data request
