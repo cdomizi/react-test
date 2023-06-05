@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 
 import {
@@ -21,18 +21,36 @@ const TableDrawer = (props) => {
     handleSubmit,
     reset,
     formState: { isSubmitSuccessful },
-  } = useForm();
+  } = useForm({
+    defaultValues: props.itemData,
+  });
 
   const onSubmit = (formData) => {
     props.onSubmit(formData);
   };
 
-  // Reset the form on submit
+  // Reset the form on submit/close
   useEffect(() => {
     if (isSubmitSuccessful || !props.drawerOpen) {
       reset();
     }
-  }, [props.drawerOpen, isSubmitSuccessful, reset]);
+  }, [props.drawerOpen, props.itemData, isSubmitSuccessful, reset]);
+
+  // Fill with random data
+  const fetchRandomData = useCallback(async () => {
+    const randomItemId = Math.ceil(Math.random() * props.randomData.maxCount);
+    try {
+      const response = await fetch(
+        `${props.randomData.url}/${randomItemId}`,
+        {}
+      );
+      const randomItemData = await response.json();
+
+      if (response.ok) reset(randomItemData, { keepDefaultValues: true });
+    } catch (error) {
+      throw new Error(error?.message);
+    }
+  }, [props.randomData.maxCount, props.randomData.url, reset]);
 
   // Create new-item-form fields based on row data
   const createFormFields = useMemo(
@@ -184,9 +202,7 @@ const TableDrawer = (props) => {
                     label={item.column.columnDef.header()}
                     inputRef={field.ref}
                     type={item.column.columnDef?.fieldFormat?.type ?? "text"}
-                    required={
-                      !!item.column.columnDef?.fieldFormat?.required
-                    }
+                    required={!!item.column.columnDef?.fieldFormat?.required}
                     InputProps={
                       item.column.columnDef?.fieldFormat?.format === "money"
                         ? {
@@ -235,13 +251,25 @@ const TableDrawer = (props) => {
     >
       <Box sx={{ display: "flex", flexDirection: "column", p: 3 }}>
         <Typography variant="h4" mb={6}>
-          {`${props.edit ? "Edit" : "New"} ${props.dataName ? capitalize(props?.dataName?.singular) : "Item"}`}
+          {`${props.edit ? "Edit" : "New"} ${
+            props.dataName ? capitalize(props?.dataName?.singular) : "Item"
+          }`}
         </Typography>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={fetchRandomData}
+          sx={{ mb: 3, ml: "auto", height: "fit-content" }}
+        >
+          Fill With Random Data
+        </Button>
         <form onSubmit={handleSubmit(onSubmit)}>
           {(createFormFields || editFormFields) ?? (
             <Alert severity="info">
               <AlertTitle>No Data</AlertTitle>
-              {`The ${props?.dataName?.singular ?? "item"} you selected contains no data.`}
+              {`The ${
+                props?.dataName?.singular ?? "item"
+              } you selected contains no data.`}
             </Alert>
           )}
           <Button
@@ -250,10 +278,11 @@ const TableDrawer = (props) => {
             disabled={!createFormFields?.length && !editFormFields?.length}
             sx={{ mt: 4 }}
           >
-            {`${props.edit
-              ? "Save Edits"
-              : "Add " + (props?.dataName?.singular ?? "item")}`
-            }
+            {`${
+              props.edit
+                ? "Save Edits"
+                : "Add " + (props?.dataName?.singular ?? "item")
+            }`}
           </Button>
         </form>
       </Box>
@@ -268,6 +297,7 @@ TableDrawer.propTypes = {
   onClose: PropTypes.func,
   edit: PropTypes.bool,
   dataName: PropTypes.object,
+  randomData: PropTypes.object,
 };
 
 export default TableDrawer;

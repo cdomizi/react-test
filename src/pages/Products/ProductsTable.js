@@ -205,6 +205,7 @@ const ProductsTable = memo(() => {
         onCreate={handleCreateProduct}
         onEdit={handleEditProduct}
         onDelete={handleDeleteProduct}
+        randomData={{ url: "https://dummyjson.com/products/", maxCount: 10 }}
       />
     </Card>
   );

@@ -79,7 +79,7 @@ const TableFilters = ({
             ))}
           </Box>
           <Box sx={{ whiteSpace: "nowrap" }}>
-            <Tooltip title="Apply Filters" sx={{ marginLeft: "auto" }}>
+            <Tooltip title="Apply Filters" sx={{ ml: "auto" }}>
               <IconButton type="submit" color="primary" size="large">
                 <FilterAltIcon fontSize="inherit" />
               </IconButton>

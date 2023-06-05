@@ -56,96 +56,136 @@ const DataTable = (props) => {
     onCreate = null,
     onEdit = null,
     onDelete = null,
+    randomData = null,
   } = props;
 
   // Snackbar reducer actions
-const SNACKBAR_ACTIONS = useMemo(() => ({
-  CREATE: "create",
-  CREATE_ERROR: "create error",
-  EDIT: "edit",
-  EDIT_ERROR: "edit error",
-  DELETE: "delete",
-  DELETE_ERROR: "delete error",
-  CLOSE: "close",
-}), []);
+  const SNACKBAR_ACTIONS = useMemo(
+    () => ({
+      CREATE: "create",
+      CREATE_ERROR: "create error",
+      EDIT: "edit",
+      EDIT_ERROR: "edit error",
+      DELETE: "delete",
+      DELETE_ERROR: "delete error",
+      CLOSE: "close",
+    }),
+    []
+  );
 
-// Initial snackbar status
-const initialSnackbarStatus = useMemo(() => ({
-  open: false,
-  vertical: "top",
-  horizontal: "center",
-  success: true,
-  message: null,
-}), []);
+  // Initial snackbar status
+  const initialSnackbarStatus = useMemo(
+    () => ({
+      open: false,
+      vertical: "top",
+      horizontal: "center",
+      success: true,
+      message: null,
+    }),
+    []
+  );
 
-// Snackbar reducer function
-const snackbarReducer = useCallback((state, action) => {
-  switch (action.type) {
-    case SNACKBAR_ACTIONS.CREATE: {
-      return {
-        ...initialSnackbarStatus,
-        open: true,
-        success: true,
-        message: `${action.payload.length ? action.payload : (dataName ? capitalize(dataName?.singular) : "Item")} created successfully!`,
-      };
-    }
-    case SNACKBAR_ACTIONS.CREATE_ERROR: {
-      console.error(
-        `Error while creating the ${dataName?.singular ?? "item"}: ${action.payload.status} - ${action.payload.statusText}`
-      );
-      return {
-        ...initialSnackbarStatus,
-        open: true,
-        success: false,
-        message: `Sorry! Unable to create the ${dataName?.singular ?? "item"}.`,
-      };
-    }
-    case SNACKBAR_ACTIONS.EDIT: {
-      return {
-        ...initialSnackbarStatus,
-        open: true,
-        success: true,
-        message: `${action.payload.length ? action.payload : (dataName ? capitalize(dataName?.singular) : "Item")} edited successfully!`,
-      };
-    }
-    case SNACKBAR_ACTIONS.EDIT_ERROR: {
-      console.error(
-        `Error while editing the ${dataName?.singular ?? "item"}: ${action.payload.status} - ${action.payload.statusText}`
-      );
-      return {
-        ...initialSnackbarStatus,
-        open: true,
-        success: false,
-        message: `Sorry! Unable to edit the ${dataName?.singular ?? "item"}.`,
-      };
-    }
-    case SNACKBAR_ACTIONS.DELETE: {
-      return {
-        ...initialSnackbarStatus,
-        open: true,
-        success: true,
-        message: `${action.payload.length ? action.payload : (dataName ? capitalize(dataName?.singular) : "Item")} deleted successfully!`,
-      };
-    }
-    case SNACKBAR_ACTIONS.DELETE_ERROR: {
-      console.error(
-        `Error while deleting the ${dataName?.singular ?? "item"}: ${action.payload.status} - ${action.payload.statusText}`
-      );
-      return {
-        ...initialSnackbarStatus,
-        open: true,
-        success: false,
-        message: `Sorry! Unable to delete the ${dataName?.singular ?? "item"}.`,
-      };
-    }
-    case SNACKBAR_ACTIONS.CLOSE: {
-      return initialSnackbarStatus;
-    }
-    default: {
-      return state;
-    }
-  }
-}, [SNACKBAR_ACTIONS, initialSnackbarStatus, dataName]);
+  // Snackbar reducer function
+  const snackbarReducer = useCallback(
+    (state, action) => {
+      switch (action.type) {
+        case SNACKBAR_ACTIONS.CREATE: {
+          return {
+            ...initialSnackbarStatus,
+            open: true,
+            success: true,
+            message: `${
+              action.payload.length
+                ? action.payload
+                : dataName
+                ? capitalize(dataName?.singular)
+                : "Item"
+            } created successfully!`,
+          };
+        }
+        case SNACKBAR_ACTIONS.CREATE_ERROR: {
+          console.error(
+            `Error while creating the ${dataName?.singular ?? "item"}: ${
+              action.payload.status
+            } - ${action.payload.statusText}`
+          );
+          return {
+            ...initialSnackbarStatus,
+            open: true,
+            success: false,
+            message: `Sorry! Unable to create the ${
+              dataName?.singular ?? "item"
+            }.`,
+          };
+        }
+        case SNACKBAR_ACTIONS.EDIT: {
+          return {
+            ...initialSnackbarStatus,
+            open: true,
+            success: true,
+            message: `${
+              action.payload.length
+                ? action.payload
+                : dataName
+                ? capitalize(dataName?.singular)
+                : "Item"
+            } edited successfully!`,
+          };
+        }
+        case SNACKBAR_ACTIONS.EDIT_ERROR: {
+          console.error(
+            `Error while editing the ${dataName?.singular ?? "item"}: ${
+              action.payload.status
+            } - ${action.payload.statusText}`
+          );
+          return {
+            ...initialSnackbarStatus,
+            open: true,
+            success: false,
+            message: `Sorry! Unable to edit the ${
+              dataName?.singular ?? "item"
+            }.`,
+          };
+        }
+        case SNACKBAR_ACTIONS.DELETE: {
+          return {
+            ...initialSnackbarStatus,
+            open: true,
+            success: true,
+            message: `${
+              action.payload.length
+                ? action.payload
+                : dataName
+                ? capitalize(dataName?.singular)
+                : "Item"
+            } deleted successfully!`,
+          };
+        }
+        case SNACKBAR_ACTIONS.DELETE_ERROR: {
+          console.error(
+            `Error while deleting the ${dataName?.singular ?? "item"}: ${
+              action.payload.status
+            } - ${action.payload.statusText}`
+          );
+          return {
+            ...initialSnackbarStatus,
+            open: true,
+            success: false,
+            message: `Sorry! Unable to delete the ${
+              dataName?.singular ?? "item"
+            }.`,
+          };
+        }
+        case SNACKBAR_ACTIONS.CLOSE: {
+          return initialSnackbarStatus;
+        }
+        default: {
+          return state;
+        }
+      }
+    },
+    [SNACKBAR_ACTIONS, initialSnackbarStatus, dataName]
+  );
 
   const defaultSorting = [{ id: orderBy, desc: defaultOrder }];
   const [sorting, setSorting] = useState(defaultSorting ?? []);
@@ -271,9 +311,9 @@ const snackbarReducer = useCallback((state, action) => {
       } else {
         // Display error message if the request failed
         console.error(
-          `Error while creating the ${dataName?.singular ?? "item"}: ${response?.status ?? ""} ${
-            response?.statusText ?? ""
-          }`
+          `Error while creating the ${dataName?.singular ?? "item"}: ${
+            response?.status ?? ""
+          } ${response?.statusText ?? ""}`
         );
         dispatch({ type: SNACKBAR_ACTIONS.CREATE_ERROR, payload: response });
       }
@@ -311,9 +351,16 @@ const snackbarReducer = useCallback((state, action) => {
         onClose={() => setDrawerStatus(initialDrawerStatus)}
         edit={drawerStatus.edit}
         dataName={dataName}
+        randomData={randomData}
       />
     ),
-    [drawerStatus, initialDrawerStatus, handleOnCreateSubmit, dataName]
+    [
+      drawerStatus,
+      initialDrawerStatus,
+      handleOnCreateSubmit,
+      dataName,
+      randomData,
+    ]
   );
 
   const EditDrawer = useMemo(
@@ -325,9 +372,16 @@ const snackbarReducer = useCallback((state, action) => {
         onClose={() => setDrawerStatus(initialDrawerStatus)}
         edit={drawerStatus.edit}
         dataName={dataName}
+        randomData={randomData}
       />
     ),
-    [drawerStatus, initialDrawerStatus, handleOnEditSubmit, dataName]
+    [
+      drawerStatus,
+      initialDrawerStatus,
+      handleOnEditSubmit,
+      dataName,
+      randomData,
+    ]
   );
 
   // Filters section
@@ -346,7 +400,7 @@ const snackbarReducer = useCallback((state, action) => {
     () => (
       <Button
         variant="contained"
-        sx={{ marginLeft: "auto", height: "fit-content" }}
+        sx={{ ml: "auto", height: "fit-content" }}
         onClick={handleOnCreate}
       >
         {`New ${dataName?.singular ?? "item"}`}
@@ -525,7 +579,9 @@ const snackbarReducer = useCallback((state, action) => {
                     <TableCell colSpan={table.getFlatHeaders().length}>
                       <Alert severity="info">
                         <AlertTitle>No Results Found</AlertTitle>
-                        {`Sorry, no ${dataName?.plural ?? "items"} match your search. Please try again with
+                        {`Sorry, no ${
+                          dataName?.plural ?? "items"
+                        } match your search. Please try again with
                         a different query.`}
                       </Alert>
                     </TableCell>
@@ -569,6 +625,7 @@ DataTable.propTypes = {
   onCreate: PropTypes.func,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
+  randomData: PropTypes.object,
 };
 
 export default DataTable;
