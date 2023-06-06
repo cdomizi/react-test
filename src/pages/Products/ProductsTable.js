@@ -71,20 +71,21 @@ const ProductsTable = memo(() => {
         cell: (info) => `${parseFloat(info.getValue()).toFixed(2)}`,
         enableColumnFilter: false,
         align: "right",
+        fieldFormat: { positiveFloat: 2 },
       }),
       columnHelper.accessor("price", {
         header: () => "Price",
         cell: (info) => formatMoney(info.getValue(), "dollars"),
         enableColumnFilter: false,
         align: "right",
-        fieldFormat: { format: "money" },
+        fieldFormat: { format: "money", positiveFloat: 2 },
       }),
       columnHelper.accessor("discountPercentage", {
         header: () => "Discount",
         cell: (info) => `${info.getValue()}%`,
         enableColumnFilter: false,
         align: "right",
-        fieldFormat: { format: "percentage" },
+        fieldFormat: { format: "percentage", positiveFloat: 2 },
       }),
       columnHelper.accessor("stock", {
         header: () => "Stock",
@@ -95,7 +96,7 @@ const ProductsTable = memo(() => {
         ),
         enableColumnFilter: false,
         align: "right",
-        fieldFormat: { type: "number" },
+        fieldFormat: { type: "positiveInteger" },
       }),
       columnHelper.accessor("description", {
         header: () => "Description",
@@ -148,6 +149,7 @@ const ProductsTable = memo(() => {
   const handleEditProduct = useCallback(async (formData) => {
     // This specific API requires `id` to be of type String
     formData.id = String(formData.id);
+    console.log(formData);
 
     const response = await fetch(
       `http://localhost:4000/api/v1/products/${formData.id}`,

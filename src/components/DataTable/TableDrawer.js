@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useCallback, useEffect, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
+import validationRules from "../../utils/formValidation";
 
 import {
   Alert,
@@ -16,25 +17,25 @@ import {
 } from "@mui/material";
 
 const TableDrawer = (props) => {
+  const defaultValues = useMemo(() => props.itemData, [props.itemData]);
   const {
     control,
     handleSubmit,
     reset,
-    formState: { isSubmitSuccessful },
+    formState: { errors },
   } = useForm({
-    defaultValues: props.itemData,
+    defaultValues,
   });
 
   const onSubmit = (formData) => {
     props.onSubmit(formData);
+    reset(props.itemData);
   };
 
   // Reset the form on submit/close
   useEffect(() => {
-    if (isSubmitSuccessful || !props.drawerOpen) {
-      reset();
-    }
-  }, [props.drawerOpen, props.itemData, isSubmitSuccessful, reset]);
+    if (!props.drawerOpen) reset(props.itemData);
+  }, [props.drawerOpen, props.itemData, reset]);
 
   // Fill with random data
   const fetchRandomData = useCallback(async () => {
@@ -62,6 +63,7 @@ const TableDrawer = (props) => {
                 key={index}
                 control={control}
                 name={column.columnDef.accessorKey}
+                rules={validationRules(column.columnDef.accessorKey)}
                 render={({ field }) => (
                   <Autocomplete
                     freeSolo
@@ -79,6 +81,12 @@ const TableDrawer = (props) => {
                         {...params}
                         id={column.columnDef.accessorKey}
                         label={column.columnDef.header()}
+                        required={!!column.columnDef?.fieldFormat?.required}
+                        error={errors[column.columnDef.accessorKey]}
+                        helperText={
+                          errors[column.columnDef.accessorKey] &&
+                          errors[column.columnDef.accessorKey]?.message
+                        }
                         InputLabelProps={{ shrink: true }}
                         margin="normal"
                         fullWidth
@@ -97,7 +105,7 @@ const TableDrawer = (props) => {
                 control={control}
                 name={column.columnDef.accessorKey}
                 defaultValue={""}
-                rules={{ required: !!column.columnDef?.fieldFormat?.required }}
+                rules={validationRules(column.columnDef.accessorKey)}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -106,6 +114,11 @@ const TableDrawer = (props) => {
                     inputRef={field.ref}
                     type={column.columnDef?.fieldFormat?.type ?? "text"}
                     required={!!column.columnDef?.fieldFormat?.required}
+                    error={errors[column.columnDef.accessorKey]}
+                    helperText={
+                      errors[column.columnDef.accessorKey] &&
+                      errors[column.columnDef.accessorKey]?.message
+                    }
                     InputProps={
                       column.columnDef?.fieldFormat?.format === "money"
                         ? {
@@ -125,13 +138,13 @@ const TableDrawer = (props) => {
                           }
                         : null
                     }
-                    margin="normal"
                     InputLabelProps={{ shrink: true }}
                     sx={{
                       display: column.columnDef?.fieldFormat?.hidden
                         ? "none"
                         : "inherit",
                     }}
+                    margin="normal"
                     fullWidth
                   />
                 )}
@@ -139,7 +152,7 @@ const TableDrawer = (props) => {
             )
           )
         : null,
-    [props.itemData, props.edit, control]
+    [props.edit, props.itemData, control, errors]
   );
 
   // Create edit-item-form fields based on row data
@@ -152,6 +165,7 @@ const TableDrawer = (props) => {
                 key={index}
                 control={control}
                 name={item.column.columnDef.accessorKey}
+                rules={validationRules(item.column.columnDef.accessorKey)}
                 render={({ field }) => (
                   <Autocomplete
                     freeSolo
@@ -177,6 +191,14 @@ const TableDrawer = (props) => {
                         {...params}
                         id={item.column.columnDef.accessorKey}
                         label={item.column.columnDef.header()}
+                        required={
+                          !!item.column.columnDef?.fieldFormat?.required
+                        }
+                        error={errors[item.column.columnDef.accessorKey]}
+                        helperText={
+                          errors[item.column.columnDef.accessorKey] &&
+                          errors[item.column.columnDef.accessorKey]?.message
+                        }
                         InputLabelProps={{ shrink: true }}
                         margin="normal"
                         fullWidth
@@ -195,6 +217,7 @@ const TableDrawer = (props) => {
                 control={control}
                 name={item.column.columnDef.accessorKey}
                 defaultValue={item?.getValue()}
+                rules={validationRules(item.column.columnDef.accessorKey)}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -203,6 +226,11 @@ const TableDrawer = (props) => {
                     inputRef={field.ref}
                     type={item.column.columnDef?.fieldFormat?.type ?? "text"}
                     required={!!item.column.columnDef?.fieldFormat?.required}
+                    error={errors[item.column.columnDef.accessorKey]}
+                    helperText={
+                      errors[item.column.columnDef.accessorKey] &&
+                      errors[item.column.columnDef.accessorKey]?.message
+                    }
                     InputProps={
                       item.column.columnDef?.fieldFormat?.format === "money"
                         ? {
@@ -237,7 +265,7 @@ const TableDrawer = (props) => {
             )
           )
         : null,
-    [props.itemData, props.edit, control]
+    [props.itemData, props.edit, control, errors]
   );
 
   return (
