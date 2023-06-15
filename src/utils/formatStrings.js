@@ -1,5 +1,9 @@
+const formatDecimals = (num, decimals = 2) => {
+  return (Math.round(parseFloat(num) * 100) / 100).toFixed(decimals);
+};
+
 const formatMoney = (value, currency) => {
-  const decimalValue = parseFloat(value).toFixed(2);
+  const decimalValue = formatDecimals(value);
   switch (currency) {
     case "dollars": {
       return `$\u00A0${decimalValue}`;
@@ -14,4 +18,4 @@ const formatMoney = (value, currency) => {
   }
 };
 
-export { formatMoney };
+export { formatMoney, formatDecimals };

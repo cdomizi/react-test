@@ -71,21 +71,21 @@ const ProductsTable = memo(() => {
         cell: (info) => `${parseFloat(info.getValue()).toFixed(2)}`,
         enableColumnFilter: false,
         align: "right",
-        fieldFormat: { positiveFloat: 2 },
+        fieldFormat: { range: [1, 5] },
       }),
       columnHelper.accessor("price", {
         header: () => "Price",
         cell: (info) => formatMoney(info.getValue(), "dollars"),
         enableColumnFilter: false,
         align: "right",
-        fieldFormat: { format: "money", positiveFloat: 2 },
+        fieldFormat: { format: "money", min: 0 },
       }),
       columnHelper.accessor("discountPercentage", {
         header: () => "Discount",
         cell: (info) => `${info.getValue()}%`,
         enableColumnFilter: false,
         align: "right",
-        fieldFormat: { format: "percentage", positiveFloat: 2 },
+        fieldFormat: { format: "percentage", min: 0 },
       }),
       columnHelper.accessor("stock", {
         header: () => "Stock",
@@ -96,7 +96,7 @@ const ProductsTable = memo(() => {
         ),
         enableColumnFilter: false,
         align: "right",
-        fieldFormat: { type: "positiveInteger" },
+        fieldFormat: { min: 0 },
       }),
       columnHelper.accessor("description", {
         header: () => "Description",

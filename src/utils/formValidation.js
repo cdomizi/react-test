@@ -2,83 +2,98 @@ const formValidation = (props) => {
   const validateFields = (field) => {
     let rules = {};
     // Required
-    if (field?.required) rules.required = "This field cannot be empty";
+    if (field?.fieldFormat?.required)
+      rules.required = "This field cannot be empty";
     // Type string
-    if (field?.type === "string")
+    if (field?.fieldFormat?.type === "string")
       rules = {
-        string: (v) => typeof v === "string",
-        message: "Input must be a string",
+        ...rules,
+        validate: {
+          string: (v) => typeof v === "string" || "Please enter a string",
+        },
       };
     // String minimum length
-    if (field?.type?.minLength)
+    if (field?.fieldFormat?.minLength)
       rules = {
+        ...rules,
         minLength: {
-          value: field.minLength,
-          message: `Input must be at least ${field.minLength} characters long`,
+          value: field?.fieldFormat?.minLength,
+          message: `Input must be at least ${field?.fieldFormat?.minLength} characters long`,
         },
       };
     // String maximum length
-    if (field?.type?.maxLength)
+    if (field?.fieldFormat?.maxLength)
       rules = {
+        ...rules,
         maxLength: {
-          value: field.maxLength,
-          message: `Input must be at least ${field.maxLength} characters long`,
+          value: field?.fieldFormat?.maxLength,
+          message: `Input must be at least ${field?.fieldFormat?.maxLength} characters long`,
         },
       };
     // Type number
-    if (field?.type === "number")
+    if (field?.fieldFormat?.type === "number")
       rules = {
-        number: (v) => !!Number(v),
-        valueAsNumber: true,
-        message: "Input must be a number",
+        ...rules,
+        validate: {
+          number: (v) =>
+            (!field?.fieldFormat?.required && v === "") ||
+            !!Number(v) ||
+            "Please enter a number",
+        },
       };
     // Minimum number
-    if (field?.min)
+    if (field?.fieldFormat?.min != null || undefined)
       rules = {
-        min: field.type?.min,
-        valueAsNumber: true,
-        message: `Value must be greater than ${field.min}`,
+        ...rules,
+        validate: {
+          min: (v) =>
+            (!field?.fieldFormat?.required && v === "") ||
+            Number(v) > field?.fieldFormat?.min ||
+            `Value must be greater than ${field?.fieldFormat?.min}`,
+        },
       };
     // Maximum number
-    if (field?.type?.max)
+    if (field?.fieldFormat?.max != null || undefined)
       rules = {
-        max: field.max,
-        valueAsNumber: true,
-        message: `Value must be less than ${field.max}`,
+        ...rules,
+        validate: {
+          max: (v) =>
+            (!field?.fieldFormat?.required && v === "") ||
+            Number(v) > field?.fieldFormat?.max ||
+            `Value must be less than ${field?.fieldFormat?.max}`,
+        },
+      };
+    // Type number within a given range
+    if (field?.fieldFormat?.range)
+      rules = {
+        validate: {
+          range: (v) =>
+            (!field?.fieldFormat?.required && v === "") ||
+            (Number(v) >= field?.fieldFormat?.range[0] &&
+              Number(v) <= field?.fieldFormat?.range[1]) ||
+            `Please enter a value between ${field?.fieldFormat?.range[0]} and ${field?.fieldFormat?.floatRange[1]}`,
+        },
       };
     // Type integer
-    if (field?.type === "integer")
+    if (field?.fieldFormat?.type === "integer")
       rules = {
-        integer: (v) => Number.isInteger(v),
-        setValueAs: (v) => parseInt(v),
-        message: "Input must be an integer",
-      };
-    // Type positive integer
-    if (field?.type === "positiveInteger")
-      rules = {
-        positiveInteger: (v) => Number.isInteger(Number(v)) && parseInt(v) > 0,
-        setValueAs: (v) => parseInt(v),
-        message: "Input must be a positive integer",
+        ...rules,
+        validate: {
+          integer: (v) =>
+            (!field?.fieldFormat?.required && v === "") ||
+            Number.isInteger(v) ||
+            "Please enter a number",
+        },
       };
     // Type float
-    if (field?.positiveFloat)
+    if (field?.fieldFormat?.type === "float")
       rules = {
-        float: (v) => !!Number(v),
-        setValueAs: (v) =>
-          field.positiveFloat === "NONE"
-            ? parseFloat(v)
-            : parseFloat(v).toFixed(field.positiveFloat),
-        message: "Input must be a float",
-      };
-    // Type positive float
-    if (field?.positiveFloat)
-      rules = {
-        float: (v) => !!Number(v) && parseFloat(v) > 0,
-        setValueAs: (v) =>
-          field.positiveFloat === "NONE"
-            ? parseFloat(v)
-            : parseFloat(v).toFixed(field.positiveFloat),
-        message: "Input must be a float",
+        validate: {
+          float: (v) =>
+            (!field?.fieldFormat?.required && v === "") ||
+            parseFloat(v) ||
+            "Please enter a decimal number",
+        },
       };
 
     return rules;
