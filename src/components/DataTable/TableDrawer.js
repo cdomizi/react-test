@@ -9,6 +9,7 @@ import {
   Autocomplete,
   Box,
   Button,
+  CircularProgress,
   Drawer,
   InputAdornment,
   TextField,
@@ -24,6 +25,8 @@ const TableDrawer = (props) => {
 
   // State to force reload on Drawer component
   const [reload, setReload] = useState();
+
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = useCallback(
     (formData) => {
@@ -42,6 +45,8 @@ const TableDrawer = (props) => {
   const setRandomData = useCallback(async () => {
     const randomItemId = Math.ceil(Math.random() * props.randomData.maxCount);
     try {
+      // Disable "Fill with random data" button
+      setLoading(true);
       const response = await fetch(
         `${props.randomData.url}/${randomItemId}`,
         {}
@@ -56,6 +61,8 @@ const TableDrawer = (props) => {
       }
     } catch (error) {
       throw new Error(error?.message);
+    } finally {
+      setLoading(false);
     }
   }, [props.randomData, reset]);
 
@@ -91,7 +98,7 @@ const TableDrawer = (props) => {
                       formState.errors[column.columnDef.accessorKey]?.message
                     }
                     InputLabelProps={{ shrink: true }}
-                    disabled={formState.isSubmitted}
+                    disabled={formState.isSubmitted || loading}
                     margin="normal"
                     fullWidth
                   />
@@ -138,7 +145,7 @@ const TableDrawer = (props) => {
                     : null
                 }
                 InputLabelProps={{ shrink: true }}
-                disabled={formState.isSubmitted}
+                disabled={formState.isSubmitted || loading}
                 sx={{
                   display: column.columnDef?.fieldFormat?.hidden
                     ? "none"
@@ -196,7 +203,7 @@ const TableDrawer = (props) => {
                         ?.message
                     }
                     InputLabelProps={{ shrink: true }}
-                    disabled={formState.isSubmitted}
+                    disabled={formState.isSubmitted || loading}
                     margin="normal"
                     fullWidth
                   />
@@ -245,7 +252,7 @@ const TableDrawer = (props) => {
                 }
                 margin="normal"
                 InputLabelProps={{ shrink: true }}
-                disabled={formState.isSubmitted}
+                disabled={formState.isSubmitted || loading}
                 sx={{
                   display: item.column.columnDef?.fieldFormat?.hidden
                     ? "none"
@@ -279,6 +286,12 @@ const TableDrawer = (props) => {
           variant="outlined"
           size="small"
           onClick={setRandomData}
+          disabled={loading}
+          endIcon={
+            (formState.isSubmitting || loading) && (
+              <CircularProgress color="inherit" size={20} />
+            )
+          }
           sx={{ mb: 3, ml: "auto", height: "fit-content" }}
         >
           Fill With Random Data
@@ -297,7 +310,13 @@ const TableDrawer = (props) => {
             type="submit"
             disabled={
               (!createFormFields?.length && !editFormFields?.length) ||
-              formState.isSubmitted
+              formState.isSubmitted ||
+              loading
+            }
+            endIcon={
+              (formState.isSubmitting || loading) && (
+                <CircularProgress color="inherit" size={20} />
+              )
             }
             sx={{ mt: 4 }}
           >
