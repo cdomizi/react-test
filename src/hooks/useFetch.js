@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useEffect, useReducer, useRef } from "react";
 
 const initialState = { loading: false, error: undefined, data: undefined };
@@ -33,7 +34,7 @@ const fetchReducer = (state, action) => {
   }
 };
 
-const useFetch = (url, options) => {
+const useFetch = (url, options = null, reload = null) => {
   const cache = useRef({});
   const [state, dispatch] = useReducer(fetchReducer, initialState);
 
@@ -48,7 +49,7 @@ const useFetch = (url, options) => {
       dispatch({ type: ACTIONS.LOADING });
 
       // If a cache exists for this url, return it
-      if (cache.current[url]) {
+      if (cache.current[url] && reload === {}) {
         dispatch({ type: "fetched", payload: cache.current[url] });
         return;
       }
@@ -85,8 +86,14 @@ const useFetch = (url, options) => {
     return function cleanup() {
       abortController.abort();
     };
-  }, [url, options]);
+  }, [url, options, reload]);
   return state;
+};
+
+useFetch.propTypes = {
+  url: PropTypes.string,
+  options: PropTypes.object,
+  reload: PropTypes.object,
 };
 
 export default useFetch;

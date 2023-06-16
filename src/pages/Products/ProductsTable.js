@@ -21,9 +21,14 @@ const ProductsTable = memo(() => {
 
   const [products, setProducts] = useState(null);
 
+  // State to force data update
+  const [reload, setReload] = useState();
+
   // Fetch data from external api
   const { loading, error, data } = useFetch(
-    "http://localhost:4000/api/v1/products"
+    "http://localhost:4000/api/v1/products",
+    null,
+    reload
   );
 
   // Set products upon fetching data
@@ -136,6 +141,8 @@ const ProductsTable = memo(() => {
 
     if (response.ok) {
       const data = await response.json();
+      // Force reload to update table data
+      setReload({});
       // Return product name to display on new product confirmation message
       const productTitle = data?.title;
       return productTitle;
@@ -149,7 +156,6 @@ const ProductsTable = memo(() => {
   const handleEditProduct = useCallback(async (formData) => {
     // This specific API requires `id` to be of type String
     formData.id = String(formData.id);
-    console.log(formData);
 
     const response = await fetch(
       `http://localhost:4000/api/v1/products/${formData.id}`,
@@ -162,6 +168,8 @@ const ProductsTable = memo(() => {
 
     if (response.ok) {
       const data = await response.json();
+      // Force reload to update table data
+      setReload({});
       // Return product name to display on edit confirmation message
       const productTitle = data?.title;
       return productTitle;
@@ -183,6 +191,8 @@ const ProductsTable = memo(() => {
     if (response.ok) {
       const data = await response.json();
       const productTitle = data?.title;
+      // Force reload to update table data
+      setReload({});
       // Return product name to display on delete confirmation message
       return productTitle;
     } else {
