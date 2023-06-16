@@ -91,6 +91,7 @@ const TableDrawer = (props) => {
                       formState.errors[column.columnDef.accessorKey]?.message
                     }
                     InputLabelProps={{ shrink: true }}
+                    disabled={formState.isSubmitted}
                     margin="normal"
                     fullWidth
                   />
@@ -137,6 +138,7 @@ const TableDrawer = (props) => {
                     : null
                 }
                 InputLabelProps={{ shrink: true }}
+                disabled={formState.isSubmitted}
                 sx={{
                   display: column.columnDef?.fieldFormat?.hidden
                     ? "none"
@@ -194,6 +196,7 @@ const TableDrawer = (props) => {
                         ?.message
                     }
                     InputLabelProps={{ shrink: true }}
+                    disabled={formState.isSubmitted}
                     margin="normal"
                     fullWidth
                   />
@@ -242,6 +245,7 @@ const TableDrawer = (props) => {
                 }
                 margin="normal"
                 InputLabelProps={{ shrink: true }}
+                disabled={formState.isSubmitted}
                 sx={{
                   display: item.column.columnDef?.fieldFormat?.hidden
                     ? "none"
@@ -291,7 +295,10 @@ const TableDrawer = (props) => {
           <Button
             variant="contained"
             type="submit"
-            disabled={!createFormFields?.length && !editFormFields?.length}
+            disabled={
+              (!createFormFields?.length && !editFormFields?.length) ||
+              formState.isSubmitted
+            }
             sx={{ mt: 4 }}
           >
             {`${
