@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 // Project import
 import useFetch from "../../hooks/useFetch";
+import uniqueFieldError from "../../utils/uniqueFieldError";
 import DataTable from "../../components/DataTable/DataTable";
 
 // MUI components
@@ -48,11 +49,13 @@ const CustomersTable = memo(() => {
         header: () => "First Name",
         cell: (info) => info.getValue(),
         enableColumnFilter: true,
+        fieldFormat: { required: true },
       }),
       columnHelper.accessor("lastName", {
         header: () => "Last Name",
         cell: (info) => info.getValue(),
         enableColumnFilter: true,
+        fieldFormat: { required: true },
       }),
       columnHelper.accessor("email", {
         header: () => "Email",
@@ -64,6 +67,7 @@ const CustomersTable = memo(() => {
         header: () => "Address",
         cell: (info) => info.getValue(),
         enableColumnFilter: true,
+        fieldFormat: { required: true },
       }),
     ],
     [columnHelper]
@@ -90,8 +94,10 @@ const CustomersTable = memo(() => {
       const customerName = `${data?.firstName} ${data?.lastName}`;
       return customerName;
     } else {
-      const error = await response;
-      return error;
+      // Check if the user entered a duplicate value for a unique field
+      const uniqueField = uniqueFieldError(response, formData);
+      // If it's not a uniqueFieldError, return a generic error
+      return uniqueField ?? response;
     }
   }, []);
 
@@ -117,8 +123,10 @@ const CustomersTable = memo(() => {
       const customerName = `${data?.firstName} ${data?.lastName}`;
       return customerName;
     } else {
-      const error = await response;
-      return error;
+      // Check if the user entered a duplicate value for a unique field
+      const uniqueField = uniqueFieldError(response, formData);
+      // If it's not a uniqueFieldError, return a generic error
+      return uniqueField ?? response;
     }
   }, []);
 

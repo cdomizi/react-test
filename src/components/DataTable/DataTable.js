@@ -69,6 +69,7 @@ const DataTable = (props) => {
       EDIT_ERROR: "edit error",
       DELETE: "delete",
       DELETE_ERROR: "delete error",
+      UNIQUE_FIELD_ERROR: "unique field error",
       CLOSE: "close",
     }),
     []
@@ -175,6 +176,19 @@ const DataTable = (props) => {
             message: `Sorry! Unable to delete the ${
               dataName?.singular ?? "item"
             }.`,
+          };
+        }
+        case SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR: {
+          console.error(
+            `404 Bad Request - Duplicate ${action.payload.field}: "${action.payload.value}"`
+          );
+          return {
+            ...initialSnackbarStatus,
+            open: true,
+            success: false,
+            message: `${capitalize(dataName?.singular) ?? "Item"} with ${
+              action.payload.field
+            } "${action.payload.value}" already exists.`,
           };
         }
         case SNACKBAR_ACTIONS.CLOSE: {
@@ -310,16 +324,21 @@ const DataTable = (props) => {
         // Display confirmation message if the request was successful
         dispatch({ type: SNACKBAR_ACTIONS.CREATE, payload: response });
       } else {
-        // Display error message if the request failed
-        console.error(
-          `Error while creating the ${dataName?.singular ?? "item"}: ${
-            response?.status ?? ""
-          } ${response?.statusText ?? ""}`
-        );
-        dispatch({ type: SNACKBAR_ACTIONS.CREATE_ERROR, payload: response });
+        // Check if it's a unique field error
+        response?.field
+          ? // Display the specific error message
+            dispatch({
+              type: SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR,
+              payload: response,
+            })
+          : // Display a generic error message
+            dispatch({
+              type: SNACKBAR_ACTIONS.CREATE_ERROR,
+              payload: response,
+            });
       }
     },
-    [onCreate, initialDrawerStatus, SNACKBAR_ACTIONS, dataName]
+    [onCreate, initialDrawerStatus, SNACKBAR_ACTIONS]
   );
 
   // Handle submit EditDrawer form
@@ -331,13 +350,18 @@ const DataTable = (props) => {
         // Display confirmation message if the request was successful
         dispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: response });
       } else {
-        // Display error message if the request failed
-        console.error(
-          `Error while editing the item: ${response?.status ?? ""} ${
-            response?.statusText ?? ""
-          }`
-        );
-        dispatch({ type: SNACKBAR_ACTIONS.EDIT_ERROR, payload: response });
+        // Check if it's a unique field error
+        response?.field
+          ? // Display the specific error message
+            dispatch({
+              type: SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR,
+              payload: response,
+            })
+          : // Display a generic error message
+            dispatch({
+              type: SNACKBAR_ACTIONS.CREATE_ERROR,
+              payload: response,
+            });
       }
     },
     [onEdit, initialDrawerStatus, SNACKBAR_ACTIONS]

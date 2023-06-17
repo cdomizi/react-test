@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 // Project import
 import useFetch from "../../hooks/useFetch";
 import { formatMoney } from "../../utils/formatStrings";
+import uniqueFieldError from "../../utils/uniqueFieldError";
 import DataTable from "../../components/DataTable/DataTable";
 
 // MUI components
@@ -147,7 +148,10 @@ const ProductsTable = memo(() => {
       return productTitle;
     } else {
       const error = await response;
-      return error;
+      // Check if the user entered a duplicate value for a unique field
+      const uniqueField = uniqueFieldError(response, formData);
+      // If it's not a uniqueFieldError, return a generic error
+      return uniqueField ?? response;
     }
   }, []);
 
@@ -174,7 +178,10 @@ const ProductsTable = memo(() => {
       return productTitle;
     } else {
       const error = await response;
-      return error;
+      // Check if the user entered a duplicate value for a unique field
+      const uniqueField = uniqueFieldError(response, formData);
+      // If it's not a uniqueFieldError, return a generic error
+      return uniqueField ?? response;
     }
   }, []);
 
