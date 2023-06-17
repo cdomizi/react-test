@@ -1,24 +1,26 @@
 import {
-  Storefront as StorefrontIcon,
+  Description as DescriptionIcon,
   Inventory as InventoryIcon,
   Group as GroupIcon,
   FormatListBulleted as FormatListBulletedIcon,
+  Storefront as StorefrontIcon,
 } from "@mui/icons-material";
 
 const icons = {
-  StorefrontIcon,
+  DescriptionIcon,
   InventoryIcon,
   GroupIcon,
   FormatListBulletedIcon,
+  StorefrontIcon,
 };
 
 // project import
 const menuItems = [
   {
     id: 0,
-    title: "shop",
-    url: "/shop",
-    icon: icons.StorefrontIcon,
+    title: "invoices",
+    url: "/invoices",
+    icon: icons.DescriptionIcon,
   },
   {
     id: 1,
@@ -37,6 +39,12 @@ const menuItems = [
     title: "todos",
     url: "/todos",
     icon: icons.FormatListBulletedIcon,
+  },
+  {
+    id: 4,
+    title: "shop",
+    url: "/shop",
+    icon: icons.StorefrontIcon,
   },
 ];
 
