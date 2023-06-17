@@ -13,6 +13,7 @@ const Shop = loadable(() => import("../pages/Shop"));
 const Products = loadable(() => import("../pages/Products"));
 const Product = loadable(() => import("../pages/Products/Product/Product"));
 const Customers = loadable(() => import("../pages/Customers"));
+const Customer = loadable(() => import("../pages/Customers/Customer"));
 const Todos = loadable(() => import("../pages/Todos"));
 
 const MainRoutes = createBrowserRouter(
@@ -24,6 +25,7 @@ const MainRoutes = createBrowserRouter(
         <Route path="products" element={<Products />} />
         <Route path="products/:productId" element={<Product />} />
         <Route path="customers" element={<Customers />} />
+        <Route path="customers/:customerId" element={<Customer />} />
         <Route path="todos" element={<Todos />} />
       </Route>
     </Route>

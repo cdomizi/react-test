@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Box, Typography, Button } from "@mui/material";
 
 // project import
-import ProductDetails from "../Products/Product/ProductDetails";
+import ProductDetail from "../Products/Product/ProductDetail";
 
 const Shop = () => {
   const [loading, setLoading] = useState(false);
@@ -93,7 +93,7 @@ const Shop = () => {
       </Button>
       <Box>
         {(loading || product) && (
-          <ProductDetails loading={loading} data={product} />
+          <ProductDetail loading={loading} data={product} />
         )}
       </Box>
     </Box>

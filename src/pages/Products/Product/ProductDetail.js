@@ -3,7 +3,7 @@ import { Box, Chip, Typography, Rating, Stack, Skeleton } from "@mui/material";
 // project import
 import PicsList from "../../../components/PicsList";
 
-const ProductDetails = ({ loading, error, data }) => {
+const ProductDetail = ({ loading, error, data }) => {
   const discountPrice = (
     ((100 - data?.discountPercentage) * data?.price) /
     100
@@ -91,4 +91,4 @@ const ProductDetails = ({ loading, error, data }) => {
   );
 };
 
-export default ProductDetails;
+export default ProductDetail;
