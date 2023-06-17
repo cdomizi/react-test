@@ -6,10 +6,10 @@ import ProductDetails from "./ProductDetails";
 
 const Product = () => {
   const { productId } = useParams();
-  const productData = useFetch(
+  const { loading, error, data } = useFetch(
     `http://localhost:4000/api/v1/products/${productId}`
   );
-  return <ProductDetails {...productData} />;
+  return <ProductDetails loading={loading} error={error} data={data} />;
 };
 
 export default Product;

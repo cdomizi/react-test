@@ -39,9 +39,9 @@ const RandomProduct = (props) => {
       <Box mb={2}>
         <Chip label={props.category} variant="outlined" />
       </Box>
-      <Rating value={props.rating} precision={0.5} readOnly />
+      <Rating value={parseFloat(props.rating)} precision={0.5} readOnly />
       <Box display="inline" ml={1}>
-        {props.rating}
+        {parseFloat(props.rating)}
         <Typography
           sx={{
             display: "inline",

@@ -71,7 +71,7 @@ const formValidation = (props) => {
             (!field?.fieldFormat?.required && v === "") ||
             (Number(v) >= field?.fieldFormat?.range[0] &&
               Number(v) <= field?.fieldFormat?.range[1]) ||
-            `Please enter a value between ${field?.fieldFormat?.range[0]} and ${field?.fieldFormat?.floatRange[1]}`,
+            `Please enter a value between ${field?.fieldFormat?.range[0]} and ${field?.fieldFormat?.range[1]}`,
         },
       };
     // Type integer

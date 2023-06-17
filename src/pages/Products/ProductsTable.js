@@ -213,6 +213,7 @@ const ProductsTable = memo(() => {
         orderBy={"id"}
         globalSearch={true}
         clickable={true}
+        reload={reload}
         onRowClick={handleRowClick}
         onCreate={handleCreateProduct}
         onEdit={handleEditProduct}

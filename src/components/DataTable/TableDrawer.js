@@ -26,12 +26,13 @@ const TableDrawer = (props) => {
   // State to force reload on Drawer component
   const [reload, setReload] = useState();
 
+  // Loading state for setRandomData
   const [loading, setLoading] = useState(false);
 
   const onSubmit = useCallback(
     (formData) => {
       props.onSubmit(formData);
-      reset(props.itemData);
+      reset();
     },
     [props, reset]
   );
@@ -98,7 +99,9 @@ const TableDrawer = (props) => {
                       formState.errors[column.columnDef.accessorKey]?.message
                     }
                     InputLabelProps={{ shrink: true }}
-                    disabled={formState.isSubmitted || loading}
+                    disabled={
+                      formState.isLoading || formState.isSubmitting || loading
+                    }
                     margin="normal"
                     fullWidth
                   />
@@ -145,7 +148,9 @@ const TableDrawer = (props) => {
                     : null
                 }
                 InputLabelProps={{ shrink: true }}
-                disabled={formState.isSubmitted || loading}
+                disabled={
+                  formState.isLoading || formState.isSubmitting || loading
+                }
                 sx={{
                   display: column.columnDef?.fieldFormat?.hidden
                     ? "none"
@@ -203,7 +208,9 @@ const TableDrawer = (props) => {
                         ?.message
                     }
                     InputLabelProps={{ shrink: true }}
-                    disabled={formState.isSubmitted || loading}
+                    disabled={
+                      formState.isLoading || formState.isSubmitting || loading
+                    }
                     margin="normal"
                     fullWidth
                   />
@@ -252,7 +259,9 @@ const TableDrawer = (props) => {
                 }
                 margin="normal"
                 InputLabelProps={{ shrink: true }}
-                disabled={formState.isSubmitted || loading}
+                disabled={
+                  formState.isLoading || formState.isSubmitting || loading
+                }
                 sx={{
                   display: item.column.columnDef?.fieldFormat?.hidden
                     ? "none"
@@ -288,7 +297,7 @@ const TableDrawer = (props) => {
           onClick={setRandomData}
           disabled={loading}
           endIcon={
-            (formState.isSubmitting || loading) && (
+            (formState.isLoading || formState.isSubmitting || loading) && (
               <CircularProgress color="inherit" size={20} />
             )
           }
@@ -310,11 +319,12 @@ const TableDrawer = (props) => {
             type="submit"
             disabled={
               (!createFormFields?.length && !editFormFields?.length) ||
-              formState.isSubmitted ||
+              formState.isLoading ||
+              formState.isSubmitting ||
               loading
             }
             endIcon={
-              (formState.isSubmitting || loading) && (
+              (formState.isLoading || formState.isSubmitting || loading) && (
                 <CircularProgress color="inherit" size={20} />
               )
             }

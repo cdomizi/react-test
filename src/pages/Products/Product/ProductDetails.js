@@ -3,7 +3,7 @@ import { Box, Chip, Typography, Rating, Stack, Skeleton } from "@mui/material";
 // project import
 import PicsList from "../../../components/PicsList";
 
-const ProductDetails = ({ loading, data }) => {
+const ProductDetails = ({ loading, error, data }) => {
   const discountPrice = (
     ((100 - data?.discountPercentage) * data?.price) /
     100
@@ -39,9 +39,9 @@ const ProductDetails = ({ loading, data }) => {
       <Box mb={2}>
         <Chip label={data?.category} variant="outlined" />
       </Box>
-      <Rating value={data?.rating} precision={0.5} readOnly />
+      <Rating value={Number(data?.rating)} precision={0.5} readOnly />
       <Box display="inline" ml={1}>
-        {data?.rating}
+        {Number(data?.rating)}
         <Typography
           sx={{
             display: "inline",
