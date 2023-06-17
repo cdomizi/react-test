@@ -594,7 +594,11 @@ const DataTable = (props) => {
         <TablePagination
           component="div"
           count={table.getPrePaginationRowModel().rows?.length ?? 0}
-          page={table.getState().pagination.pageIndex}
+          page={
+            !this?.count || this?.count <= 0
+              ? 0
+              : table.getState().pagination.pageIndex
+          }
           rowsPerPage={table.getState().pagination.pageSize}
           rowsPerPageOptions={rowsPerPageOptions}
           onPageChange={handlePageChange}

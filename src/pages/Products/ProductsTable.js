@@ -189,10 +189,10 @@ const ProductsTable = memo(() => {
 
     if (response.ok) {
       const data = await response.json();
-      const productTitle = data?.title;
       // Force reload to update table data
       setReload({});
       // Return product name to display on delete confirmation message
+      const productTitle = data?.title;
       return productTitle;
     } else {
       const error = await response;
