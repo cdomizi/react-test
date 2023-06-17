@@ -27,7 +27,6 @@ const ProductsTable = memo(() => {
   // Fetch data from external api
   const { loading, error, data } = useFetch(
     "http://localhost:4000/api/v1/products",
-    null,
     reload
   );
 

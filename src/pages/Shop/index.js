@@ -4,26 +4,28 @@ import { useState, useEffect, useRef } from "react";
 import { Box, Typography, Button } from "@mui/material";
 
 // project import
-import RandomProduct from "./RandomProduct";
+import ProductDetails from "../Products/Product/ProductDetails";
 
 const Shop = () => {
   const [loading, setLoading] = useState(false);
-  const [number, setNumber] = useState(null);
+  const [randomId, setRandomId] = useState(null);
+
   // product data from external API
-  const data = `http://localhost:4000/api/v1/products/${number}`;
+  const url = `https://dummyjson.com/products/${randomId}`;
   const [product, setProduct] = useState(null);
+
   // AbortController to abort fetch request
   const controllerRef = useRef(null);
 
   // set random product id
   const handleFetchData = () => {
     setLoading(true);
-    setNumber(() => Math.ceil(Math.random() * 10));
+    setRandomId(() => Math.ceil(Math.random() * 10));
   };
 
   // abort fetch product data request
   const handleStopFetching = () => {
-    controllerRef && controllerRef.current?.abort();
+    // controllerRef && controllerRef.current?.abort();
     setLoading(false);
   };
 
@@ -31,16 +33,19 @@ const Shop = () => {
   useEffect(() => {
     const abortController = new AbortController();
     controllerRef.current = abortController;
+
     const getProduct = async () => {
       try {
-        const res = await fetch(data, { signal: controllerRef.current.signal });
+        const res = await fetch(url, { signal: controllerRef.current.signal });
         const json = await res.json();
+
         // do not set the product if the user stops the request
         if (controllerRef.current.signal?.aborted) {
           return;
         } else {
           setProduct(json);
         }
+
         setLoading(false);
       } catch (error) {
         controllerRef.current.signal.aborted
@@ -50,12 +55,12 @@ const Shop = () => {
       }
     };
 
-    number && getProduct();
+    randomId && getProduct();
 
     return function cleanup() {
       abortController.abort();
     };
-  }, [data, number, controllerRef]);
+  }, [url, randomId, controllerRef]);
 
   return (
     <Box sx={{ py: 3, textAlign: "center" }}>
@@ -88,7 +93,7 @@ const Shop = () => {
       </Button>
       <Box>
         {(loading || product) && (
-          <RandomProduct loading={loading} {...product} />
+          <ProductDetails loading={loading} data={product} />
         )}
       </Box>
     </Box>
