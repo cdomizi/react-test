@@ -1,5 +1,5 @@
 import {
-  Description as DescriptionIcon,
+  ShoppingBag as ShoppingBagIcon,
   Inventory as InventoryIcon,
   Group as GroupIcon,
   FormatListBulleted as FormatListBulletedIcon,
@@ -7,7 +7,7 @@ import {
 } from "@mui/icons-material";
 
 const icons = {
-  DescriptionIcon,
+  ShoppingBagIcon,
   InventoryIcon,
   GroupIcon,
   FormatListBulletedIcon,
@@ -18,9 +18,9 @@ const icons = {
 const menuItems = [
   {
     id: 0,
-    title: "invoices",
-    url: "/invoices",
-    icon: icons.DescriptionIcon,
+    title: "orders",
+    url: "/orders",
+    icon: icons.ShoppingBagIcon,
   },
   {
     id: 1,
