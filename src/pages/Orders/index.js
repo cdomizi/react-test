@@ -1,4 +1,7 @@
-// mui components
+// Project import
+import OrdersTable from "./OrdersTable";
+
+// MUI components
 import { Box, Typography } from "@mui/material";
 
 const Orders = () => {
@@ -7,6 +10,7 @@ const Orders = () => {
       <Typography variant="h2" gutterBottom>
         Orders
       </Typography>
+      <OrdersTable />
     </Box>
   );
 };

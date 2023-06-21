@@ -1,7 +1,7 @@
-// project import
+// Project import
 import CustomersTable from "./CustomersTable";
 
-// mui components
+// MUI components
 import { Box, Typography } from "@mui/material";
 
 const Customers = () => {

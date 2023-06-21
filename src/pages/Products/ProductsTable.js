@@ -95,7 +95,7 @@ const ProductsTable = memo(() => {
       columnHelper.accessor("stock", {
         header: () => "Stock",
         cell: (info) => (
-          <Typography color={() => setColor(info.getValue())} component="span">
+          <Typography color={setColor(info.getValue())} component="span">
             {info.getValue()}
           </Typography>
         ),
@@ -147,7 +147,6 @@ const ProductsTable = memo(() => {
       const productTitle = data?.title;
       return productTitle;
     } else {
-      const error = await response;
       // Check if the user entered a duplicate value for a unique field
       const uniqueField = uniqueFieldError(response, formData);
       // If it's not a uniqueFieldError, return a generic error
@@ -177,7 +176,6 @@ const ProductsTable = memo(() => {
       const productTitle = data?.title;
       return productTitle;
     } else {
-      const error = await response;
       // Check if the user entered a duplicate value for a unique field
       const uniqueField = uniqueFieldError(response, formData);
       // If it's not a uniqueFieldError, return a generic error

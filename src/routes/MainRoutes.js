@@ -10,6 +10,7 @@ const RootLayout = loadable(() => import("../layouts/RootLayout"));
 const ErrorPage = loadable(() => import("../pages/Error"));
 const Home = loadable(() => import("../pages/Home/Home"));
 const Orders = loadable(() => import("../pages/Orders"));
+const Order = loadable(() => import("../pages/Orders/Order"));
 const Products = loadable(() => import("../pages/Products"));
 const Product = loadable(() => import("../pages/Products/Product/Product"));
 const Customers = loadable(() => import("../pages/Customers"));
@@ -23,6 +24,7 @@ const MainRoutes = createBrowserRouter(
       <Route errorElement={<ErrorPage />}>
         <Route index element={<Home />} />
         <Route path="orders" element={<Orders />} />
+        <Route path="orders/:orderId" element={<Order />} />
         <Route path="products" element={<Products />} />
         <Route path="products/:productId" element={<Product />} />
         <Route path="customers" element={<Customers />} />

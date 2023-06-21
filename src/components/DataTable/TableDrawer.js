@@ -18,6 +18,16 @@ import {
 } from "@mui/material";
 
 const TableDrawer = (props) => {
+  // Filter Drawer fields based on property `fieldFormat.exclude`
+  const filterFields = useCallback(
+    (fields) => {
+      return props.edit
+        ? fields?.filter((item) => !item.column.columnDef?.fieldFormat?.exclude)
+        : fields?.filter((column) => !column.columnDef?.fieldFormat?.exclude);
+    },
+    [props.edit]
+  );
+
   const defaultValues = useMemo(() => props.itemData, [props.itemData]);
   const { control, handleSubmit, reset, formState } = useForm({
     defaultValues,
@@ -69,7 +79,7 @@ const TableDrawer = (props) => {
 
   // Create new-item-form fields based on row data
   const createFormFields = !props.edit
-    ? props.itemData?.map((column, index) =>
+    ? filterFields(props.itemData)?.map((column, index) =>
         column.columnDef?.fieldFormat?.format === "multiple" ? (
           <Controller
             key={index}
@@ -167,7 +177,7 @@ const TableDrawer = (props) => {
 
   // Create edit-item-form fields based on row data
   const editFormFields = props.edit
-    ? props.itemData?.map((item, index) =>
+    ? filterFields(props.itemData)?.map((item, index) =>
         item.column.columnDef?.fieldFormat?.format === "multiple" ? (
           <Controller
             key={index}
