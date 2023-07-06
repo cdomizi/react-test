@@ -14,20 +14,66 @@ import { Button, Card, Typography } from "@mui/material";
 const OrdersTable = memo(() => {
   const navigate = useNavigate();
 
+  // Specify the name for table data.
+  const dataName = useMemo(() => ({ singular: "order", plural: "orders" }), []);
+
+  const [orders, setOrders] = useState(null);
+
+  // State to force data update
+  const [reload, setReload] = useState();
+
+  // Fetch orders data
+  const { loading, error, data } = useFetch(
+    "http://localhost:4000/api/v1/orders",
+    reload
+  );
+
+  // Set orders upon fetching data
+  useEffect(() => {
+    setOrders(data);
+  }, [data]);
+
+  // Fetch products data
+  const { data: productData } = useFetch(
+    "http://localhost:4000/api/v1/products",
+    reload
+  );
+
+  // Get product by ID
+  const getProduct = useCallback(
+    (item) => ({
+      item: productData?.find((product) => product?.id === item?.productId),
+      quantity: item?.quantity,
+    }),
+    [productData]
+  );
+
   // Get total price of all products in a single order
-  const getOrderTotal = useCallback((products) => {
-    const amount = products.reduce((total, product) => {
-      const price = product.price * (1 - product.discountPercentage / 100);
-      return total + price;
-    }, 0);
-    return amount;
-  }, []);
+  const getOrderTotal = useCallback(
+    (products) => {
+      const orderProducts = products?.map((product) => getProduct(product));
+      const amount = orderProducts?.reduce((total, product) => {
+        const price =
+          product?.item.price *
+          (1 - product?.item.discountPercentage / 100) *
+          product?.quantity;
+        return total + price;
+      }, 0);
+      return amount;
+    },
+    [getProduct]
+  );
 
   // Get the list of all prodicts in a single order
-  const getProductsList = useCallback((products) => {
-    const titles = products.map((product) => product.title);
-    return titles.join(", ");
-  }, []);
+  const getProductsList = useCallback(
+    (products) => {
+      const titles = products.map(
+        (product) => `${product?.quantity}× ${getProduct(product)?.item.title}`
+      );
+      return titles.join(", ");
+    },
+    [getProduct]
+  );
 
   // Get invoice status for a specific order
   const getInvoiceStatus = useCallback((invoice) => {
@@ -52,25 +98,6 @@ const OrdersTable = memo(() => {
     },
     [getInvoiceStatus]
   );
-
-  // Specify the name for table data.
-  const dataName = useMemo(() => ({ singular: "order", plural: "orders" }), []);
-
-  const [orders, setOrders] = useState(null);
-
-  // State to force data update
-  const [reload, setReload] = useState();
-
-  // Fetch data from external api
-  const { loading, error, data } = useFetch(
-    "http://localhost:4000/api/v1/orders",
-    reload
-  );
-
-  // Set orders upon fetching data
-  useEffect(() => {
-    setOrders(data);
-  }, [data]);
 
   // Create table columns
   const columnHelper = useMemo(() => createColumnHelper(), []);
