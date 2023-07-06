@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 import uniqueFieldError from "../../utils/uniqueFieldError";
 import DataTable from "../../components/DataTable/DataTable";
+import OrdersDrawer from "./OrdersDrawer";
 import { formatDate, formatMoney } from "../../utils//formatStrings";
 
 // MUI components
@@ -34,12 +35,13 @@ const OrdersTable = memo(() => {
   }, [data]);
 
   // Fetch products data
-  const { data: productData } = useFetch(
-    "http://localhost:4000/api/v1/products",
-    reload
-  );
+  const {
+    loading: productLoading,
+    error: productError,
+    data: productData,
+  } = useFetch("http://localhost:4000/api/v1/products", reload);
 
-  // Get product by ID
+  // Get product data by ID including quantity
   const getProduct = useCallback(
     (item) => ({
       item: productData?.find((product) => product?.id === item?.productId),
@@ -59,18 +61,20 @@ const OrdersTable = memo(() => {
           product?.quantity;
         return total + price;
       }, 0);
-      return amount;
+      // Return 0 if `amount` is null/undefined
+      return amount || 0;
     },
     [getProduct]
   );
 
-  // Get the list of all prodicts in a single order
+  // Get the list of all prodicts in a single order (including quantity)
   const getProductsList = useCallback(
     (products) => {
       const titles = products.map(
         (product) => `${product?.quantity}× ${getProduct(product)?.item.title}`
       );
-      return titles.join(", ");
+      // Return "None" if products list is empty/null/undefined
+      return titles.join(", ") || "None";
     },
     [getProduct]
   );
@@ -147,6 +151,7 @@ const OrdersTable = memo(() => {
             )}
           </Typography>
         ),
+        fieldFormat: { checkbox: true },
       }),
     ],
     [columnHelper, getInvoiceStatus, getOrderTotal, getProductsList, setColor]
@@ -238,8 +243,8 @@ const OrdersTable = memo(() => {
         data={orders}
         dataName={dataName}
         columns={columns}
-        loading={loading}
-        error={error}
+        loading={loading || productLoading}
+        error={error || productError}
         orderBy={"id"}
         globalSearch={true}
         clickable={true}
@@ -248,7 +253,8 @@ const OrdersTable = memo(() => {
         onCreate={handleCreateOrder}
         onEdit={handleEditOrder}
         onDelete={handleDeleteOrder}
-        // randomData={{ url: "https://dummyjson.com/orders/", maxCount: 10 }}
+        randomData={{ url: "https://dummyjson.com/orders/", maxCount: 10 }}
+        customDrawer={OrdersDrawer}
       />
     </Card>
   );

@@ -1,7 +1,7 @@
 // MUI components
 import { Alert, Snackbar } from "@mui/material";
 
-const TableSnackbar = ({ openSnackbar, onClose }) => {
+const CustomSnackbar = ({ openSnackbar, onClose }) => {
   return (
     <Snackbar
       open={openSnackbar.open}
@@ -22,4 +22,4 @@ const TableSnackbar = ({ openSnackbar, onClose }) => {
   );
 };
 
-export default TableSnackbar;
+export default CustomSnackbar;

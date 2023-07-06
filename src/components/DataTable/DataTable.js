@@ -12,7 +12,7 @@ import {
 // Project imports
 import TableFilters from "./TableFilters";
 import TableDrawer from "./TableDrawer";
-import TableSnackbar from "./TableSnackbar";
+import CustomSnackbar from "../CustomSnackbar";
 
 // MUI components
 import {
@@ -58,6 +58,7 @@ const DataTable = (props) => {
     onEdit = null,
     onDelete = null,
     randomData = null,
+    customDrawer: CustomDrawer = null,
   } = props;
 
   // Snackbar reducer actions
@@ -367,45 +368,75 @@ const DataTable = (props) => {
     [onEdit, initialDrawerStatus, SNACKBAR_ACTIONS]
   );
 
+  // Conditionally render CustomDrawer if provided as props
   const CreateDrawer = useMemo(
-    () => (
-      <TableDrawer
-        drawerOpen={drawerStatus.open}
-        itemData={drawerStatus.payload}
-        onSubmit={(formData) => handleOnCreateSubmit(formData)}
-        onClose={() => setDrawerStatus(initialDrawerStatus)}
-        edit={drawerStatus.edit}
-        dataName={dataName}
-        randomData={randomData}
-      />
-    ),
+    () =>
+      CustomDrawer ? (
+        <CustomDrawer
+          drawerOpen={drawerStatus.open}
+          itemData={drawerStatus.payload}
+          onSubmit={(formData) => handleOnCreateSubmit(formData)}
+          onClose={() => setDrawerStatus(initialDrawerStatus)}
+          edit={drawerStatus.edit}
+          dataName={dataName}
+          randomData={randomData}
+        />
+      ) : (
+        <TableDrawer
+          drawerOpen={drawerStatus.open}
+          itemData={drawerStatus.payload}
+          onSubmit={(formData) => handleOnCreateSubmit(formData)}
+          onClose={() => setDrawerStatus(initialDrawerStatus)}
+          edit={drawerStatus.edit}
+          dataName={dataName}
+          randomData={randomData}
+        />
+      ),
     [
-      drawerStatus,
-      initialDrawerStatus,
-      handleOnCreateSubmit,
+      CustomDrawer,
+      drawerStatus.open,
+      drawerStatus.payload,
+      drawerStatus.edit,
       dataName,
       randomData,
+      handleOnCreateSubmit,
+      initialDrawerStatus,
     ]
   );
 
+  // Conditionally render CustomDrawer if provided as props
   const EditDrawer = useMemo(
-    () => (
-      <TableDrawer
-        drawerOpen={drawerStatus.open}
-        itemData={drawerStatus.payload}
-        onSubmit={(formData) => handleOnEditSubmit(formData)}
-        onClose={() => setDrawerStatus(initialDrawerStatus)}
-        edit={drawerStatus.edit}
-        dataName={dataName}
-        randomData={randomData}
-      />
-    ),
+    () =>
+      CustomDrawer ? (
+        <CustomDrawer
+          drawerOpen={drawerStatus.open}
+          itemData={drawerStatus.payload}
+          onSubmit={(formData) => handleOnEditSubmit(formData)}
+          onClose={() => setDrawerStatus(initialDrawerStatus)}
+          edit={drawerStatus.edit}
+          dataName={dataName}
+          randomData={randomData}
+        />
+      ) : (
+        <TableDrawer
+          drawerOpen={drawerStatus.open}
+          itemData={drawerStatus.payload}
+          onSubmit={(formData) => handleOnEditSubmit(formData)}
+          onClose={() => setDrawerStatus(initialDrawerStatus)}
+          edit={drawerStatus.edit}
+          dataName={dataName}
+          randomData={randomData}
+        />
+      ),
     [
-      drawerStatus,
-      initialDrawerStatus,
-      handleOnEditSubmit,
+      CustomDrawer,
+      drawerStatus.open,
+      drawerStatus.payload,
+      drawerStatus.edit,
       dataName,
       randomData,
+      handleOnEditSubmit,
+      initialDrawerStatus,
     ]
   );
 
@@ -628,7 +659,7 @@ const DataTable = (props) => {
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleRowsPerPageChange}
         />
-        <TableSnackbar
+        <CustomSnackbar
           openSnackbar={snackbarState}
           onClose={() => dispatch({ type: SNACKBAR_ACTIONS.CLOSE })}
         />
@@ -656,6 +687,7 @@ DataTable.propTypes = {
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
   randomData: PropTypes.object,
+  customDrawer: PropTypes.func,
 };
 
 export default DataTable;
