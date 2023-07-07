@@ -112,6 +112,17 @@ const TableDrawer = (props) => {
                     disabled={
                       formState.isLoading || formState.isSubmitting || loading
                     }
+                    InputProps={{
+                      ...((formState.isLoading ||
+                        formState.isSubmitting ||
+                        loading) && {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <CircularProgress color="inherit" size={20} />
+                          </InputAdornment>
+                        ),
+                      }),
+                    }}
                     margin="normal"
                     fullWidth
                   />
@@ -142,8 +153,16 @@ const TableDrawer = (props) => {
                   formState.errors[column.columnDef.accessorKey] &&
                   formState.errors[column.columnDef.accessorKey]?.message
                 }
-                InputProps={
-                  column.columnDef?.fieldFormat?.format === "money"
+                InputProps={{
+                  ...(formState.isLoading || formState.isSubmitting || loading
+                    ? {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <CircularProgress color="inherit" size={20} />
+                          </InputAdornment>
+                        ),
+                      }
+                    : column.columnDef?.fieldFormat?.format === "money"
                     ? {
                         startAdornment: (
                           <InputAdornment position="start">$</InputAdornment>
@@ -155,9 +174,10 @@ const TableDrawer = (props) => {
                           <InputAdornment position="start">%</InputAdornment>
                         ),
                       }
-                    : null
-                }
+                    : null),
+                }}
                 InputLabelProps={{ shrink: true }}
+                margin="normal"
                 disabled={
                   formState.isLoading || formState.isSubmitting || loading
                 }
@@ -166,7 +186,6 @@ const TableDrawer = (props) => {
                     ? "none"
                     : "inherit",
                 }}
-                margin="normal"
                 fullWidth
               />
             )}
@@ -218,6 +237,17 @@ const TableDrawer = (props) => {
                         ?.message
                     }
                     InputLabelProps={{ shrink: true }}
+                    InputProps={{
+                      ...((formState.isLoading ||
+                        formState.isSubmitting ||
+                        loading) && {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <CircularProgress color="inherit" size={20} />
+                          </InputAdornment>
+                        ),
+                      }),
+                    }}
                     disabled={
                       formState.isLoading || formState.isSubmitting || loading
                     }
@@ -251,8 +281,16 @@ const TableDrawer = (props) => {
                   formState.errors[item.column.columnDef.accessorKey] &&
                   formState.errors[item.column.columnDef.accessorKey]?.message
                 }
-                InputProps={
-                  item.column.columnDef?.fieldFormat?.format === "money"
+                InputProps={{
+                  ...(formState.isLoading || formState.isSubmitting || loading
+                    ? {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <CircularProgress color="inherit" size={20} />
+                          </InputAdornment>
+                        ),
+                      }
+                    : item.column.columnDef?.fieldFormat?.format === "money"
                     ? {
                         startAdornment: (
                           <InputAdornment position="start">$</InputAdornment>
@@ -265,10 +303,10 @@ const TableDrawer = (props) => {
                           <InputAdornment position="start">%</InputAdornment>
                         ),
                       }
-                    : null
-                }
-                margin="normal"
+                    : null),
+                }}
                 InputLabelProps={{ shrink: true }}
+                margin="normal"
                 disabled={
                   formState.isLoading || formState.isSubmitting || loading
                 }

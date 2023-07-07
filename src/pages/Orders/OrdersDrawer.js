@@ -1,11 +1,16 @@
 import PropTypes from "prop-types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+
+// Project import
+import useFetch from "../../hooks/useFetch";
 import validationRules from "../../utils/formValidation";
 
+// MUI import
 import {
   Alert,
   AlertTitle,
+  Autocomplete,
   Box,
   Button,
   Checkbox,
@@ -19,6 +24,27 @@ import {
 } from "@mui/material";
 
 const OrdersDrawer = (props) => {
+  // Fetch customer data
+  const {
+    loading: customerLoading,
+    error: customerError,
+    data: customerData,
+  } = useFetch("http://localhost:4000/api/v1/customers");
+
+  // Fetch product data
+  const {
+    loading: productsLoading,
+    error: productsError,
+    data: productsData,
+  } = useFetch("http://localhost:4000/api/v1/products");
+
+  // Fetch invoice data
+  const {
+    // loading: invoiceLoading,
+    // error: invoiceError,
+    data: invoiceData,
+  } = useFetch("http://localhost:4000/api/v1/invoices");
+
   // Filter Drawer fields based on property `fieldFormat.exclude`
   const filterFields = useCallback(
     (fields) => {
@@ -80,72 +106,165 @@ const OrdersDrawer = (props) => {
 
   // Create new-item-form fields based on row data
   const createFormFields = !props.edit
-    ? filterFields(props.itemData)?.map((column, index) =>
-        column.columnDef?.fieldFormat?.checkbox ? (
-          <Controller
-            key={index}
-            control={control}
-            name={column.columnDef.accessorKey}
-            rules={validationRules(column.columnDef)}
-            render={({ field }) => (
-              <FormControlLabel
-                {...field}
-                control={<Checkbox />}
-                label="Generate invoice"
-                sx={{ width: "100%" }}
+    ? filterFields(props.itemData)?.map((column, index) => {
+        switch (column.columnDef?.accessorKey) {
+          case "customer":
+            return (
+              <Controller
+                key={index}
+                control={control}
+                name={column.columnDef.accessorKey}
+                defaultValue={""}
+                rules={validationRules(column.columnDef)}
+                render={({ field }) => (
+                  <Autocomplete
+                    handleHomeEndKeys
+                    id={`tags-${column.columnDef.accessorKey}`}
+                    options={customerData}
+                    getOptionLabel={(customer) =>
+                      `#${customer?.id} ${customer?.firstName} ${customer?.lastName}`
+                    }
+                    onChange={(event, value) => field.onChange(value)}
+                    onInputChange={(event, item) => {
+                      if (item) field.onChange(item);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        id={column.columnDef.accessorKey}
+                        label={column.columnDef.header()}
+                        error={
+                          !!(
+                            formState.errors[column.columnDef.accessorKey] ||
+                            customerError
+                          )
+                        }
+                        helperText={
+                          (formState.errors[column.columnDef.accessorKey] &&
+                            formState.errors[column.columnDef.accessorKey]
+                              ?.message) ||
+                          customerError?.message
+                        }
+                        InputLabelProps={{ shrink: true }}
+                        disabled={
+                          formState.isLoading ||
+                          formState.isSubmitting ||
+                          loading ||
+                          customerLoading
+                        }
+                        InputProps={{
+                          ...((formState.isLoading ||
+                            formState.isSubmitting ||
+                            loading ||
+                            customerLoading) && {
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <CircularProgress color="inherit" size={20} />
+                              </InputAdornment>
+                            ),
+                          }),
+                        }}
+                        margin="normal"
+                        fullWidth
+                      />
+                    )}
+                    sx={{
+                      maxHeight: "10rem",
+                      overflow: "auto",
+                    }}
+                  />
+                )}
               />
-            )}
-          />
-        ) : (
-          <Controller
-            key={index}
-            control={control}
-            name={column.columnDef.accessorKey}
-            defaultValue={""}
-            rules={validationRules(column.columnDef)}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                id={column.columnDef.accessorKey}
-                label={column.columnDef.header()}
-                inputRef={field.ref}
-                type={column.columnDef?.fieldFormat?.type ?? "text"}
-                error={!!formState.errors[column.columnDef.accessorKey]}
-                helperText={
-                  formState.errors[column.columnDef.accessorKey] &&
-                  formState.errors[column.columnDef.accessorKey]?.message
-                }
-                InputProps={
-                  column.columnDef?.fieldFormat?.format === "money"
-                    ? {
-                        startAdornment: (
-                          <InputAdornment position="start">$</InputAdornment>
-                        ),
-                      }
-                    : column.columnDef?.fieldFormat?.format === "percentage"
-                    ? {
-                        endAdornment: (
-                          <InputAdornment position="start">%</InputAdornment>
-                        ),
-                      }
-                    : null
-                }
-                InputLabelProps={{ shrink: true }}
-                disabled={
-                  formState.isLoading || formState.isSubmitting || loading
-                }
-                sx={{
-                  display: column.columnDef?.fieldFormat?.hidden
-                    ? "none"
-                    : "inherit",
-                }}
-                margin="normal"
-                fullWidth
+            );
+          case "products":
+            return (
+              <Controller
+                key={index}
+                control={control}
+                name={column.columnDef.accessorKey}
+                rules={validationRules(column.columnDef)}
+                render={({ field }) => (
+                  <Autocomplete
+                    multiple
+                    handleHomeEndKeys
+                    id={`tags-${column.columnDef.accessorKey}`}
+                    onChange={(event, value) => field.onChange(value)}
+                    onInputChange={(event, item) => {
+                      if (item) field.onChange(item);
+                    }}
+                    options={productsData}
+                    getOptionLabel={(product) =>
+                      `#${product?.id} ${product?.title}`
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        id={column.columnDef.accessorKey}
+                        label={column.columnDef.header()}
+                        error={
+                          !!(
+                            formState.errors[column.columnDef.accessorKey] ||
+                            productsError
+                          )
+                        }
+                        helperText={
+                          (formState.errors[column.columnDef.accessorKey] &&
+                            formState.errors[column.columnDef.accessorKey]
+                              ?.message) ||
+                          productsError?.message
+                        }
+                        InputLabelProps={{ shrink: true }}
+                        disabled={
+                          formState.isLoading ||
+                          formState.isSubmitting ||
+                          loading ||
+                          productsLoading
+                        }
+                        InputProps={{
+                          ...((formState.isLoading ||
+                            formState.isSubmitting ||
+                            loading ||
+                            productsLoading) && {
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <CircularProgress color="inherit" size={20} />
+                              </InputAdornment>
+                            ),
+                          }),
+                        }}
+                        margin="normal"
+                        fullWidth
+                      />
+                    )}
+                    sx={{
+                      maxHeight: "10rem",
+                      overflow: "auto",
+                    }}
+                  />
+                )}
               />
-            )}
-          />
-        )
-      )
+            );
+          case "invoice":
+            return (
+              <Controller
+                key={index}
+                control={control}
+                name={column.columnDef.accessorKey}
+                rules={validationRules(column.columnDef)}
+                render={({ field }) => (
+                  <FormControlLabel
+                    {...field}
+                    control={<Checkbox />}
+                    label="Generate invoice"
+                    sx={{ width: "100%" }}
+                  />
+                )}
+              />
+            );
+          default:
+            return null;
+        }
+      })
     : null;
 
   // Create edit-item-form fields based on row data

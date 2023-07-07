@@ -73,7 +73,9 @@ const useFetch = (url, options = null, reload = null) => {
         });
       } catch (error) {
         if (!abortController.signal.aborted) {
-          console.error(`Error while fetching data: ${error.message}`);
+          console.error(
+            `Error while fetching data: ${error?.message || "Unexpected error"}`
+          );
           dispatch({
             type: ACTIONS.ERROR,
             payload: error,
