@@ -91,7 +91,7 @@ const TableDrawer = (props) => {
                 freeSolo
                 multiple
                 handleHomeEndKeys
-                id={`tags-${column.columnDef.accessorKey}`}
+                id={`${props.dataName}-${column.columnDef.accessorKey}`}
                 options={[]}
                 defaultValue={[]}
                 onChange={(event, value) => field.onChange(value)}
@@ -208,7 +208,7 @@ const TableDrawer = (props) => {
                 freeSolo
                 multiple
                 handleHomeEndKeys
-                id={`tags-${item.column.columnDef.accessorKey}`}
+                id={`${props.dataName}-${item.column.columnDef.accessorKey}`}
                 options={
                   typeof item?.getValue() === "string"
                     ? [item?.getValue()]
@@ -284,6 +284,7 @@ const TableDrawer = (props) => {
                 InputProps={{
                   ...(formState.isLoading || formState.isSubmitting || loading
                     ? {
+                        // Loading
                         endAdornment: (
                           <InputAdornment position="end">
                             <CircularProgress color="inherit" size={20} />
@@ -292,6 +293,7 @@ const TableDrawer = (props) => {
                       }
                     : item.column.columnDef?.fieldFormat?.format === "money"
                     ? {
+                        // Format Money
                         startAdornment: (
                           <InputAdornment position="start">$</InputAdornment>
                         ),
@@ -299,6 +301,7 @@ const TableDrawer = (props) => {
                     : item.column.columnDef?.fieldFormat?.format ===
                       "percentage"
                     ? {
+                        // Format Percentage
                         endAdornment: (
                           <InputAdornment position="start">%</InputAdornment>
                         ),

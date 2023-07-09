@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 
 // Project import
 import useFetch from "../../hooks/useFetch";
@@ -15,13 +15,18 @@ import {
   Button,
   Checkbox,
   CircularProgress,
+  Divider,
   Drawer,
+  FormControl,
   FormControlLabel,
+  IconButton,
   InputAdornment,
+  Stack,
   TextField,
   Typography,
   capitalize,
 } from "@mui/material";
+import { Delete as DeleteIcon } from "@mui/icons-material";
 
 const OrdersDrawer = (props) => {
   // Fetch customer data
@@ -56,8 +61,17 @@ const OrdersDrawer = (props) => {
   );
 
   const defaultValues = useMemo(() => props.itemData, [props.itemData]);
-  const { control, handleSubmit, reset, formState } = useForm({
-    defaultValues,
+  const { register, control, handleSubmit, reset, formState } = useForm({
+    // defaultValues,
+  });
+
+  // Products array
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "products",
+    rules: {
+      required: "Please, add at least one product",
+    },
   });
 
   // State to force reload on Drawer component
@@ -70,14 +84,19 @@ const OrdersDrawer = (props) => {
     (formData) => {
       props.onSubmit(formData);
       reset();
+      // Remove all product form fields on submit
+      fields.forEach((field) => remove());
     },
-    [props, reset]
+    [fields, props, remove, reset]
   );
 
   // Reset the form on submit/close
   useEffect(() => {
-    if (!props.drawerOpen) reset(props.itemData);
-  }, [props.drawerOpen, props.itemData, reset]);
+    if (!props.drawerOpen) {
+      reset(props.itemData);
+      fields.forEach((field) => remove());
+    }
+  }, [fields, props.drawerOpen, props.itemData, remove, reset]);
 
   // Fill with random data
   const setRandomData = useCallback(async () => {
@@ -119,7 +138,7 @@ const OrdersDrawer = (props) => {
                 render={({ field }) => (
                   <Autocomplete
                     handleHomeEndKeys
-                    id={`tags-${column.columnDef.accessorKey}`}
+                    id={`${props.dataName}-${column.columnDef.accessorKey}`}
                     options={customerData}
                     getOptionLabel={(customer) =>
                       `#${customer?.id} ${customer?.firstName} ${customer?.lastName}`
@@ -178,72 +197,219 @@ const OrdersDrawer = (props) => {
             );
           case "products":
             return (
-              <Controller
-                key={index}
-                control={control}
-                name={column.columnDef.accessorKey}
-                rules={validationRules(column.columnDef)}
-                render={({ field }) => (
-                  <Autocomplete
-                    multiple
-                    handleHomeEndKeys
-                    id={`tags-${column.columnDef.accessorKey}`}
-                    onChange={(event, value) => field.onChange(value)}
-                    onInputChange={(event, item) => {
-                      if (item) field.onChange(item);
-                    }}
-                    options={productsData}
-                    getOptionLabel={(product) =>
-                      `#${product?.id} ${product?.title}`
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        id={column.columnDef.accessorKey}
-                        label={column.columnDef.header()}
-                        error={
-                          !!(
-                            formState.errors[column.columnDef.accessorKey] ||
-                            productsError
-                          )
-                        }
-                        helperText={
-                          (formState.errors[column.columnDef.accessorKey] &&
-                            formState.errors[column.columnDef.accessorKey]
-                              ?.message) ||
-                          productsError?.message
-                        }
-                        InputLabelProps={{ shrink: true }}
-                        disabled={
-                          formState.isLoading ||
-                          formState.isSubmitting ||
-                          loading ||
-                          productsLoading
-                        }
-                        InputProps={{
-                          ...((formState.isLoading ||
-                            formState.isSubmitting ||
-                            loading ||
-                            productsLoading) && {
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <CircularProgress color="inherit" size={20} />
-                              </InputAdornment>
-                            ),
-                          }),
-                        }}
-                        margin="normal"
-                        fullWidth
-                      />
-                    )}
-                    sx={{
-                      maxHeight: "10rem",
-                      overflow: "auto",
-                    }}
-                  />
-                )}
-              />
+              <Stack key={index} mt={3}>
+                <Divider>
+                  <Typography color="text.secondary">Products</Typography>
+                </Divider>
+                {fields.map((item, prodIndex) => (
+                  <Stack key={prodIndex} direction="row" spacing={2} useFlexGap>
+                    <Controller
+                      control={control}
+                      name={`products.${prodIndex}.product`}
+                      render={({ field }) => (
+                        <Autocomplete
+                          handleHomeEndKeys
+                          {...register(`products.${prodIndex}.product`, {
+                            required: "Please, select a product",
+                          })}
+                          id={`${props.dataName}-products-${prodIndex}`}
+                          onChange={(event, value) => field.onChange(value)}
+                          onInputChange={(event, item) => {
+                            if (item) field.onChange(item);
+                          }}
+                          options={productsData}
+                          getOptionLabel={(product) =>
+                            `#${product?.id} ${product?.title}`
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              id={`products.${prodIndex}.product`}
+                              label="Product"
+                              error={
+                                !!(
+                                  formState.errors?.products?.[prodIndex]
+                                    ?.product || productsError
+                                )
+                              }
+                              helperText={
+                                (formState.errors?.products?.[prodIndex]
+                                  ?.product &&
+                                  formState.errors?.products?.[prodIndex]
+                                    ?.product?.message) ||
+                                productsError?.message
+                              }
+                              InputLabelProps={{ shrink: true }}
+                              disabled={
+                                formState.isLoading ||
+                                formState.isSubmitting ||
+                                loading ||
+                                productsLoading
+                              }
+                              InputProps={{
+                                ...((formState.isLoading ||
+                                  formState.isSubmitting ||
+                                  loading ||
+                                  productsLoading) && {
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      <CircularProgress
+                                        color="inherit"
+                                        size={20}
+                                      />
+                                    </InputAdornment>
+                                  ),
+                                }),
+                              }}
+                              margin="normal"
+                              fullWidth
+                            />
+                          )}
+                        />
+                      )}
+                    />
+                    <Controller
+                      control={control}
+                      name={`products.${prodIndex}.quantity`}
+                      render={({ params }) => (
+                        <FormControl margin="normal">
+                          <TextField
+                            {...params}
+                            {...register(`products.${prodIndex}.quantity`, {
+                              min: {
+                                value: 1,
+                                valueAsNumber: true,
+                                message: "Must be >0",
+                              },
+                            })}
+                            id={`products.${prodIndex}.quantity`}
+                            label="Quantity"
+                            error={
+                              !!(
+                                formState.errors?.products?.[prodIndex]
+                                  ?.quantity || productsError
+                              )
+                            }
+                            helperText={
+                              (formState.errors?.products?.[prodIndex]
+                                ?.quantity &&
+                                formState.errors?.products?.[prodIndex]
+                                  ?.quantity?.message) ||
+                              productsError?.message
+                            }
+                            InputLabelProps={{ shrink: true }}
+                            disabled={
+                              formState.isLoading ||
+                              formState.isSubmitting ||
+                              loading ||
+                              productsLoading
+                            }
+                            InputProps={{
+                              // Set minimum quantity as 1
+                              min: 1,
+                              ...((formState.isLoading ||
+                                formState.isSubmitting ||
+                                loading ||
+                                productsLoading) && {
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    <CircularProgress
+                                      color="inherit"
+                                      size={20}
+                                    />
+                                  </InputAdornment>
+                                ),
+                              }),
+                            }}
+                            sx={{ maxWidth: "6.7rem" }}
+                          />
+                        </FormControl>
+                      )}
+                    />
+                    <IconButton onClick={() => remove(prodIndex)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Stack>
+                ))}
+                <Typography color="error.main" variant="caption">
+                  {formState.errors.products?.root?.message}
+                </Typography>
+                <Button
+                  type="button"
+                  variant="outlined"
+                  size="small"
+                  onClick={() => append({ product: "", quantity: 1 })}
+                  sx={{ mt: 1 }}
+                >
+                  Add Product
+                </Button>
+              </Stack>
             );
+          // <Controller
+          //   key={index}
+          //   control={control}
+          //   name={column.columnDef.accessorKey}
+          //   rules={validationRules(column.columnDef)}
+          //   render={({ field }) => (
+          //     <Autocomplete
+          //       multiple
+          //       handleHomeEndKeys
+          //       id={`${props.dataName}-${column.columnDef.accessorKey}`}
+          //       onChange={(event, value) => field.onChange(value)}
+          //       onInputChange={(event, item) => {
+          //         if (item) field.onChange(item);
+          //       }}
+          //       options={productsData}
+          //       getOptionLabel={(product) =>
+          //         `#${product?.id} ${product?.title}`
+          //       }
+          //       renderInput={(params) => (
+          //         <TextField
+          //           {...params}
+          //           id={column.columnDef.accessorKey}
+          //           label={column.columnDef.header()}
+          //           error={
+          //             !!(
+          //               formState.errors[column.columnDef.accessorKey] ||
+          //               productsError
+          //             )
+          //           }
+          //           helperText={
+          //             (formState.errors[column.columnDef.accessorKey] &&
+          //               formState.errors[column.columnDef.accessorKey]
+          //                 ?.message) ||
+          //             productsError?.message
+          //           }
+          //           InputLabelProps={{ shrink: true }}
+          //           disabled={
+          //             formState.isLoading ||
+          //             formState.isSubmitting ||
+          //             loading ||
+          //             productsLoading
+          //           }
+          //           InputProps={{
+          //             ...((formState.isLoading ||
+          //               formState.isSubmitting ||
+          //               loading ||
+          //               productsLoading) && {
+          //               endAdornment: (
+          //                 <InputAdornment position="end">
+          //                   <CircularProgress color="inherit" size={20} />
+          //                 </InputAdornment>
+          //               ),
+          //             }),
+          //           }}
+          //           margin="normal"
+          //           fullWidth
+          //         />
+          //       )}
+          //       sx={{
+          //         maxHeight: "10rem",
+          //         overflow: "auto",
+          //       }}
+          //     />
+          //   )}
+          // />
           case "invoice":
             return (
               <Controller
@@ -256,7 +422,7 @@ const OrdersDrawer = (props) => {
                     {...field}
                     control={<Checkbox />}
                     label="Generate invoice"
-                    sx={{ width: "100%" }}
+                    sx={{ width: "100%", mt: "3rem" }}
                   />
                 )}
               />
@@ -344,7 +510,7 @@ const OrdersDrawer = (props) => {
       open={props.drawerOpen || false}
       onClose={props.onClose}
       sx={{
-        "& .MuiDrawer-paper": { boxSizing: "border-box", width: "22rem" },
+        "& .MuiDrawer-paper": { boxSizing: "border-box", width: "28rem" },
       }}
       reload={reload}
     >
