@@ -23,6 +23,7 @@ import {
   InputAdornment,
   Stack,
   TextField,
+  Tooltip,
   Typography,
   capitalize,
 } from "@mui/material";
@@ -62,7 +63,7 @@ const OrdersDrawer = (props) => {
 
   const defaultValues = useMemo(() => props.itemData, [props.itemData]);
   const { register, control, handleSubmit, reset, formState } = useForm({
-    // defaultValues,
+    defaultValues,
   });
 
   // Products array
@@ -82,6 +83,7 @@ const OrdersDrawer = (props) => {
 
   const onSubmit = useCallback(
     (formData) => {
+      console.log(formData);
       props.onSubmit(formData);
       reset();
       // Remove all product form fields on submit
@@ -93,10 +95,10 @@ const OrdersDrawer = (props) => {
   // Reset the form on submit/close
   useEffect(() => {
     if (!props.drawerOpen) {
-      reset(props.itemData);
+      reset();
       fields.forEach((field) => remove());
     }
-  }, [fields, props.drawerOpen, props.itemData, remove, reset]);
+  }, [fields, props.drawerOpen, remove, reset]);
 
   // Fill with random data
   const setRandomData = useCallback(async () => {
@@ -133,12 +135,11 @@ const OrdersDrawer = (props) => {
                 key={index}
                 control={control}
                 name={column.columnDef.accessorKey}
-                defaultValue={""}
                 rules={validationRules(column.columnDef)}
                 render={({ field }) => (
                   <Autocomplete
                     handleHomeEndKeys
-                    id={`${props.dataName}-${column.columnDef.accessorKey}`}
+                    id={`${props.dataName.singular}-${column.columnDef.accessorKey}`}
                     options={customerData}
                     getOptionLabel={(customer) =>
                       `#${customer?.id} ${customer?.firstName} ${customer?.lastName}`
@@ -147,6 +148,7 @@ const OrdersDrawer = (props) => {
                     onInputChange={(event, item) => {
                       if (item) field.onChange(item);
                     }}
+                    noOptionsText={`No ${props?.dataName?.plural ?? "items"}`}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -172,32 +174,32 @@ const OrdersDrawer = (props) => {
                           customerLoading
                         }
                         InputProps={{
-                          ...((formState.isLoading ||
-                            formState.isSubmitting ||
-                            loading ||
-                            customerLoading) && {
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <CircularProgress color="inherit" size={20} />
-                              </InputAdornment>
-                            ),
-                          }),
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {formState.isLoading ||
+                              formState.isSubmitting ||
+                              loading ||
+                              customerLoading ? (
+                                <InputAdornment position="end">
+                                  <CircularProgress color="inherit" size={20} />
+                                </InputAdornment>
+                              ) : null}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
                         }}
                         margin="normal"
                         fullWidth
                       />
                     )}
-                    sx={{
-                      maxHeight: "10rem",
-                      overflow: "auto",
-                    }}
                   />
                 )}
               />
             );
           case "products":
             return (
-              <Stack key={index} mt={3}>
+              <Stack key={index} id="order-products-form-section" mt={3}>
                 <Divider>
                   <Typography color="text.secondary">Products</Typography>
                 </Divider>
@@ -212,7 +214,7 @@ const OrdersDrawer = (props) => {
                           {...register(`products.${prodIndex}.product`, {
                             required: "Please, select a product",
                           })}
-                          id={`${props.dataName}-products-${prodIndex}`}
+                          id={`${props.dataName.singular}-products-${prodIndex}`}
                           onChange={(event, value) => field.onChange(value)}
                           onInputChange={(event, item) => {
                             if (item) field.onChange(item);
@@ -221,6 +223,9 @@ const OrdersDrawer = (props) => {
                           getOptionLabel={(product) =>
                             `#${product?.id} ${product?.title}`
                           }
+                          noOptionsText={`No ${
+                            props?.dataName?.plural ?? "items"
+                          }`}
                           renderInput={(params) => (
                             <TextField
                               {...params}
@@ -247,24 +252,29 @@ const OrdersDrawer = (props) => {
                                 productsLoading
                               }
                               InputProps={{
-                                ...((formState.isLoading ||
-                                  formState.isSubmitting ||
-                                  loading ||
-                                  productsLoading) && {
-                                  endAdornment: (
-                                    <InputAdornment position="end">
-                                      <CircularProgress
-                                        color="inherit"
-                                        size={20}
-                                      />
-                                    </InputAdornment>
-                                  ),
-                                }),
+                                ...params.InputProps,
+                                endAdornment: (
+                                  <>
+                                    {formState.isLoading ||
+                                    formState.isSubmitting ||
+                                    loading ||
+                                    customerLoading ? (
+                                      <InputAdornment position="end">
+                                        <CircularProgress
+                                          color="inherit"
+                                          size={20}
+                                        />
+                                      </InputAdornment>
+                                    ) : null}
+                                    {params.InputProps.endAdornment}
+                                  </>
+                                ),
                               }}
                               margin="normal"
                               fullWidth
                             />
                           )}
+                          sx={{ width: "100%" }}
                         />
                       )}
                     />
@@ -284,6 +294,7 @@ const OrdersDrawer = (props) => {
                             })}
                             id={`products.${prodIndex}.quantity`}
                             label="Quantity"
+                            type="number"
                             error={
                               !!(
                                 formState.errors?.products?.[prodIndex]
@@ -306,29 +317,33 @@ const OrdersDrawer = (props) => {
                             }
                             InputProps={{
                               // Set minimum quantity as 1
-                              min: 1,
-                              ...((formState.isLoading ||
-                                formState.isSubmitting ||
-                                loading ||
-                                productsLoading) && {
-                                endAdornment: (
-                                  <InputAdornment position="end">
-                                    <CircularProgress
-                                      color="inherit"
-                                      size={20}
-                                    />
-                                  </InputAdornment>
-                                ),
-                              }),
+                              inputProps: { min: 1 },
+                              endAdornment: (
+                                <>
+                                  {formState.isLoading ||
+                                  formState.isSubmitting ||
+                                  loading ||
+                                  customerLoading ? (
+                                    <InputAdornment position="end">
+                                      <CircularProgress
+                                        color="inherit"
+                                        size={20}
+                                      />
+                                    </InputAdornment>
+                                  ) : null}
+                                </>
+                              ),
                             }}
                             sx={{ maxWidth: "6.7rem" }}
                           />
                         </FormControl>
                       )}
                     />
-                    <IconButton onClick={() => remove(prodIndex)}>
-                      <DeleteIcon />
-                    </IconButton>
+                    <Tooltip title="Delete" onClick={() => remove(prodIndex)}>
+                      <IconButton>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
                   </Stack>
                 ))}
                 <Typography color="error.main" variant="caption">
@@ -345,71 +360,6 @@ const OrdersDrawer = (props) => {
                 </Button>
               </Stack>
             );
-          // <Controller
-          //   key={index}
-          //   control={control}
-          //   name={column.columnDef.accessorKey}
-          //   rules={validationRules(column.columnDef)}
-          //   render={({ field }) => (
-          //     <Autocomplete
-          //       multiple
-          //       handleHomeEndKeys
-          //       id={`${props.dataName}-${column.columnDef.accessorKey}`}
-          //       onChange={(event, value) => field.onChange(value)}
-          //       onInputChange={(event, item) => {
-          //         if (item) field.onChange(item);
-          //       }}
-          //       options={productsData}
-          //       getOptionLabel={(product) =>
-          //         `#${product?.id} ${product?.title}`
-          //       }
-          //       renderInput={(params) => (
-          //         <TextField
-          //           {...params}
-          //           id={column.columnDef.accessorKey}
-          //           label={column.columnDef.header()}
-          //           error={
-          //             !!(
-          //               formState.errors[column.columnDef.accessorKey] ||
-          //               productsError
-          //             )
-          //           }
-          //           helperText={
-          //             (formState.errors[column.columnDef.accessorKey] &&
-          //               formState.errors[column.columnDef.accessorKey]
-          //                 ?.message) ||
-          //             productsError?.message
-          //           }
-          //           InputLabelProps={{ shrink: true }}
-          //           disabled={
-          //             formState.isLoading ||
-          //             formState.isSubmitting ||
-          //             loading ||
-          //             productsLoading
-          //           }
-          //           InputProps={{
-          //             ...((formState.isLoading ||
-          //               formState.isSubmitting ||
-          //               loading ||
-          //               productsLoading) && {
-          //               endAdornment: (
-          //                 <InputAdornment position="end">
-          //                   <CircularProgress color="inherit" size={20} />
-          //                 </InputAdornment>
-          //               ),
-          //             }),
-          //           }}
-          //           margin="normal"
-          //           fullWidth
-          //         />
-          //       )}
-          //       sx={{
-          //         maxHeight: "10rem",
-          //         overflow: "auto",
-          //       }}
-          //     />
-          //   )}
-          // />
           case "invoice":
             return (
               <Controller
@@ -458,6 +408,7 @@ const OrdersDrawer = (props) => {
             name={item.column.columnDef.accessorKey}
             defaultValue={item?.getValue()}
             rules={validationRules(item.column.columnDef)}
+            noOptionsText={`No ${props?.dataName?.plural ?? "items"}`}
             render={({ field }) => (
               <TextField
                 {...field}

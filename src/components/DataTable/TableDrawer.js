@@ -91,13 +91,16 @@ const TableDrawer = (props) => {
                 freeSolo
                 multiple
                 handleHomeEndKeys
-                id={`${props.dataName}-${column.columnDef.accessorKey}`}
+                id={`${props?.dataName?.singular ?? "item"}-${
+                  column.columnDef.accessorKey
+                }`}
                 options={[]}
                 defaultValue={[]}
                 onChange={(event, value) => field.onChange(value)}
                 onInputChange={(event, item) => {
                   if (item) field.onChange(item);
                 }}
+                noOptionsText={`No ${props?.dataName?.plural ?? "items"}`}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -223,6 +226,7 @@ const TableDrawer = (props) => {
                 onInputChange={(event, item) => {
                   if (item) field.onChange(item);
                 }}
+                noOptionsText={`No ${props?.dataName?.plural ?? "items"}`}
                 renderInput={(params) => (
                   <TextField
                     {...params}
