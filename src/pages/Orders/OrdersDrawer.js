@@ -83,8 +83,16 @@ const OrdersDrawer = (props) => {
 
   const onSubmit = useCallback(
     (formData) => {
+      const submitData = {
+        customerId: formData.customer.id,
+        products: formData.products.map((product) => ({
+          id: product.product.id,
+          quantity: parseInt(product.quantity),
+        })),
+        invoice: !!formData.invoice,
+      };
       console.log(formData);
-      props.onSubmit(formData);
+      props.onSubmit(submitData);
       reset();
       // Remove all product form fields on submit
       fields.forEach((field) => remove());

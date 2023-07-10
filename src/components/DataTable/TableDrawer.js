@@ -116,15 +116,19 @@ const TableDrawer = (props) => {
                       formState.isLoading || formState.isSubmitting || loading
                     }
                     InputProps={{
-                      ...((formState.isLoading ||
-                        formState.isSubmitting ||
-                        loading) && {
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <CircularProgress color="inherit" size={20} />
-                          </InputAdornment>
-                        ),
-                      }),
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {formState.isLoading ||
+                          formState.isSubmitting ||
+                          loading ? (
+                            <InputAdornment position="end">
+                              <CircularProgress color="inherit" size={20} />
+                            </InputAdornment>
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
                     }}
                     margin="normal"
                     fullWidth
@@ -242,15 +246,19 @@ const TableDrawer = (props) => {
                     }
                     InputLabelProps={{ shrink: true }}
                     InputProps={{
-                      ...((formState.isLoading ||
-                        formState.isSubmitting ||
-                        loading) && {
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <CircularProgress color="inherit" size={20} />
-                          </InputAdornment>
-                        ),
-                      }),
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {formState.isLoading ||
+                          formState.isSubmitting ||
+                          loading ? (
+                            <InputAdornment position="end">
+                              <CircularProgress color="inherit" size={20} />
+                            </InputAdornment>
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
                     }}
                     disabled={
                       formState.isLoading || formState.isSubmitting || loading
