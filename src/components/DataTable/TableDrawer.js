@@ -1,7 +1,10 @@
 import PropTypes from "prop-types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+
+// Project import
 import validationRules from "../../utils/formValidation";
+import getRandomInt from "../../utils/getRandomInt";
 
 import {
   Alert,
@@ -54,7 +57,7 @@ const TableDrawer = (props) => {
 
   // Fill with random data
   const setRandomData = useCallback(async () => {
-    const randomItemId = Math.ceil(Math.random() * props.randomData.maxCount);
+    const randomItemId = getRandomInt(props.randomData.maxCount);
     try {
       // Disable "Fill with random data" button
       setLoading(true);

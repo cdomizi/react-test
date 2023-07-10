@@ -253,7 +253,6 @@ const OrdersTable = memo(() => {
         onCreate={handleCreateOrder}
         onEdit={handleEditOrder}
         onDelete={handleDeleteOrder}
-        randomData={{ url: "https://dummyjson.com/orders/", maxCount: 10 }}
         customDrawer={OrdersDrawer}
       />
     </Card>

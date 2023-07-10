@@ -5,6 +5,7 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 // Project import
 import useFetch from "../../hooks/useFetch";
 import validationRules from "../../utils/formValidation";
+import getRandomInt from "../../utils/getRandomInt";
 
 // MUI import
 import {
@@ -83,6 +84,7 @@ const OrdersDrawer = (props) => {
 
   const onSubmit = useCallback(
     (formData) => {
+      // Process form data for submit
       const submitData = {
         customerId: formData.customer.id,
         products: formData.products.map((product) => ({
@@ -91,10 +93,9 @@ const OrdersDrawer = (props) => {
         })),
         invoice: !!formData.invoice,
       };
-      console.log(formData);
       props.onSubmit(submitData);
+      // Reset form and remove all product fields on submit
       reset();
-      // Remove all product form fields on submit
       fields.forEach((field) => remove());
     },
     [fields, props, remove, reset]
@@ -110,28 +111,46 @@ const OrdersDrawer = (props) => {
 
   // Fill with random data
   const setRandomData = useCallback(async () => {
-    const randomItemId = Math.ceil(Math.random() * props.randomData.maxCount);
-    try {
-      // Disable "Fill with random data" button
-      setLoading(true);
-      const response = await fetch(
-        `${props.randomData.url}/${randomItemId}`,
-        {}
-      );
-      const randomItemData = await response.json();
-
-      if (response.ok) {
-        // Delete ID property if exists
-        randomItemData.id && delete randomItemData.id;
-        reset(randomItemData, { keepDefaultValues: true });
-        setReload({});
-      }
-    } catch (error) {
-      throw new Error(error?.message);
-    } finally {
-      setLoading(false);
+    // Get an array of random products
+    const randomProducts = [...productsData];
+    const randomProductsCount = getRandomInt(3);
+    const getUniqueId = () => {
+      const removedId = randomProducts?.splice(
+        getRandomInt(randomProducts?.length - 1, 0),
+        1
+      )[0];
+      return removedId;
+    };
+    const products = [];
+    let i = 0;
+    while (i < randomProductsCount) {
+      products.push({ product: getUniqueId(), quantity: getRandomInt(3) });
+      i++;
     }
-  }, [props.randomData, reset]);
+    // Get a random customer
+    const randomCustomer = () => {
+      const randomInt = getRandomInt(customerData?.length - 1);
+      return customerData?.[randomInt];
+    };
+    // Get a random boolean value for the invoice
+    const randomBoolean = Boolean(getRandomInt(2, 0));
+
+    // Disable "Fill with random data" button
+    setLoading(true);
+    // Fill form fields
+    reset(
+      {
+        customer: randomCustomer(),
+        products,
+        invoice: randomBoolean,
+      },
+      { keepDefaultValues: true }
+    );
+    // Rerender the component
+    setReload({});
+
+    setLoading(false);
+  }, [customerData, productsData, reset]);
 
   // Create new-item-form fields based on row data
   const createFormFields = !props.edit
@@ -148,7 +167,7 @@ const OrdersDrawer = (props) => {
                   <Autocomplete
                     handleHomeEndKeys
                     id={`${props.dataName.singular}-${column.columnDef.accessorKey}`}
-                    options={customerData}
+                    options={customerData ?? []}
                     getOptionLabel={(customer) =>
                       `#${customer?.id} ${customer?.firstName} ${customer?.lastName}`
                     }
@@ -227,7 +246,7 @@ const OrdersDrawer = (props) => {
                           onInputChange={(event, item) => {
                             if (item) field.onChange(item);
                           }}
-                          options={productsData}
+                          options={productsData ?? []}
                           getOptionLabel={(product) =>
                             `#${product?.id} ${product?.title}`
                           }
@@ -380,7 +399,7 @@ const OrdersDrawer = (props) => {
                     {...field}
                     control={<Checkbox />}
                     label="Generate invoice"
-                    sx={{ width: "100%", mt: "3rem" }}
+                    sx={{ width: "100%", mt: "1.5rem" }}
                   />
                 )}
               />

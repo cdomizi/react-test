@@ -5,6 +5,7 @@ import { Box, Typography, Button } from "@mui/material";
 
 // project import
 import ProductDetail from "../Products/Product/ProductDetail";
+import getRandomInt from "../../utils/getRandomInt";
 
 const Shop = () => {
   const [loading, setLoading] = useState(false);
@@ -20,7 +21,7 @@ const Shop = () => {
   // set random product id
   const handleFetchData = () => {
     setLoading(true);
-    setRandomId(() => Math.ceil(Math.random() * 10));
+    setRandomId(() => getRandomInt(10));
   };
 
   // abort fetch product data request

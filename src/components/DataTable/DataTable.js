@@ -379,7 +379,6 @@ const DataTable = (props) => {
           onClose={() => setDrawerStatus(initialDrawerStatus)}
           edit={drawerStatus.edit}
           dataName={dataName}
-          randomData={randomData}
         />
       ) : (
         <TableDrawer
