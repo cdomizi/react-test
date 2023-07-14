@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 
 // Project import
@@ -62,10 +62,10 @@ const OrdersDrawer = (props) => {
     [props.edit]
   );
 
-  const defaultValues = useMemo(() => props.itemData, [props.itemData]);
-  const { register, control, handleSubmit, reset, formState } = useForm({
-    defaultValues,
-  });
+  // Customer form field value
+  const [customerValue, setCustomerValue] = useState();
+
+  const { register, control, handleSubmit, reset, formState } = useForm();
 
   // Products array
   const { fields, append, remove } = useFieldArray({
@@ -130,7 +130,7 @@ const OrdersDrawer = (props) => {
     // Get a random customer
     const randomCustomer = () => {
       const randomInt = getRandomInt(customerData?.length - 1);
-      return customerData?.[randomInt];
+      setCustomerValue(customerData?.[randomInt]);
     };
     // Get a random boolean value for the invoice
     const randomBoolean = Boolean(getRandomInt(2, 0));
@@ -167,11 +167,13 @@ const OrdersDrawer = (props) => {
                   <Autocomplete
                     handleHomeEndKeys
                     id={`${props.dataName.singular}-${column.columnDef.accessorKey}`}
+                    value={customerValue || null}
                     options={customerData ?? []}
                     getOptionLabel={(customer) =>
-                      `#${customer?.id} ${customer?.firstName} ${customer?.lastName}`
+                      `${customer?.id && "#" + customer.id} ${
+                        customer?.firstName
+                      } ${customer?.lastName}`
                     }
-                    onChange={(event, value) => field.onChange(value)}
                     onInputChange={(event, item) => {
                       if (item) field.onChange(item);
                     }}
@@ -390,18 +392,18 @@ const OrdersDrawer = (props) => {
           case "invoice":
             return (
               <FormControlLabel
+                key={index}
                 label="Generate invoice"
                 sx={{ width: "100%", mt: "1.5rem" }}
                 control={
                   <Controller
-                    key={index}
                     control={control}
                     name={column.columnDef.accessorKey}
                     rules={validationRules(column.columnDef)}
                     render={({ field }) => (
                       <Checkbox
                         {...field}
-                        checked={field.value}
+                        checked={!!field.value}
                         onChange={field.onChange}
                       />
                     )}
