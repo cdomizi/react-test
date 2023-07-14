@@ -389,19 +389,24 @@ const OrdersDrawer = (props) => {
             );
           case "invoice":
             return (
-              <Controller
-                key={index}
-                control={control}
-                name={column.columnDef.accessorKey}
-                rules={validationRules(column.columnDef)}
-                render={({ field }) => (
-                  <FormControlLabel
-                    {...field}
-                    control={<Checkbox />}
-                    label="Generate invoice"
-                    sx={{ width: "100%", mt: "1.5rem" }}
+              <FormControlLabel
+                label="Generate invoice"
+                sx={{ width: "100%", mt: "1.5rem" }}
+                control={
+                  <Controller
+                    key={index}
+                    control={control}
+                    name={column.columnDef.accessorKey}
+                    rules={validationRules(column.columnDef)}
+                    render={({ field }) => (
+                      <Checkbox
+                        {...field}
+                        checked={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
                   />
-                )}
+                }
               />
             );
           default:
