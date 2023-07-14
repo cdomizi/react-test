@@ -674,7 +674,7 @@ DataTable.propTypes = {
   dataName: PropTypes.object,
   columns: PropTypes.array,
   loading: PropTypes.bool,
-  error: PropTypes.string,
+  error: PropTypes.object,
   rowsPerPageOptions: PropTypes.array,
   orderBy: PropTypes.string,
   globalSearch: PropTypes.bool,
