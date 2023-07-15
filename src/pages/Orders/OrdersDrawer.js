@@ -62,8 +62,11 @@ const OrdersDrawer = (props) => {
     [props.edit]
   );
 
-  // Customer form field value
+  // Customer field value
   const [customerValue, setCustomerValue] = useState();
+
+  // Products field list of values
+  const [productsValue, setProductsValue] = useState();
 
   const { register, control, handleSubmit, reset, formState } = useForm();
 
@@ -82,13 +85,19 @@ const OrdersDrawer = (props) => {
   // Loading state for setRandomData
   const [loading, setLoading] = useState(false);
 
+  // Get id from formData item
+  const getItemId = useCallback(
+    (item) => parseInt(item.split(" ")[0].substring(1)),
+    []
+  );
+
   const onSubmit = useCallback(
     (formData) => {
       // Process form data for submit
       const submitData = {
-        customerId: formData.customer.id,
+        customerId: getItemId(formData.customer),
         products: formData.products.map((product) => ({
-          id: product.product.id,
+          id: getItemId(product.product),
           quantity: parseInt(product.quantity),
         })),
         invoice: !!formData.invoice,
@@ -96,15 +105,19 @@ const OrdersDrawer = (props) => {
       props.onSubmit(submitData);
       // Reset form and remove all product fields on submit
       reset();
+      setCustomerValue();
+      setProductsValue();
       fields.forEach((field) => remove());
     },
-    [fields, props, remove, reset]
+    [fields, getItemId, props, remove, reset]
   );
 
   // Reset the form on submit/close
   useEffect(() => {
     if (!props.drawerOpen) {
       reset();
+      setCustomerValue();
+      setProductsValue();
       fields.forEach((field) => remove());
     }
   }, [fields, props.drawerOpen, remove, reset]);
@@ -127,6 +140,7 @@ const OrdersDrawer = (props) => {
       products.push({ product: getUniqueId(), quantity: getRandomInt(3) });
       i++;
     }
+    setProductsValue(products.map((product) => product.product));
     // Get a random customer
     const randomCustomer = () => {
       const randomInt = getRandomInt(customerData?.length - 1);
@@ -151,6 +165,17 @@ const OrdersDrawer = (props) => {
 
     setLoading(false);
   }, [customerData, productsData, reset]);
+
+  const deleteProduct = useCallback(
+    (index) => {
+      const newProducts = productsValue.filter(
+        (product) => productsValue.indexOf(product) !== index
+      );
+      setProductsValue(newProducts);
+      remove(index);
+    },
+    [productsValue, remove]
+  );
 
   // Create new-item-form fields based on row data
   const createFormFields = !props.edit
@@ -244,17 +269,20 @@ const OrdersDrawer = (props) => {
                             required: "Please, select a product",
                           })}
                           id={`${props.dataName.singular}-products-${prodIndex}`}
-                          onChange={(event, value) => field.onChange(value)}
-                          onInputChange={(event, item) => {
-                            if (item) field.onChange(item);
-                          }}
+                          value={productsValue?.[prodIndex] || null}
                           options={productsData ?? []}
                           getOptionLabel={(product) =>
-                            `#${product?.id} ${product?.title}`
+                            `${product?.id && "#" + product.id} ${
+                              product?.title
+                            }`
                           }
                           noOptionsText={`No ${
                             props?.dataName?.plural ?? "items"
                           }`}
+                          onChange={(event, value) => field.onChange(value)}
+                          onInputChange={(event, item) => {
+                            if (item) field.onChange(item);
+                          }}
                           renderInput={(params) => (
                             <TextField
                               {...params}
@@ -368,7 +396,10 @@ const OrdersDrawer = (props) => {
                         </FormControl>
                       )}
                     />
-                    <Tooltip title="Delete" onClick={() => remove(prodIndex)}>
+                    <Tooltip
+                      title="Delete"
+                      onClick={() => deleteProduct(prodIndex)}
+                    >
                       <IconButton>
                         <DeleteIcon />
                       </IconButton>
