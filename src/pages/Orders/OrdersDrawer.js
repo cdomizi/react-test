@@ -72,9 +72,6 @@ const OrdersDrawer = (props) => {
     },
   });
 
-  // State to force reload on Drawer component
-  const [reload, setReload] = useState();
-
   // Loading state for setRandomData
   const [loading, setLoading] = useState(false);
 
@@ -189,9 +186,6 @@ const OrdersDrawer = (props) => {
       products: randomProducts,
       invoice: randomBoolean,
     });
-
-    // Force component rerender
-    setReload({});
 
     setLoading(false);
   }, [customerData, productsData, reset]);
@@ -799,7 +793,6 @@ const OrdersDrawer = (props) => {
       sx={{
         "& .MuiDrawer-paper": { boxSizing: "border-box", width: "28rem" },
       }}
-      reload={reload}
     >
       <Box sx={{ display: "flex", flexDirection: "column", p: 3 }}>
         <Typography variant="h4" mb={6}>
