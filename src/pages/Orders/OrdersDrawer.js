@@ -88,6 +88,8 @@ const OrdersDrawer = (props) => {
     (formData) => {
       // Process form data for submit
       const submitData = {
+        // Pass `id` property if available
+        ...(formData.id && { id: parseInt(formData.id) }),
         customerId: getItemId(formData.customer),
         products: formData.products.map((product) => ({
           id: getItemId(product.product),
@@ -121,13 +123,13 @@ const OrdersDrawer = (props) => {
     if (props.drawerOpen && props.edit) {
       // Get order customer
       const defaultCustomer = props.itemData
-        .filter((item) => item.id.substring(2) === "customer")[0]
+        .filter((item) => item.id.split("_")[1] === "customer")[0]
         .getValue();
 
       // Get order products
       setCustomerValue(defaultCustomer);
       const defaultProducts = props.itemData
-        .filter((item) => item.id.substring(2) === "products")[0]
+        .filter((item) => item.id.split("_")[1] === "products")[0]
         .getValue()
         .map((product) => ({
           product: productsData.find((item) => item.id === product.productId),
@@ -182,14 +184,11 @@ const OrdersDrawer = (props) => {
     setLoading(true);
 
     // Fill form fields
-    reset(
-      {
-        customer: randomCustomer(),
-        products: randomProducts,
-        invoice: randomBoolean,
-      },
-      { keepDefaultValues: true }
-    );
+    reset({
+      customer: randomCustomer(),
+      products: randomProducts,
+      invoice: randomBoolean,
+    });
 
     // Force component rerender
     setReload({});
@@ -484,6 +483,32 @@ const OrdersDrawer = (props) => {
   const editFormFields = props.edit
     ? filterFields(props.itemData)?.map((item, index) => {
         switch (item.column.columnDef?.accessorKey) {
+          case "id":
+            return (
+              <Controller
+                key={index}
+                control={control}
+                name={item.column.columnDef.accessorKey}
+                defaultValue={item.getValue()}
+                rules={validationRules(item.column.columnDef)}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    id={item.column.columnDef.accessorKey}
+                    label={item.column.columnDef.header()}
+                    inputRef={field.ref}
+                    type="text"
+                    InputLabelProps={{ shrink: true }}
+                    margin="normal"
+                    disabled={
+                      formState.isLoading || formState.isSubmitting || loading
+                    }
+                    sx={{ display: "none" }}
+                    fullWidth
+                  />
+                )}
+              />
+            );
           case "customer":
             return (
               <Controller
@@ -732,36 +757,8 @@ const OrdersDrawer = (props) => {
               </Stack>
             );
           case "invoice":
-            // If the invoice has been paid, do not display the checkbox
-            return item.getValue()?.paid ? null : !!item.getValue() ? (
-              // If an invoice exists, display "Mark as paid"
-              <FormControlLabel
-                key={index}
-                label="Mark as paid"
-                sx={{ width: "100%", mt: "1.5rem" }}
-                control={
-                  <Controller
-                    control={control}
-                    id={item.column.columnDef.accessorKey}
-                    name={item.column.columnDef.accessorKey}
-                    rules={validationRules(item.column.columnDef)}
-                    render={({ field }) => (
-                      <Checkbox
-                        {...field}
-                        checked={!!field.value}
-                        onChange={field.onChange}
-                        disabled={
-                          formState.isLoading ||
-                          formState.isSubmitting ||
-                          loading
-                        }
-                      />
-                    )}
-                  />
-                }
-              />
-            ) : (
-              // If no invoice exists, display "Generate invoice"
+            // Only display the checkbox if the invoice does not exist
+            return !!item.getValue() ? null : (
               <FormControlLabel
                 key={index}
                 label="Generate invoice"

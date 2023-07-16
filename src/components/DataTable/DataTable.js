@@ -360,7 +360,7 @@ const DataTable = (props) => {
             })
           : // Display a generic error message
             dispatch({
-              type: SNACKBAR_ACTIONS.CREATE_ERROR,
+              type: SNACKBAR_ACTIONS.EDIT_ERROR,
               payload: response,
             });
       }
