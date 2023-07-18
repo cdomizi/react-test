@@ -55,16 +55,11 @@ const OrdersDrawer = (props) => {
     [props.edit]
   );
 
-  // Customer field value
-  const [customerValue, setCustomerValue] = useState();
-
-  // Products field list of values
-  const [productsValue, setProductsValue] = useState();
-
-  const { register, control, handleSubmit, reset, formState } = useForm();
+  const { register, control, handleSubmit, reset, formState, setValue } =
+    useForm();
 
   // Products array
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control,
     name: "products",
     rules: {
@@ -72,14 +67,8 @@ const OrdersDrawer = (props) => {
     },
   });
 
-  // Loading state for setRandomData
-  const [loading, setLoading] = useState(false);
-
   // Get id from formData item
-  const getItemId = useCallback(
-    (item) => parseInt(item.split(" ")[0].substring(1)),
-    []
-  );
+  const getItemId = useCallback((item) => parseInt(item.id), []);
 
   const onSubmit = useCallback(
     (formData) => {
@@ -98,22 +87,18 @@ const OrdersDrawer = (props) => {
       props.onSubmit(submitData);
       // Reset form and remove all product fields on submit
       reset();
-      setCustomerValue();
-      setProductsValue();
-      fields.forEach((field) => remove());
+      remove();
     },
-    [fields, getItemId, props, remove, reset]
+    [getItemId, props, remove, reset]
   );
 
   // Reset the form on submit/close
   useEffect(() => {
     if (!props.drawerOpen) {
       reset();
-      setCustomerValue();
-      setProductsValue();
-      fields.forEach((field) => remove());
+      remove();
     }
-  }, [fields, props.drawerOpen, remove, reset]);
+  }, [props.drawerOpen, remove, reset]);
 
   // Populate the form on edit
   useEffect(() => {
@@ -122,17 +107,18 @@ const OrdersDrawer = (props) => {
       const defaultCustomer = props.itemData
         .filter((item) => item.id.split("_")[1] === "customer")[0]
         .getValue();
+      setValue("customer", defaultCustomer);
 
       // Get order products
-      setCustomerValue(defaultCustomer);
       const defaultProducts = props.itemData
         .filter((item) => item.id.split("_")[1] === "products")[0]
         .getValue()
         .map((product) => ({
-          product: productsData.find((item) => item.id === product.productId),
+          product: productsData?.find((item) => item.id === product.productId),
           quantity: product.quantity,
         }));
-      setProductsValue(defaultProducts.map((product) => product.product));
+      // setProductsValue(defaultProducts.map((product) => product.product));
+      replace("products", defaultProducts);
 
       // Populate form fields
       reset(
@@ -143,7 +129,18 @@ const OrdersDrawer = (props) => {
         { keepDefaultValues: true }
       );
     }
-  }, [productsData, props.drawerOpen, props.edit, props.itemData, reset]);
+  }, [
+    productsData,
+    props.drawerOpen,
+    props.edit,
+    props.itemData,
+    replace,
+    reset,
+    setValue,
+  ]);
+
+  // Loading state for setRandomData
+  const [loading, setLoading] = useState(false);
 
   // Fill with random data
   const setRandomData = useCallback(async () => {
@@ -157,6 +154,7 @@ const OrdersDrawer = (props) => {
       )[0];
       return removedId;
     };
+
     const randomProducts = [];
     let i = 0;
     while (i < randomProductsCount) {
@@ -166,12 +164,11 @@ const OrdersDrawer = (props) => {
       });
       i++;
     }
-    setProductsValue(randomProducts.map((product) => product.product));
 
     // Get a random customer
     const randomCustomer = () => {
       const randomInt = getRandomInt(customerData?.length - 1);
-      setCustomerValue(customerData?.[randomInt]);
+      return customerData?.[randomInt];
     };
 
     // Get a random boolean value for the invoice
@@ -193,13 +190,9 @@ const OrdersDrawer = (props) => {
   // Delete item from products list
   const deleteProduct = useCallback(
     (index) => {
-      const newProducts = productsValue.filter(
-        (product) => productsValue.indexOf(product) !== index
-      );
-      setProductsValue(newProducts);
       remove(index);
     },
-    [productsValue, remove]
+    [remove]
   );
 
   // Create new-item-form fields based on row data
@@ -217,17 +210,20 @@ const OrdersDrawer = (props) => {
                   <Autocomplete
                     handleHomeEndKeys
                     id={`${props.dataName.singular}-${column.columnDef.accessorKey}`}
-                    value={customerValue || null}
+                    value={field.value || null}
+                    onChange={(event, value) => {
+                      field.onChange(value);
+                    }}
                     options={customerData ?? []}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
                     getOptionLabel={(customer) =>
                       `${customer?.id && "#" + customer.id} ${
                         customer?.firstName
                       } ${customer?.lastName}`
                     }
-                    onInputChange={(event, item) => {
-                      if (item) field.onChange(item);
-                    }}
-                    noOptionsText={`No ${props?.dataName?.plural ?? "items"}`}
+                    noOptionsText={"No customer"}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -283,7 +279,7 @@ const OrdersDrawer = (props) => {
                   <Typography color="text.secondary">Products</Typography>
                 </Divider>
                 {fields.map((item, prodIndex) => (
-                  <Stack key={prodIndex} direction="row" spacing={2} useFlexGap>
+                  <Stack key={item.id} direction="row" spacing={2} useFlexGap>
                     <Controller
                       control={control}
                       name={`products.${prodIndex}.product`}
@@ -294,19 +290,20 @@ const OrdersDrawer = (props) => {
                             required: "Please, select a product",
                           })}
                           id={`${props.dataName.singular}-products-${prodIndex}`}
-                          value={productsValue?.[prodIndex] || null}
+                          value={field.value || null}
+                          onChange={(event, value) => {
+                            field.onChange(value);
+                          }}
                           options={productsData ?? []}
+                          isOptionEqualToValue={(option, value) =>
+                            option.id === value.id
+                          }
                           getOptionLabel={(product) =>
                             `${product?.id && "#" + product.id} ${
                               product?.title
                             }`
                           }
-                          noOptionsText={`No ${
-                            props?.dataName?.plural ?? "items"
-                          }`}
-                          onInputChange={(event, item) => {
-                            if (item) field.onChange(item);
-                          }}
+                          noOptionsText={"No products"}
                           renderInput={(params) => (
                             <TextField
                               {...params}
@@ -362,6 +359,7 @@ const OrdersDrawer = (props) => {
                     <Controller
                       control={control}
                       name={`products.${prodIndex}.quantity`}
+                      defaultValue={1}
                       render={({ params }) => (
                         <FormControl margin="normal">
                           <TextField
@@ -420,10 +418,7 @@ const OrdersDrawer = (props) => {
                         </FormControl>
                       )}
                     />
-                    <Tooltip
-                      title="Delete"
-                      onClick={() => deleteProduct(prodIndex)}
-                    >
+                    <Tooltip title="Delete" onClick={() => remove(prodIndex)}>
                       <IconButton>
                         <DeleteIcon />
                       </IconButton>
@@ -514,20 +509,20 @@ const OrdersDrawer = (props) => {
                   <Autocomplete
                     handleHomeEndKeys
                     id={`${props.dataName.singular}-${item.column.columnDef.accessorKey}`}
-                    value={customerValue || null}
+                    value={field.value || null}
+                    onChange={(event, value) => {
+                      field.onChange(value);
+                    }}
                     options={customerData ?? []}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
                     getOptionLabel={(customer) =>
                       `${customer?.id && "#" + customer.id} ${
                         customer?.firstName
                       } ${customer?.lastName}`
                     }
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
-                    onInputChange={(event, item) => {
-                      if (item) field.onChange(item);
-                    }}
-                    noOptionsText={`No ${props?.dataName?.plural ?? "items"}`}
+                    noOptionsText={"No customer"}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -586,7 +581,7 @@ const OrdersDrawer = (props) => {
                   <Typography color="text.secondary">Products</Typography>
                 </Divider>
                 {fields.map((item, prodIndex) => (
-                  <Stack key={prodIndex} direction="row" spacing={2} useFlexGap>
+                  <Stack key={item.id} direction="row" spacing={2} useFlexGap>
                     <Controller
                       control={control}
                       name={`products.${prodIndex}.product`}
@@ -597,7 +592,10 @@ const OrdersDrawer = (props) => {
                             required: "Please, select a product",
                           })}
                           id={`${props.dataName.singular}-products-${prodIndex}`}
-                          value={productsValue?.[prodIndex] || null}
+                          value={field.value || null}
+                          onChange={(event, value) => {
+                            field.onChange(value);
+                          }}
                           options={productsData ?? []}
                           getOptionLabel={(product) =>
                             `${product?.id && "#" + product.id} ${
@@ -607,12 +605,7 @@ const OrdersDrawer = (props) => {
                           isOptionEqualToValue={(option, value) =>
                             option.id === value.id
                           }
-                          noOptionsText={`No ${
-                            props?.dataName?.plural ?? "items"
-                          }`}
-                          onInputChange={(event, item) => {
-                            if (item) field.onChange(item);
-                          }}
+                          noOptionsText={"No products"}
                           renderInput={(params) => (
                             <TextField
                               {...params}
@@ -858,7 +851,6 @@ OrdersDrawer.propTypes = {
   onClose: PropTypes.func,
   edit: PropTypes.bool,
   dataName: PropTypes.object,
-  randomData: PropTypes.object,
 };
 
 export default OrdersDrawer;

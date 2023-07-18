@@ -103,7 +103,7 @@ const TableDrawer = (props) => {
                 onInputChange={(event, item) => {
                   if (item) field.onChange(item);
                 }}
-                noOptionsText={`No ${props?.dataName?.plural ?? "items"}`}
+                noOptionsText={"No items"}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -233,7 +233,7 @@ const TableDrawer = (props) => {
                 onInputChange={(event, item) => {
                   if (item) field.onChange(item);
                 }}
-                noOptionsText={`No ${props?.dataName?.plural ?? "items"}`}
+                noOptionsText={"No items"}
                 renderInput={(params) => (
                   <TextField
                     {...params}
