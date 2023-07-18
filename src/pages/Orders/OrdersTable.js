@@ -130,7 +130,7 @@ const OrdersTable = memo(() => {
         header: () => "Products",
         cell: (info) => getProductsList(info.getValue()),
         enableColumnFilter: true,
-        fieldFormat: { required: true, format: "multiple" },
+        fieldFormat: { required: true },
       }),
       columnHelper.display({
         id: "total",

@@ -74,16 +74,16 @@ const OrdersDrawer = (props) => {
     (formData) => {
       // Process form data for submit
       const submitData = {
-        // Pass `id` property if available
+        // Pass `id` property if available (i.e. on edit)
         ...(formData.id && { id: parseInt(formData.id) }),
         customerId: getItemId(formData.customer),
         products: formData.products.map((product) => ({
           id: getItemId(product.product),
           quantity: parseInt(product.quantity),
         })),
-        //
         invoice: !!formData.invoice,
       };
+
       props.onSubmit(submitData);
       // Reset form and remove all product fields on submit
       reset();
@@ -117,7 +117,6 @@ const OrdersDrawer = (props) => {
           product: productsData?.find((item) => item.id === product.productId),
           quantity: product.quantity,
         }));
-      // setProductsValue(defaultProducts.map((product) => product.product));
       replace("products", defaultProducts);
 
       // Populate form fields
@@ -144,7 +143,7 @@ const OrdersDrawer = (props) => {
 
   // Fill with random data
   const setRandomData = useCallback(async () => {
-    // Get an array of random products
+    // Get an array of 1 to 3 random products
     const allProducts = [...productsData];
     const randomProductsCount = getRandomInt(3);
     const getUniqueId = () => {
@@ -187,15 +186,7 @@ const OrdersDrawer = (props) => {
     setLoading(false);
   }, [customerData, productsData, reset]);
 
-  // Delete item from products list
-  const deleteProduct = useCallback(
-    (index) => {
-      remove(index);
-    },
-    [remove]
-  );
-
-  // Create new-item-form fields based on row data
+  // Create new-order-form fields based on row data
   const createFormFields = !props.edit
     ? filterFields(props.itemData)?.map((column, index) => {
         switch (column.columnDef?.accessorKey) {
@@ -359,7 +350,6 @@ const OrdersDrawer = (props) => {
                     <Controller
                       control={control}
                       name={`products.${prodIndex}.quantity`}
-                      defaultValue={1}
                       render={({ params }) => (
                         <FormControl margin="normal">
                           <TextField
@@ -368,11 +358,11 @@ const OrdersDrawer = (props) => {
                               min: {
                                 value: 1,
                                 valueAsNumber: true,
-                                message: "Must be >0",
+                                message: "Value must be >0",
                               },
                             })}
                             id={`products.${prodIndex}.quantity`}
-                            label={`Quantity #${prodIndex + 1}`}
+                            label={`Qty. #${prodIndex + 1}`}
                             type="number"
                             error={
                               !!(
@@ -413,7 +403,7 @@ const OrdersDrawer = (props) => {
                                 </>
                               ),
                             }}
-                            sx={{ maxWidth: "6.7rem" }}
+                            sx={{ maxWidth: "6.7rem", minWidth: "5rem" }}
                           />
                         </FormControl>
                       )}
@@ -468,7 +458,7 @@ const OrdersDrawer = (props) => {
       })
     : null;
 
-  // Create edit-item-form fields based on row data
+  // Create edit-order-form fields based on row data
   const editFormFields = props.edit
     ? filterFields(props.itemData)?.map((item, index) => {
         switch (item.column.columnDef?.accessorKey) {
@@ -478,7 +468,6 @@ const OrdersDrawer = (props) => {
                 key={index}
                 control={control}
                 name={item.column.columnDef.accessorKey}
-                defaultValue={item.getValue()}
                 rules={validationRules(item.column.columnDef)}
                 render={({ field }) => (
                   <TextField
@@ -669,7 +658,7 @@ const OrdersDrawer = (props) => {
                               min: {
                                 value: 1,
                                 valueAsNumber: true,
-                                message: "Must be >0",
+                                message: "Value must be >0",
                               },
                             })}
                             id={`products.${prodIndex}.quantity`}
@@ -714,15 +703,12 @@ const OrdersDrawer = (props) => {
                                 </>
                               ),
                             }}
-                            sx={{ maxWidth: "6.7rem" }}
+                            sx={{ maxWidth: "6.7rem", minWidth: "5rem" }}
                           />
                         </FormControl>
                       )}
                     />
-                    <Tooltip
-                      title="Delete"
-                      onClick={() => deleteProduct(prodIndex)}
-                    >
+                    <Tooltip title="Delete" onClick={() => remove(prodIndex)}>
                       <IconButton>
                         <DeleteIcon />
                       </IconButton>
@@ -791,7 +777,7 @@ const OrdersDrawer = (props) => {
         <Typography variant="h4" mb={6}>
           {`${props.edit ? "Edit" : "New"} ${
             props.dataName ? capitalize(props?.dataName?.singular) : "Item"
-          }`}{" "}
+          }`}
         </Typography>
         <Button
           variant="outlined"
