@@ -98,11 +98,8 @@ const TableDrawer = (props) => {
                   column.columnDef.accessorKey
                 }`}
                 options={[]}
-                defaultValue={[]}
+                value={field.value || []}
                 onChange={(event, value) => field.onChange(value)}
-                onInputChange={(event, item) => {
-                  if (item) field.onChange(item);
-                }}
                 noOptionsText={"No items"}
                 renderInput={(params) => (
                   <TextField
@@ -224,15 +221,8 @@ const TableDrawer = (props) => {
                     ? [item?.getValue()]
                     : item?.getValue()
                 }
-                defaultValue={
-                  typeof item?.getValue() === "string"
-                    ? [item?.getValue()]
-                    : item?.getValue()
-                }
+                value={field.value ?? item.getValue()}
                 onChange={(event, value) => field.onChange(value)}
-                onInputChange={(event, item) => {
-                  if (item) field.onChange(item);
-                }}
                 noOptionsText={"No items"}
                 renderInput={(params) => (
                   <TextField
