@@ -55,8 +55,10 @@ const OrdersDrawer = (props) => {
     [props.edit]
   );
 
-  const { register, control, handleSubmit, reset, formState, setValue } =
-    useForm();
+  const { register, control, handleSubmit, reset, formState, setValue, watch } =
+    useForm({
+      defaultValues: { customer: null, products: [], invoice: false },
+    });
 
   // Products array
   const { fields, append, remove, replace } = useFieldArray({
@@ -280,8 +282,8 @@ const OrdersDrawer = (props) => {
                           {...register(`products.${prodIndex}.product`, {
                             required: "Please, select a product",
                           })}
-                          id={`${props.dataName.singular}-products-${prodIndex}`}
-                          value={field.value || null}
+                          id={`products-${prodIndex}.product`}
+                          value={watch("products")[prodIndex].product || null}
                           onChange={(event, value) => {
                             field.onChange(value);
                           }}
@@ -298,7 +300,7 @@ const OrdersDrawer = (props) => {
                           renderInput={(params) => (
                             <TextField
                               {...params}
-                              id={`products.${prodIndex}.product`}
+                              id={`products.${prodIndex}.product-input`}
                               label={`Product #${prodIndex + 1}`}
                               error={
                                 !!(
@@ -580,8 +582,8 @@ const OrdersDrawer = (props) => {
                           {...register(`products.${prodIndex}.product`, {
                             required: "Please, select a product",
                           })}
-                          id={`${props.dataName.singular}-products-${prodIndex}`}
-                          value={field.value || null}
+                          id={`products.${prodIndex}.product-input`}
+                          value={watch("products")[prodIndex].product || null}
                           onChange={(event, value) => {
                             field.onChange(value);
                           }}
