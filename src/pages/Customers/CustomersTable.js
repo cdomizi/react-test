@@ -24,9 +24,11 @@ const CustomersTable = memo(() => {
   // State to force data update
   const [reload, setReload] = useState();
 
+  const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
+
   // Fetch data from external api
   const { loading, error, data } = useFetch(
-    "http://localhost:4000/api/v1/customers",
+    `${API_ENDPOINT}v1/customers`,
     reload
   );
 
@@ -79,78 +81,87 @@ const CustomersTable = memo(() => {
   };
 
   // Create new customer
-  const handleCreateCustomer = useCallback(async (formData) => {
-    const response = await fetch(`http://localhost:4000/api/v1/customers`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      // Force reload to update table data
-      setReload({});
-      // Return customer name to display on new customer confirmation message
-      const customerName = `${data?.firstName} ${data?.lastName}`;
-      return customerName;
-    } else {
-      // Check if the user entered a duplicate value for a unique field
-      const uniqueField = uniqueFieldError(response, formData);
-      // If it's not a uniqueFieldError, return a generic error
-      return uniqueField ?? response;
-    }
-  }, []);
-
-  // Edit customer
-  const handleEditCustomer = useCallback(async (formData) => {
-    // This specific API requires `id` to be of type String
-    formData.id = String(formData.id);
-
-    const response = await fetch(
-      `http://localhost:4000/api/v1/customers/${formData.id}`,
-      {
-        method: "PUT",
+  const handleCreateCustomer = useCallback(
+    async (formData) => {
+      const response = await fetch(`${API_ENDPOINT}v1/customers`, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-      }
-    );
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      // Force reload to update table data
-      setReload({});
-      // Return customer name to display on edit confirmation message
-      const customerName = `${data?.firstName} ${data?.lastName}`;
-      return customerName;
-    } else {
-      // Check if the user entered a duplicate value for a unique field
-      const uniqueField = uniqueFieldError(response, formData);
-      // If it's not a uniqueFieldError, return a generic error
-      return uniqueField ?? response;
-    }
-  }, []);
+      if (response.ok) {
+        const data = await response.json();
+        // Force reload to update table data
+        setReload({});
+        // Return customer name to display on new customer confirmation message
+        const customerName = `${data?.firstName} ${data?.lastName}`;
+        return customerName;
+      } else {
+        // Check if the user entered a duplicate value for a unique field
+        const uniqueField = uniqueFieldError(response, formData);
+        // If it's not a uniqueFieldError, return a generic error
+        return uniqueField ?? response;
+      }
+    },
+    [API_ENDPOINT]
+  );
+
+  // Edit customer
+  const handleEditCustomer = useCallback(
+    async (formData) => {
+      // This specific API requires `id` to be of type String
+      formData.id = String(formData.id);
+
+      const response = await fetch(
+        `${API_ENDPOINT}v1/customers/${formData.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        // Force reload to update table data
+        setReload({});
+        // Return customer name to display on edit confirmation message
+        const customerName = `${data?.firstName} ${data?.lastName}`;
+        return customerName;
+      } else {
+        // Check if the user entered a duplicate value for a unique field
+        const uniqueField = uniqueFieldError(response, formData);
+        // If it's not a uniqueFieldError, return a generic error
+        return uniqueField ?? response;
+      }
+    },
+    [API_ENDPOINT]
+  );
 
   // Delete customer
-  const handleDeleteCustomer = useCallback(async (customerId) => {
-    const response = await fetch(
-      `http://localhost:4000/api/v1/customers/${customerId}`,
-      {
-        method: "DELETE",
-      }
-    );
+  const handleDeleteCustomer = useCallback(
+    async (customerId) => {
+      const response = await fetch(
+        `${API_ENDPOINT}v1/customers/${customerId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
-    if (response.ok) {
-      const data = await response.json();
-      // Force reload to update table data
-      setReload({});
-      // Return customer name to display on delete confirmation message
-      const customerName = `${data?.firstName} ${data?.lastName}`;
-      return customerName;
-    } else {
-      const error = await response;
-      return error;
-    }
-  }, []);
+      if (response.ok) {
+        const data = await response.json();
+        // Force reload to update table data
+        setReload({});
+        // Return customer name to display on delete confirmation message
+        const customerName = `${data?.firstName} ${data?.lastName}`;
+        return customerName;
+      } else {
+        const error = await response;
+        return error;
+      }
+    },
+    [API_ENDPOINT]
+  );
 
   return (
     <Card>

@@ -31,19 +31,21 @@ import {
 import { Delete as DeleteIcon } from "@mui/icons-material";
 
 const OrdersDrawer = (props) => {
+  const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
+
   // Fetch customer data
   const {
     loading: customerLoading,
     error: customerError,
     data: customerData,
-  } = useFetch("http://localhost:4000/api/v1/customers");
+  } = useFetch(`${API_ENDPOINT}v1/customers`);
 
   // Fetch product data
   const {
     loading: productsLoading,
     error: productsError,
     data: productsData,
-  } = useFetch("http://localhost:4000/api/v1/products");
+  } = useFetch(`${API_ENDPOINT}v1/products`);
 
   // Filter Drawer fields based on property `fieldFormat.exclude`
   const filterFields = useCallback(

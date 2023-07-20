@@ -25,9 +25,11 @@ const ProductsTable = memo(() => {
   // State to force data update
   const [reload, setReload] = useState();
 
+  const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
+
   // Fetch data from external api
   const { loading, error, data } = useFetch(
-    "http://localhost:4000/api/v1/products",
+    `${API_ENDPOINT}v1/products`,
     reload
   );
 
@@ -133,7 +135,7 @@ const ProductsTable = memo(() => {
 
   // Create new product
   const handleCreateProduct = useCallback(async (formData) => {
-    const response = await fetch(`http://localhost:4000/api/v1/products`, {
+    const response = await fetch(`${API_ENDPOINT}v1/products`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -159,14 +161,11 @@ const ProductsTable = memo(() => {
     // This specific API requires `id` to be of type String
     formData.id = String(formData.id);
 
-    const response = await fetch(
-      `http://localhost:4000/api/v1/products/${formData.id}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      }
-    );
+    const response = await fetch(`${API_ENDPOINT}v1/products/${formData.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
 
     if (response.ok) {
       const data = await response.json();
@@ -185,12 +184,9 @@ const ProductsTable = memo(() => {
 
   // Delete product
   const handleDeleteProduct = useCallback(async (productId) => {
-    const response = await fetch(
-      `http://localhost:4000/api/v1/products/${productId}`,
-      {
-        method: "DELETE",
-      }
-    );
+    const response = await fetch(`${API_ENDPOINT}v1/products/${productId}`, {
+      method: "DELETE",
+    });
 
     if (response.ok) {
       const data = await response.json();

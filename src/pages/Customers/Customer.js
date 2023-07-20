@@ -4,10 +4,9 @@ import { useParams } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 
 const Customer = () => {
+  const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
   const { customerId } = useParams();
-  const { data } = useFetch(
-    `http://localhost:4000/api/v1/customers/${customerId}`
-  );
+  const { data } = useFetch(`${API_ENDPOINT}v1/customers/${customerId}`);
   return (
     <pre>
       <code>{JSON.stringify(data, null, 2)}</code>

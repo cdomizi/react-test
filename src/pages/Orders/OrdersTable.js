@@ -23,11 +23,10 @@ const OrdersTable = memo(() => {
   // State to force data update
   const [reload, setReload] = useState();
 
+  const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
+
   // Fetch orders data
-  const { loading, error, data } = useFetch(
-    "http://localhost:4000/api/v1/orders",
-    reload
-  );
+  const { loading, error, data } = useFetch(`${API_ENDPOINT}v1/orders`, reload);
 
   // Set orders upon fetching data
   useEffect(() => {
@@ -39,7 +38,7 @@ const OrdersTable = memo(() => {
     loading: productLoading,
     error: productError,
     data: productData,
-  } = useFetch("http://localhost:4000/api/v1/products", reload);
+  } = useFetch(`${API_ENDPOINT}v1/products`, reload);
 
   // Get product data by ID including quantity
   const getProduct = useCallback(
@@ -164,7 +163,7 @@ const OrdersTable = memo(() => {
 
   // Create new order
   const handleCreateOrder = useCallback(async (formData) => {
-    const response = await fetch(`http://localhost:4000/api/v1/orders`, {
+    const response = await fetch(`${API_ENDPOINT}v1/orders`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -190,14 +189,11 @@ const OrdersTable = memo(() => {
     // This specific API requires `id` to be of type String
     formData.id = String(formData.id);
 
-    const response = await fetch(
-      `http://localhost:4000/api/v1/orders/${formData.id}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      }
-    );
+    const response = await fetch(`${API_ENDPOINT}v1/orders/${formData.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
 
     if (response.ok) {
       const data = await response.json();
@@ -216,12 +212,9 @@ const OrdersTable = memo(() => {
 
   // Delete order
   const handleDeleteOrder = useCallback(async (orderId) => {
-    const response = await fetch(
-      `http://localhost:4000/api/v1/orders/${orderId}`,
-      {
-        method: "DELETE",
-      }
-    );
+    const response = await fetch(`${API_ENDPOINT}orders/${orderId}`, {
+      method: "DELETE",
+    });
 
     if (response.ok) {
       const data = await response.json();
