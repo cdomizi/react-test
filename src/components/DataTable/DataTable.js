@@ -446,6 +446,7 @@ const DataTable = (props) => {
     const arr = [...filteredColumns].map((header) => ({
       id: header.id,
       label: header.column.columnDef.header(),
+      type: header.column.columnDef?.filterType,
     }));
     return arr;
   }, [table]);

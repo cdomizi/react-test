@@ -98,9 +98,20 @@ const ProductsTable = memo(() => {
             {info.getValue()}
           </Typography>
         ),
-        enableColumnFilter: false,
+        enableColumnFilter: true,
+        // Filter stock within a given range
+        filterFn: (row, columnId, value) => {
+          const stock = row.getValue(columnId);
+          const [min, max] = value.map((val) =>
+            val?.length ? parseInt(val) : NaN
+          );
+          return min >= 0 && max >= 0
+            ? stock >= min && stock <= max
+            : stock >= min || stock <= max;
+        },
         align: "right",
         fieldFormat: { min: 0 },
+        filterType: { type: "number", min: 0 },
       }),
       columnHelper.accessor("description", {
         header: () => "Description",

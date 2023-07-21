@@ -70,7 +70,10 @@ const OrdersTable = memo(() => {
   const getProductsList = useCallback(
     (products) => {
       const titles = products.map(
-        (product) => `${product?.quantity}× ${getProduct(product)?.item.title}`
+        (product) =>
+          `${product?.quantity}× #${getProduct(product)?.item.id} ${
+            getProduct(product)?.item.title
+          }`
       );
       // Return "None" if products list is empty/null/undefined
       return titles.join(", ") || "None";
@@ -121,7 +124,8 @@ const OrdersTable = memo(() => {
       columnHelper.accessor("updatedAt", {
         header: () => "Updated",
         cell: (info) => formatDate(info.getValue()),
-        enableColumnFilter: false,
+        isVisible: false,
+        enableColumnFilter: true,
         fieldFormat: { hidden: true },
       }),
       columnHelper.accessor("customer", {
@@ -129,12 +133,30 @@ const OrdersTable = memo(() => {
         cell: (info) =>
           `${info.getValue().firstName} ${info.getValue().lastName}`,
         enableColumnFilter: true,
+        // Filter customer by name
+        filterFn: (row, columnId, value) => {
+          const { firstName, lastName } = row.getValue(columnId);
+          const filterValue = value.toLowerCase().trim();
+
+          return (
+            firstName.toLowerCase().includes(filterValue) ||
+            lastName.toLowerCase().includes(filterValue)
+          );
+        },
         fieldFormat: { required: true },
       }),
       columnHelper.accessor("products", {
         header: () => "Products",
         cell: (info) => getProductsList(info.getValue()),
         enableColumnFilter: true,
+        // Filter products by title
+        filterFn: (row, columnId, value) => {
+          const products = getProductsList(
+            row.getValue(columnId)
+          ).toLowerCase();
+
+          return products.includes(value.toLowerCase().trim());
+        },
         fieldFormat: { required: true },
       }),
       columnHelper.display({
@@ -156,7 +178,18 @@ const OrdersTable = memo(() => {
             )}
           </Typography>
         ),
+        enableColumnFilter: true,
+        // Filter invoice by status
+        filterFn: (row, columnId, value) => {
+          const status = getInvoiceStatus(row.getValue(columnId)) ?? "none";
+          console.log(status);
+          return status === value;
+        },
         fieldFormat: { checkbox: true },
+        filterType: {
+          type: "select",
+          options: ["none", "pending", "paid", "overdue"],
+        },
       }),
     ],
     [columnHelper, getInvoiceStatus, getOrderTotal, getProductsList, setColor]
@@ -254,7 +287,7 @@ const OrdersTable = memo(() => {
         loading={loading || productLoading}
         error={error || productError}
         orderBy={"updatedAt"}
-        globalSearch={true}
+        globalSearch={false}
         defaultOrder={true}
         clickable={true}
         reload={reload}

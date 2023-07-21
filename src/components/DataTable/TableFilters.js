@@ -2,7 +2,15 @@ import PropTypes from "prop-types";
 import { useCallback } from "react";
 
 // MUI components
-import { Box, IconButton, Stack, TextField, Tooltip } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  MenuItem,
+  Stack,
+  TextField,
+  Tooltip,
+  capitalize,
+} from "@mui/material";
 
 // MUI icons
 import {
@@ -24,9 +32,16 @@ const TableFilters = ({
       const formData = new FormData(event.currentTarget);
       // Format data according to DataTable filter format
       const filtersArray = [];
-      formData.forEach((value, key) =>
-        filtersArray.push({ id: key, value: value })
-      );
+      formData.forEach((value, key) => {
+        const duplicate = filtersArray.findIndex(({ id }) => id === key);
+        duplicate >= 0
+          ? (filtersArray[duplicate].value = [
+              filtersArray[duplicate].value,
+              value,
+            ])
+          : filtersArray.push({ id: key, value: value });
+        // filtersArray.push({ id: key, value: value });
+      });
       // Only set non-empty filters
       onFiltersSubmit(filtersArray.filter((filter) => filter.value.length));
     },
@@ -67,16 +82,79 @@ const TableFilters = ({
               gap: 2,
             }}
           >
-            {filters?.map((filter) => (
-              <TextField
-                key={filter.id}
-                margin="normal"
-                id={filter.id}
-                name={filter.id}
-                label={filter.label}
-                InputLabelProps={{ shrink: true }}
-              />
-            ))}
+            {filters?.map((filter) => {
+              switch (filter?.type?.type) {
+                case "select":
+                  return (
+                    <TextField
+                      select
+                      key={filter.id}
+                      margin="normal"
+                      id={filter.id}
+                      name={filter.id}
+                      defaultValue={""}
+                      label={filter.label}
+                      InputLabelProps={{ shrink: true }}
+                      inputProps={{ sx: { width: "12rem", textAlign: "left" } }}
+                    >
+                      {filter.type.options.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {!!option ? capitalize(option) : "None"}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  );
+                case "number":
+                  return (
+                    <>
+                      <TextField
+                        key={filter.id}
+                        margin="normal"
+                        id={filter.id}
+                        name={filter.id}
+                        defaultValue={null}
+                        label={`Min. ${filter.label}`}
+                        type="number"
+                        InputLabelProps={{ shrink: true }}
+                        inputProps={{
+                          sx: { width: "6rem" },
+                          ...(typeof filter.type?.min === "number" && {
+                            min: filter.type.min,
+                          }),
+                        }}
+                      />
+                      <TextField
+                        number
+                        key={filter.id}
+                        margin="normal"
+                        id={filter.id}
+                        name={filter.id}
+                        defaultValue={null}
+                        label={`Max. ${filter.label}`}
+                        type="number"
+                        InputLabelProps={{ shrink: true }}
+                        inputProps={{
+                          sx: { width: "6rem" },
+                          ...(typeof filter.type?.min === "number" && {
+                            min: filter.type.min,
+                          }),
+                        }}
+                      />
+                    </>
+                  );
+                default:
+                  return (
+                    <TextField
+                      key={filter.id}
+                      margin="normal"
+                      id={filter.id}
+                      name={filter.id}
+                      label={filter.label}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  );
+              }
+            })}
           </Box>
           <Box sx={{ whiteSpace: "nowrap" }}>
             <Tooltip title="Apply Filters" sx={{ ml: "auto" }}>
