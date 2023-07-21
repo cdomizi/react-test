@@ -142,6 +142,32 @@ const TableFilters = ({
                       />
                     </>
                   );
+                case "date":
+                  return (
+                    <>
+                      <TextField
+                        key={filter.id}
+                        margin="normal"
+                        id={filter.id}
+                        name={filter.id}
+                        defaultValue={null}
+                        label="From"
+                        type="date"
+                        InputLabelProps={{ shrink: true }}
+                      />
+                      <TextField
+                        number
+                        key={filter.id}
+                        margin="normal"
+                        id={filter.id}
+                        name={filter.id}
+                        defaultValue={null}
+                        label="Before"
+                        type="date"
+                        InputLabelProps={{ shrink: true }}
+                      />
+                    </>
+                  );
                 default:
                   return (
                     <TextField

@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback, memo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 // Project import
 import useFetch from "../../hooks/useFetch";
@@ -120,6 +121,18 @@ const OrdersTable = memo(() => {
         cell: (info) => formatDate(info.getValue()),
         enableColumnFilter: true,
         fieldFormat: { hidden: true },
+        filterType: { type: "date" },
+        // Filter date within a given range
+        filterFn: (row, columnId, value) => {
+          const date = new Date(row.getValue(columnId));
+          const [from, before] = value.map((date) =>
+            date?.length ? moment(date) : NaN
+          );
+
+          return from >= 0 && before >= 0
+            ? date >= from && date <= before
+            : date >= from || date <= before;
+        },
       }),
       columnHelper.accessor("updatedAt", {
         header: () => "Updated",

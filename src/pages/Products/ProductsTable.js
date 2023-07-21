@@ -102,8 +102,8 @@ const ProductsTable = memo(() => {
         // Filter stock within a given range
         filterFn: (row, columnId, value) => {
           const stock = row.getValue(columnId);
-          const [min, max] = value.map((val) =>
-            val?.length ? parseInt(val) : NaN
+          const [min, max] = value.map((amount) =>
+            amount?.length ? parseInt(amount) : NaN
           );
           return min >= 0 && max >= 0
             ? stock >= min && stock <= max
