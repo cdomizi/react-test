@@ -7,7 +7,7 @@ const Customer = () => {
   const { customerId } = useParams();
   const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
 
-  const { data } = useFetch(`${API_ENDPOINT}v1/customers/${customerId}`);
+  const { data } = useFetch(`${API_ENDPOINT}customers/${customerId}`);
   return (
     <pre>
       <code>{JSON.stringify(data, null, 2)}</code>

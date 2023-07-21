@@ -7,7 +7,7 @@ const Order = () => {
   const { orderId } = useParams();
   const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
 
-  const { data } = useFetch(`${API_ENDPOINT}v1/orders/${orderId}`);
+  const { data } = useFetch(`${API_ENDPOINT}orders/${orderId}`);
   return (
     <pre>
       <code>{JSON.stringify(data, null, 2)}</code>

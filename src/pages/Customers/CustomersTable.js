@@ -13,7 +13,7 @@ import { Card } from "@mui/material";
 const CustomersTable = memo(() => {
   const navigate = useNavigate();
 
-  // Specify the name for table data.
+  // Specify the name for table data
   const dataName = useMemo(
     () => ({ singular: "customer", plural: "customers" }),
     []
@@ -21,16 +21,13 @@ const CustomersTable = memo(() => {
 
   const [customers, setCustomers] = useState(null);
 
-  // State to force data update
+  // State to force reload on data update
   const [reload, setReload] = useState();
 
   const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
 
   // Fetch data from external api
-  const { loading, error, data } = useFetch(
-    `${API_ENDPOINT}v1/customers`,
-    reload
-  );
+  const { loading, error, data } = useFetch(`${API_ENDPOINT}customers`, reload);
 
   // Set customers upon fetching data
   useEffect(() => {
@@ -83,7 +80,7 @@ const CustomersTable = memo(() => {
   // Create new customer
   const handleCreateCustomer = useCallback(
     async (formData) => {
-      const response = await fetch(`${API_ENDPOINT}v1/customers`, {
+      const response = await fetch(`${API_ENDPOINT}customers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -112,14 +109,11 @@ const CustomersTable = memo(() => {
       // This specific API requires `id` to be of type String
       formData.id = String(formData.id);
 
-      const response = await fetch(
-        `${API_ENDPOINT}v1/customers/${formData.id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(`${API_ENDPOINT}customers/${formData.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -141,12 +135,9 @@ const CustomersTable = memo(() => {
   // Delete customer
   const handleDeleteCustomer = useCallback(
     async (customerId) => {
-      const response = await fetch(
-        `${API_ENDPOINT}v1/customers/${customerId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`${API_ENDPOINT}customers/${customerId}`, {
+        method: "DELETE",
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -174,6 +165,7 @@ const CustomersTable = memo(() => {
         error={error}
         orderBy={"id"}
         globalSearch={true}
+        defaultOrder={true}
         clickable={true}
         reload={reload}
         onRowClick={handleRowClick}

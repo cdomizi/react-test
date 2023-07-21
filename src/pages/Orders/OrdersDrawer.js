@@ -38,14 +38,14 @@ const OrdersDrawer = (props) => {
     loading: customerLoading,
     error: customerError,
     data: customerData,
-  } = useFetch(`${API_ENDPOINT}v1/customers`);
+  } = useFetch(`${API_ENDPOINT}customers`);
 
   // Fetch product data
   const {
     loading: productsLoading,
     error: productsError,
     data: productsData,
-  } = useFetch(`${API_ENDPOINT}v1/products`);
+  } = useFetch(`${API_ENDPOINT}products`);
 
   // Filter Drawer fields based on property `fieldFormat.exclude`
   const filterFields = useCallback(
@@ -79,7 +79,7 @@ const OrdersDrawer = (props) => {
       // Process form data for submit
       const submitData = {
         // Pass `id` property if available (i.e. on edit)
-        ...(formData.id && { id: parseInt(formData.id) }),
+        ...(formData.id && { id: formData.id }),
         customerId: getItemId(formData.customer),
         products: formData.products.map((product) => ({
           id: getItemId(product.product),
@@ -87,7 +87,6 @@ const OrdersDrawer = (props) => {
         })),
         invoice: !!formData.invoice,
       };
-
       props.onSubmit(submitData);
       // Reset form and remove all product fields on submit
       reset();
@@ -181,11 +180,14 @@ const OrdersDrawer = (props) => {
     setLoading(true);
 
     // Fill form fields
-    reset({
-      customer: randomCustomer(),
-      products: randomProducts,
-      invoice: randomBoolean,
-    });
+    reset(
+      {
+        customer: randomCustomer(),
+        products: randomProducts,
+        invoice: randomBoolean,
+      },
+      { keepDefaultValues: true }
+    );
 
     setLoading(false);
   }, [customerData, productsData, reset]);
@@ -472,6 +474,7 @@ const OrdersDrawer = (props) => {
                 key={index}
                 control={control}
                 name={item.column.columnDef.accessorKey}
+                defaultValue={item?.getValue()}
                 rules={validationRules(item.column.columnDef)}
                 render={({ field }) => (
                   <TextField

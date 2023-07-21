@@ -15,18 +15,18 @@ import { Button, Card, Typography } from "@mui/material";
 const OrdersTable = memo(() => {
   const navigate = useNavigate();
 
-  // Specify the name for table data.
+  // Specify the name for table data
   const dataName = useMemo(() => ({ singular: "order", plural: "orders" }), []);
 
   const [orders, setOrders] = useState(null);
 
-  // State to force data update
+  // State to force reload on data update
   const [reload, setReload] = useState();
 
   const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
 
   // Fetch orders data
-  const { loading, error, data } = useFetch(`${API_ENDPOINT}v1/orders`, reload);
+  const { loading, error, data } = useFetch(`${API_ENDPOINT}orders`, reload);
 
   // Set orders upon fetching data
   useEffect(() => {
@@ -38,7 +38,7 @@ const OrdersTable = memo(() => {
     loading: productLoading,
     error: productError,
     data: productData,
-  } = useFetch(`${API_ENDPOINT}v1/products`, reload);
+  } = useFetch(`${API_ENDPOINT}products`, reload);
 
   // Get product data by ID including quantity
   const getProduct = useCallback(
@@ -118,6 +118,12 @@ const OrdersTable = memo(() => {
         enableColumnFilter: true,
         fieldFormat: { hidden: true },
       }),
+      columnHelper.accessor("updatedAt", {
+        header: () => "Updated",
+        cell: (info) => formatDate(info.getValue()),
+        enableColumnFilter: false,
+        fieldFormat: { hidden: true },
+      }),
       columnHelper.accessor("customer", {
         header: () => "Customer",
         cell: (info) =>
@@ -164,7 +170,7 @@ const OrdersTable = memo(() => {
   // Create new order
   const handleCreateOrder = useCallback(
     async (formData) => {
-      const response = await fetch(`${API_ENDPOINT}v1/orders`, {
+      const response = await fetch(`${API_ENDPOINT}orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -174,9 +180,9 @@ const OrdersTable = memo(() => {
         const data = await response.json();
         // Force reload to update table data
         setReload({});
-        // Return order id to display on new order confirmation message
-        const orderTitle = `#${data?.id}`;
-        return orderTitle;
+        // Return order ID to display on new order confirmation message
+        const orderId = `#${data?.id}`;
+        return orderId;
       } else {
         // Check if the user entered a duplicate value for a unique field
         const uniqueField = uniqueFieldError(response, formData);
@@ -193,7 +199,7 @@ const OrdersTable = memo(() => {
       // This specific API requires `id` to be of type String
       formData.id = String(formData.id);
 
-      const response = await fetch(`${API_ENDPOINT}v1/orders/${formData.id}`, {
+      const response = await fetch(`${API_ENDPOINT}orders/${formData.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -203,9 +209,9 @@ const OrdersTable = memo(() => {
         const data = await response.json();
         // Force reload to update table data
         setReload({});
-        // Return order name to display on edit confirmation message
-        const orderTitle = `#${data?.id}`;
-        return orderTitle;
+        // Return order ID to display on edit confirmation message
+        const orderId = `#${data?.id}`;
+        return orderId;
       } else {
         // Check if the user entered a duplicate value for a unique field
         const uniqueField = uniqueFieldError(response, formData);
@@ -247,8 +253,9 @@ const OrdersTable = memo(() => {
         columns={columns}
         loading={loading || productLoading}
         error={error || productError}
-        orderBy={"id"}
+        orderBy={"updatedAt"}
         globalSearch={true}
+        defaultOrder={true}
         clickable={true}
         reload={reload}
         onRowClick={handleRowClick}

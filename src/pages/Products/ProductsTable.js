@@ -14,7 +14,7 @@ import { Card, Typography } from "@mui/material";
 const ProductsTable = memo(() => {
   const navigate = useNavigate();
 
-  // Specify the name for table data.
+  // Specify the name for table data
   const dataName = useMemo(
     () => ({ singular: "product", plural: "products" }),
     []
@@ -22,16 +22,13 @@ const ProductsTable = memo(() => {
 
   const [products, setProducts] = useState(null);
 
-  // State to force data update
+  // State to force reload on data update
   const [reload, setReload] = useState();
 
   const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
 
   // Fetch data from external api
-  const { loading, error, data } = useFetch(
-    `${API_ENDPOINT}v1/products`,
-    reload
-  );
+  const { loading, error, data } = useFetch(`${API_ENDPOINT}products`, reload);
 
   // Set products upon fetching data
   useEffect(() => {
@@ -136,7 +133,7 @@ const ProductsTable = memo(() => {
   // Create new product
   const handleCreateProduct = useCallback(
     async (formData) => {
-      const response = await fetch(`${API_ENDPOINT}v1/products`, {
+      const response = await fetch(`${API_ENDPOINT}products`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -165,14 +162,11 @@ const ProductsTable = memo(() => {
       // This specific API requires `id` to be of type String
       formData.id = String(formData.id);
 
-      const response = await fetch(
-        `${API_ENDPOINT}v1/products/${formData.id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(`${API_ENDPOINT}products/${formData.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -194,7 +188,7 @@ const ProductsTable = memo(() => {
   // Delete product
   const handleDeleteProduct = useCallback(
     async (productId) => {
-      const response = await fetch(`${API_ENDPOINT}v1/products/${productId}`, {
+      const response = await fetch(`${API_ENDPOINT}products/${productId}`, {
         method: "DELETE",
       });
 
@@ -224,6 +218,7 @@ const ProductsTable = memo(() => {
         error={error}
         orderBy={"id"}
         globalSearch={true}
+        defaultOrder={true}
         clickable={true}
         reload={reload}
         onRowClick={handleRowClick}
