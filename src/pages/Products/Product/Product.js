@@ -5,8 +5,9 @@ import useFetch from "../../../hooks/useFetch";
 import ProductDetail from "./ProductDetail";
 
 const Product = () => {
-  const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
   const { productId } = useParams();
+  const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
+
   const { loading, error, data } = useFetch(
     `${API_ENDPOINT}products/${productId}`
   );

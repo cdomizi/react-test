@@ -134,72 +134,84 @@ const ProductsTable = memo(() => {
   };
 
   // Create new product
-  const handleCreateProduct = useCallback(async (formData) => {
-    const response = await fetch(`${API_ENDPOINT}v1/products`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+  const handleCreateProduct = useCallback(
+    async (formData) => {
+      const response = await fetch(`${API_ENDPOINT}v1/products`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      // Force reload to update table data
-      setReload({});
-      // Return product name to display on new product confirmation message
-      const productTitle = data?.title;
-      return productTitle;
-    } else {
-      // Check if the user entered a duplicate value for a unique field
-      const uniqueField = uniqueFieldError(response, formData);
-      // If it's not a uniqueFieldError, return a generic error
-      return uniqueField ?? response;
-    }
-  }, []);
+      if (response.ok) {
+        const data = await response.json();
+        // Force reload to update table data
+        setReload({});
+        // Return product name to display on new product confirmation message
+        const productTitle = data?.title;
+        return productTitle;
+      } else {
+        // Check if the user entered a duplicate value for a unique field
+        const uniqueField = uniqueFieldError(response, formData);
+        // If it's not a uniqueFieldError, return a generic error
+        return uniqueField ?? response;
+      }
+    },
+    [API_ENDPOINT]
+  );
 
   // Edit product
-  const handleEditProduct = useCallback(async (formData) => {
-    // This specific API requires `id` to be of type String
-    formData.id = String(formData.id);
+  const handleEditProduct = useCallback(
+    async (formData) => {
+      // This specific API requires `id` to be of type String
+      formData.id = String(formData.id);
 
-    const response = await fetch(`${API_ENDPOINT}v1/products/${formData.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+      const response = await fetch(
+        `${API_ENDPOINT}v1/products/${formData.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
-    if (response.ok) {
-      const data = await response.json();
-      // Force reload to update table data
-      setReload({});
-      // Return product name to display on edit confirmation message
-      const productTitle = data?.title;
-      return productTitle;
-    } else {
-      // Check if the user entered a duplicate value for a unique field
-      const uniqueField = uniqueFieldError(response, formData);
-      // If it's not a uniqueFieldError, return a generic error
-      return uniqueField ?? response;
-    }
-  }, []);
+      if (response.ok) {
+        const data = await response.json();
+        // Force reload to update table data
+        setReload({});
+        // Return product name to display on edit confirmation message
+        const productTitle = data?.title;
+        return productTitle;
+      } else {
+        // Check if the user entered a duplicate value for a unique field
+        const uniqueField = uniqueFieldError(response, formData);
+        // If it's not a uniqueFieldError, return a generic error
+        return uniqueField ?? response;
+      }
+    },
+    [API_ENDPOINT]
+  );
 
   // Delete product
-  const handleDeleteProduct = useCallback(async (productId) => {
-    const response = await fetch(`${API_ENDPOINT}v1/products/${productId}`, {
-      method: "DELETE",
-    });
+  const handleDeleteProduct = useCallback(
+    async (productId) => {
+      const response = await fetch(`${API_ENDPOINT}v1/products/${productId}`, {
+        method: "DELETE",
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      // Force reload to update table data
-      setReload({});
-      // Return product name to display on delete confirmation message
-      const productTitle = data?.title;
-      return productTitle;
-    } else {
-      const error = await response;
-      return error;
-    }
-  }, []);
+      if (response.ok) {
+        const data = await response.json();
+        // Force reload to update table data
+        setReload({});
+        // Return product name to display on delete confirmation message
+        const productTitle = data?.title;
+        return productTitle;
+      } else {
+        const error = await response;
+        return error;
+      }
+    },
+    [API_ENDPOINT]
+  );
 
   return (
     <Card>

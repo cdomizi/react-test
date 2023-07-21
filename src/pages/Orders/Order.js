@@ -4,8 +4,9 @@ import { useParams } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 
 const Order = () => {
-  const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
   const { orderId } = useParams();
+  const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
+
   const { data } = useFetch(`${API_ENDPOINT}v1/orders/${orderId}`);
   return (
     <pre>

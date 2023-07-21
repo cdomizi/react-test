@@ -162,72 +162,81 @@ const OrdersTable = memo(() => {
   };
 
   // Create new order
-  const handleCreateOrder = useCallback(async (formData) => {
-    const response = await fetch(`${API_ENDPOINT}v1/orders`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+  const handleCreateOrder = useCallback(
+    async (formData) => {
+      const response = await fetch(`${API_ENDPOINT}v1/orders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      // Force reload to update table data
-      setReload({});
-      // Return order id to display on new order confirmation message
-      const orderTitle = `#${data?.id}`;
-      return orderTitle;
-    } else {
-      // Check if the user entered a duplicate value for a unique field
-      const uniqueField = uniqueFieldError(response, formData);
-      // If it's not a uniqueFieldError, return a generic error
-      return uniqueField ?? response;
-    }
-  }, []);
+      if (response.ok) {
+        const data = await response.json();
+        // Force reload to update table data
+        setReload({});
+        // Return order id to display on new order confirmation message
+        const orderTitle = `#${data?.id}`;
+        return orderTitle;
+      } else {
+        // Check if the user entered a duplicate value for a unique field
+        const uniqueField = uniqueFieldError(response, formData);
+        // If it's not a uniqueFieldError, return a generic error
+        return uniqueField ?? response;
+      }
+    },
+    [API_ENDPOINT]
+  );
 
   // Edit order
-  const handleEditOrder = useCallback(async (formData) => {
-    // This specific API requires `id` to be of type String
-    formData.id = String(formData.id);
+  const handleEditOrder = useCallback(
+    async (formData) => {
+      // This specific API requires `id` to be of type String
+      formData.id = String(formData.id);
 
-    const response = await fetch(`${API_ENDPOINT}v1/orders/${formData.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+      const response = await fetch(`${API_ENDPOINT}v1/orders/${formData.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      // Force reload to update table data
-      setReload({});
-      // Return order name to display on edit confirmation message
-      const orderTitle = `#${data?.id}`;
-      return orderTitle;
-    } else {
-      // Check if the user entered a duplicate value for a unique field
-      const uniqueField = uniqueFieldError(response, formData);
-      // If it's not a uniqueFieldError, return a generic error
-      return uniqueField ?? response;
-    }
-  }, []);
+      if (response.ok) {
+        const data = await response.json();
+        // Force reload to update table data
+        setReload({});
+        // Return order name to display on edit confirmation message
+        const orderTitle = `#${data?.id}`;
+        return orderTitle;
+      } else {
+        // Check if the user entered a duplicate value for a unique field
+        const uniqueField = uniqueFieldError(response, formData);
+        // If it's not a uniqueFieldError, return a generic error
+        return uniqueField ?? response;
+      }
+    },
+    [API_ENDPOINT]
+  );
 
   // Delete order
-  const handleDeleteOrder = useCallback(async (orderId) => {
-    const response = await fetch(`${API_ENDPOINT}orders/${orderId}`, {
-      method: "DELETE",
-    });
+  const handleDeleteOrder = useCallback(
+    async (orderId) => {
+      const response = await fetch(`${API_ENDPOINT}orders/${orderId}`, {
+        method: "DELETE",
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      // Force reload to update table data
-      setReload({});
-      // Return order name to display on delete confirmation message
-      const orderTitle = `#${data?.id}`;
-      return orderTitle;
-    } else {
-      const error = await response;
-      return error;
-    }
-  }, []);
+      if (response.ok) {
+        const data = await response.json();
+        // Force reload to update table data
+        setReload({});
+        // Return order name to display on delete confirmation message
+        const orderTitle = `#${data?.id}`;
+        return orderTitle;
+      } else {
+        const error = await response;
+        return error;
+      }
+    },
+    [API_ENDPOINT]
+  );
 
   return (
     <Card>
