@@ -7,11 +7,9 @@ import ProductDetail from "./ProductDetail";
 const Product = () => {
   const { productId } = useParams();
   const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
+  const product = useFetch(`${API_ENDPOINT}products/${productId}`);
 
-  const { loading, error, data } = useFetch(
-    `${API_ENDPOINT}products/${productId}`
-  );
-  return <ProductDetail loading={loading} error={error} data={data} />;
+  return <ProductDetail {...product} />;
 };
 
 export default Product;
