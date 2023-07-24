@@ -481,7 +481,6 @@ const OrdersDrawer = (props) => {
                     {...field}
                     id={item.column.columnDef.accessorKey}
                     label={item.column.columnDef.header()}
-                    inputRef={field.ref}
                     type="text"
                     InputLabelProps={{ shrink: true }}
                     margin="normal"

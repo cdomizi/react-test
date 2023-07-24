@@ -1,5 +1,6 @@
-// MUI components
-import { Alert, Snackbar } from "@mui/material";
+// MUI components & icons
+import { Alert, Snackbar, IconButton } from "@mui/material";
+import { Close as CloseIcon } from "@mui/icons-material";
 
 const CustomSnackbar = ({ openSnackbar, onClose }) => {
   return (
@@ -13,8 +14,18 @@ const CustomSnackbar = ({ openSnackbar, onClose }) => {
       onClose={onClose}
     >
       <Alert
-        onClose={onClose}
+        variant="filled"
         severity={openSnackbar.success ? "success" : "error"}
+        action={
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={onClose}
+          >
+            <CloseIcon />
+          </IconButton>
+        }
       >
         {openSnackbar.message}
       </Alert>
