@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useCallback } from "react";
+import { Fragment, useCallback } from "react";
 
 // MUI components
 import {
@@ -106,15 +106,15 @@ const TableFilters = ({
                   );
                 case "number":
                   return (
-                    <>
+                    <Fragment key={filter.id}>
                       <TextField
-                        key={filter.id}
-                        margin="normal"
-                        id={filter.id}
+                        key={`${filter.id}.min`}
+                        id={`${filter.id}.min`}
                         name={filter.id}
                         defaultValue={null}
                         label={`Min. ${filter.label}`}
                         type="number"
+                        margin="normal"
                         InputLabelProps={{ shrink: true }}
                         inputProps={{
                           sx: { width: "6rem" },
@@ -124,14 +124,13 @@ const TableFilters = ({
                         }}
                       />
                       <TextField
-                        number
-                        key={filter.id}
-                        margin="normal"
-                        id={filter.id}
+                        key={`${filter.id}.max`}
+                        id={`${filter.id}.max`}
                         name={filter.id}
                         defaultValue={null}
                         label={`Max. ${filter.label}`}
                         type="number"
+                        margin="normal"
                         InputLabelProps={{ shrink: true }}
                         inputProps={{
                           sx: { width: "6rem" },
@@ -140,33 +139,32 @@ const TableFilters = ({
                           }),
                         }}
                       />
-                    </>
+                    </Fragment>
                   );
                 case "date":
                   return (
-                    <>
+                    <Fragment key={filter.id}>
                       <TextField
-                        key={filter.id}
-                        margin="normal"
-                        id={filter.id}
+                        key={`${filter.id}.from`}
+                        id={`${filter.id}.from`}
                         name={filter.id}
                         defaultValue={null}
                         label="From"
                         type="date"
+                        margin="normal"
                         InputLabelProps={{ shrink: true }}
                       />
                       <TextField
-                        number
-                        key={filter.id}
-                        margin="normal"
-                        id={filter.id}
+                        key={`${filter.id}.before`}
+                        id={`${filter.id}.before`}
                         name={filter.id}
                         defaultValue={null}
                         label="Before"
                         type="date"
+                        margin="normal"
                         InputLabelProps={{ shrink: true }}
                       />
-                    </>
+                    </Fragment>
                   );
                 default:
                   return (
