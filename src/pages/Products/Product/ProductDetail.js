@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 
 import {
   Alert,
@@ -16,7 +16,7 @@ import PicsList from "../../../components/PicsList";
 
 const ProductDetail = ({ loading, error, data }) => {
   // Get discounted price
-  const discountPrice = useCallback(
+  const discountPrice = useMemo(
     () => (((100 - data?.discountPercentage) * data?.price) / 100).toFixed(2),
     [data?.discountPercentage, data?.price]
   );
