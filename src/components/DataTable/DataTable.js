@@ -78,13 +78,13 @@ const DataTable = (props) => {
   // Column filter
   const [columnFilters, setColumnFilters] = useState([]);
 
-  const initialDrawerStatus = useMemo(
+  const initialDrawerState = useMemo(
     () => ({ open: false, payload: null, edit: false }),
     []
   );
 
-  // Table drawer status
-  const [drawerStatus, setDrawerStatus] = useState(initialDrawerStatus);
+  // Table drawer state
+  const [drawerState, setDrawerState] = useState(initialDrawerState);
 
   const hiddenColumns = useMemo(
     () =>
@@ -136,28 +136,28 @@ const DataTable = (props) => {
   const handleOnCreate = useCallback(
     async (event) => {
       event.stopPropagation();
-      setDrawerStatus({
-        ...drawerStatus,
+      setDrawerState({
+        ...drawerState,
         open: true,
         edit: false,
         payload: table.getAllFlatColumns(),
       });
     },
-    [drawerStatus, table]
+    [drawerState, table]
   );
 
   // Handle edit button click
   const handleOnEdit = useCallback(
     async (event, rowData) => {
       event.stopPropagation();
-      setDrawerStatus({
-        ...drawerStatus,
+      setDrawerState({
+        ...drawerState,
         open: true,
         edit: true,
         payload: rowData.getAllCells(),
       });
     },
-    [drawerStatus]
+    [drawerState]
   );
 
   // Handle delete button click
@@ -180,7 +180,7 @@ const DataTable = (props) => {
   const handleOnCreateSubmit = useCallback(
     async (formData) => {
       const response = await onCreate(formData);
-      setDrawerStatus(initialDrawerStatus);
+      setDrawerState(initialDrawerState);
       if (typeof response === "string") {
         // Display confirmation message if the request was successful
         dispatch({ type: SNACKBAR_ACTIONS.CREATE, payload: response });
@@ -199,14 +199,14 @@ const DataTable = (props) => {
             });
       }
     },
-    [onCreate, initialDrawerStatus, dispatch]
+    [onCreate, initialDrawerState, dispatch]
   );
 
   // Handle submit EditDrawer form
   const handleOnEditSubmit = useCallback(
     async (formData) => {
       const response = await onEdit(formData);
-      setDrawerStatus(initialDrawerStatus);
+      setDrawerState(initialDrawerState);
       if (response?.length) {
         // Display confirmation message if the request was successful
         dispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: response });
@@ -225,7 +225,7 @@ const DataTable = (props) => {
             });
       }
     },
-    [onEdit, initialDrawerStatus, dispatch]
+    [onEdit, initialDrawerState, dispatch]
   );
 
   // Conditionally render CustomDrawer if provided as props
@@ -233,33 +233,33 @@ const DataTable = (props) => {
     () =>
       CustomDrawer ? (
         <CustomDrawer
-          drawerOpen={drawerStatus.open}
-          itemData={drawerStatus.payload}
+          drawerOpen={drawerState.open}
+          itemData={drawerState.payload}
           onSubmit={(formData) => handleOnCreateSubmit(formData)}
-          onClose={() => setDrawerStatus(initialDrawerStatus)}
-          edit={drawerStatus.edit}
+          onClose={() => setDrawerState(initialDrawerState)}
+          edit={drawerState.edit}
           dataName={dataName}
         />
       ) : (
         <TableDrawer
-          drawerOpen={drawerStatus.open}
-          itemData={drawerStatus.payload}
+          drawerOpen={drawerState.open}
+          itemData={drawerState.payload}
           onSubmit={(formData) => handleOnCreateSubmit(formData)}
-          onClose={() => setDrawerStatus(initialDrawerStatus)}
-          edit={drawerStatus.edit}
+          onClose={() => setDrawerState(initialDrawerState)}
+          edit={drawerState.edit}
           dataName={dataName}
           randomData={randomData}
         />
       ),
     [
       CustomDrawer,
-      drawerStatus.open,
-      drawerStatus.payload,
-      drawerStatus.edit,
+      drawerState.open,
+      drawerState.payload,
+      drawerState.edit,
       dataName,
       randomData,
       handleOnCreateSubmit,
-      initialDrawerStatus,
+      initialDrawerState,
     ]
   );
 
@@ -268,33 +268,33 @@ const DataTable = (props) => {
     () =>
       CustomDrawer ? (
         <CustomDrawer
-          drawerOpen={drawerStatus.open}
-          itemData={drawerStatus.payload}
+          drawerOpen={drawerState.open}
+          itemData={drawerState.payload}
           onSubmit={(formData) => handleOnEditSubmit(formData)}
-          onClose={() => setDrawerStatus(initialDrawerStatus)}
-          edit={drawerStatus.edit}
+          onClose={() => setDrawerState(initialDrawerState)}
+          edit={drawerState.edit}
           dataName={dataName}
         />
       ) : (
         <TableDrawer
-          drawerOpen={drawerStatus.open}
-          itemData={drawerStatus.payload}
+          drawerOpen={drawerState.open}
+          itemData={drawerState.payload}
           onSubmit={(formData) => handleOnEditSubmit(formData)}
-          onClose={() => setDrawerStatus(initialDrawerStatus)}
-          edit={drawerStatus.edit}
+          onClose={() => setDrawerState(initialDrawerState)}
+          edit={drawerState.edit}
           dataName={dataName}
           randomData={randomData}
         />
       ),
     [
       CustomDrawer,
-      drawerStatus.open,
-      drawerStatus.payload,
-      drawerStatus.edit,
+      drawerState.open,
+      drawerState.payload,
+      drawerState.edit,
       dataName,
       randomData,
       handleOnEditSubmit,
-      initialDrawerStatus,
+      initialDrawerState,
     ]
   );
 
@@ -523,7 +523,7 @@ const DataTable = (props) => {
           onClose={() => dispatch({ type: SNACKBAR_ACTIONS.CLOSE })}
         />
       </Paper>
-      {drawerStatus.edit ? EditDrawer : CreateDrawer}
+      {drawerState.edit ? EditDrawer : CreateDrawer}
     </>
   );
 };
