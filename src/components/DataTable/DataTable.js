@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useMemo, useCallback, useState, useReducer } from "react";
+import { useMemo, useCallback, useContext, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -12,6 +12,9 @@ import {
 // Project imports
 import TableFilters from "./TableFilters";
 import TableDrawer from "./TableDrawer";
+import SnackbarContext, {
+  SNACKBAR_ACTIONS,
+} from "../../contexts/SnackbarContext";
 import CustomSnackbar from "../CustomSnackbar";
 
 // MUI components
@@ -33,7 +36,6 @@ import {
   Tooltip,
   IconButton,
   Button,
-  capitalize,
 } from "@mui/material";
 
 // MUI icons
@@ -61,147 +63,11 @@ const DataTable = (props) => {
     customDrawer: CustomDrawer = null,
   } = props;
 
-  // Snackbar reducer actions
-  const SNACKBAR_ACTIONS = useMemo(
-    () => ({
-      CREATE: "create",
-      CREATE_ERROR: "create error",
-      EDIT: "edit",
-      EDIT_ERROR: "edit error",
-      DELETE: "delete",
-      DELETE_ERROR: "delete error",
-      UNIQUE_FIELD_ERROR: "unique field error",
-      CLOSE: "close",
-    }),
-    []
-  );
+  // State and dispatch function for snackbar component
+  const [snackbarState, dispatch] = useContext(SnackbarContext);
 
-  // Initial snackbar status
-  const initialSnackbarStatus = useMemo(
-    () => ({
-      open: false,
-      vertical: "top",
-      horizontal: "center",
-      success: true,
-      message: null,
-    }),
-    []
-  );
-
-  // Snackbar reducer function
-  const snackbarReducer = useCallback(
-    (state, action) => {
-      switch (action.type) {
-        case SNACKBAR_ACTIONS.CREATE: {
-          return {
-            ...initialSnackbarStatus,
-            open: true,
-            success: true,
-            message: `${
-              action.payload.length
-                ? action.payload
-                : dataName
-                ? capitalize(dataName?.singular)
-                : "Item"
-            } created successfully!`,
-          };
-        }
-        case SNACKBAR_ACTIONS.CREATE_ERROR: {
-          console.error(
-            `Error while creating the ${dataName?.singular ?? "item"}: ${
-              action.payload.status
-            } - ${action.payload.statusText}`
-          );
-          return {
-            ...initialSnackbarStatus,
-            open: true,
-            success: false,
-            message: `Sorry! Unable to create the ${
-              dataName?.singular ?? "item"
-            }.`,
-          };
-        }
-        case SNACKBAR_ACTIONS.EDIT: {
-          return {
-            ...initialSnackbarStatus,
-            open: true,
-            success: true,
-            message: `${
-              action.payload.length
-                ? action.payload
-                : dataName
-                ? capitalize(dataName?.singular)
-                : "Item"
-            } edited successfully!`,
-          };
-        }
-        case SNACKBAR_ACTIONS.EDIT_ERROR: {
-          console.error(
-            `Error while editing the ${dataName?.singular ?? "item"}: ${
-              action.payload.status
-            } - ${action.payload.statusText}`
-          );
-          return {
-            ...initialSnackbarStatus,
-            open: true,
-            success: false,
-            message: `Sorry! Unable to edit the ${
-              dataName?.singular ?? "item"
-            }.`,
-          };
-        }
-        case SNACKBAR_ACTIONS.DELETE: {
-          return {
-            ...initialSnackbarStatus,
-            open: true,
-            success: true,
-            message: `${
-              action.payload.length
-                ? action.payload
-                : dataName
-                ? capitalize(dataName?.singular)
-                : "Item"
-            } deleted successfully!`,
-          };
-        }
-        case SNACKBAR_ACTIONS.DELETE_ERROR: {
-          console.error(
-            `Error while deleting the ${dataName?.singular ?? "item"}: ${
-              action.payload.status
-            } - ${action.payload.statusText}`
-          );
-          return {
-            ...initialSnackbarStatus,
-            open: true,
-            success: false,
-            message: `Sorry! Unable to delete the ${
-              dataName?.singular ?? "item"
-            }.`,
-          };
-        }
-        case SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR: {
-          console.error(
-            `404 Bad Request - Duplicate ${action.payload.field}: "${action.payload.value}"`
-          );
-          return {
-            ...initialSnackbarStatus,
-            open: true,
-            success: false,
-            message: `${capitalize(dataName?.singular) ?? "Item"} with ${
-              action.payload.field
-            } "${action.payload.value}" already exists.`,
-          };
-        }
-        case SNACKBAR_ACTIONS.CLOSE: {
-          return initialSnackbarStatus;
-        }
-        default: {
-          return state;
-        }
-      }
-    },
-    [SNACKBAR_ACTIONS, initialSnackbarStatus, dataName]
-  );
+  // Set the `dataName` property for the snackbar if provided
+  if (dataName) snackbarState.dataName = dataName;
 
   const defaultSorting = [{ id: orderBy, desc: defaultOrder }];
   const [sorting, setSorting] = useState(defaultSorting ?? []);
@@ -219,12 +85,6 @@ const DataTable = (props) => {
 
   // Table drawer status
   const [drawerStatus, setDrawerStatus] = useState(initialDrawerStatus);
-
-  // Snackbar reducer
-  const [snackbarState, dispatch] = useReducer(
-    snackbarReducer,
-    initialSnackbarStatus
-  );
 
   const hiddenColumns = useMemo(
     () =>
@@ -313,7 +173,7 @@ const DataTable = (props) => {
         dispatch({ type: SNACKBAR_ACTIONS.DELETE_ERROR, payload: response });
       }
     },
-    [onDelete, SNACKBAR_ACTIONS]
+    [onDelete, dispatch]
   );
 
   // Handle submit CreateDrawer form
@@ -339,7 +199,7 @@ const DataTable = (props) => {
             });
       }
     },
-    [onCreate, initialDrawerStatus, SNACKBAR_ACTIONS]
+    [onCreate, initialDrawerStatus, dispatch]
   );
 
   // Handle submit EditDrawer form
@@ -365,7 +225,7 @@ const DataTable = (props) => {
             });
       }
     },
-    [onEdit, initialDrawerStatus, SNACKBAR_ACTIONS]
+    [onEdit, initialDrawerStatus, dispatch]
   );
 
   // Conditionally render CustomDrawer if provided as props
@@ -659,7 +519,7 @@ const DataTable = (props) => {
           onRowsPerPageChange={handleRowsPerPageChange}
         />
         <CustomSnackbar
-          openSnackbar={snackbarState}
+          {...snackbarState}
           onClose={() => dispatch({ type: SNACKBAR_ACTIONS.CLOSE })}
         />
       </Paper>

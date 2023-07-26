@@ -1,5 +1,6 @@
 import { RouterProvider } from "react-router-dom";
 import ThemeCustomization from "./themes/ThemeCustomization";
+import { SnackbarProvider } from "./contexts/SnackbarContext";
 
 // project import
 import MainRoutes from "./routes/MainRoutes";
@@ -11,7 +12,9 @@ function App() {
   return (
     <Box className="App">
       <ThemeCustomization>
-        <RouterProvider router={MainRoutes} />
+        <SnackbarProvider>
+          <RouterProvider router={MainRoutes} />
+        </SnackbarProvider>
       </ThemeCustomization>
     </Box>
   );
