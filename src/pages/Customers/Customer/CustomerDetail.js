@@ -227,9 +227,28 @@ const CustomerDetail = ({ loading, error, data }) => {
                 >
                   Fill with random data
                 </Button>
-                <Button type="submit" variant="contained" size="large">
-                  Save
-                </Button>
+                <Stack direction="row" spacing={2}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    color="secondary"
+                    size="large"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setEdit(false);
+                    }}
+                  >
+                    Undo
+                  </Button>
+                </Stack>
               </>
             ) : (
               <Stack direction="row" spacing={2}>
