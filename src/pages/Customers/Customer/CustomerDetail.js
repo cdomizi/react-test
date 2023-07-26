@@ -97,6 +97,12 @@ const CustomerDetail = ({ loading, error, data }) => {
     []
   );
 
+  const formatLabel = useCallback((label) => {
+    const split = label.split(/(?=[A-Z])|(?<=[A-Z])/g);
+
+    return capitalize(split[0]) + " " + split.slice(1).join("");
+  }, []);
+
   // Customer Details section
   const FormDetails = useMemo(
     () =>
@@ -114,7 +120,7 @@ const CustomerDetail = ({ loading, error, data }) => {
                   <TextField
                     {...field}
                     id={key}
-                    label={capitalize(key)}
+                    label={key}
                     inputRef={field.ref}
                     inputProps={{ readOnly: edit }}
                     InputLabelProps={{ shrink: true }}
@@ -137,7 +143,7 @@ const CustomerDetail = ({ loading, error, data }) => {
                   <TextField
                     {...field}
                     id={key}
-                    label={capitalize(key)}
+                    label={formatLabel(key)}
                     inputProps={{ readOnly: !edit }}
                     InputLabelProps={{ shrink: true }}
                     margin="normal"
@@ -147,7 +153,7 @@ const CustomerDetail = ({ loading, error, data }) => {
             );
         }
       }),
-    [control, data, edit]
+    [control, data, edit, formatLabel]
   );
 
   // Format order
@@ -167,24 +173,26 @@ const CustomerDetail = ({ loading, error, data }) => {
             : `Customer ${data?.id}`}
           :
         </Typography>
-        {data?.orders?.length
-          ? data.orders.map((order) => (
-              <List>
-                <ListItem sx={{ display: "block" }} disablePadding>
-                  <ListItemIcon
-                    sx={{
-                      "&, & .MuiListItemIcon-root": { minWidth: "2rem" },
-                      verticalAlign: "sub",
-                    }}
-                  >
-                    <CircleIcon fontSize="small" />
-                  </ListItemIcon>
-                  {`#${order.id} on `}
-                  <strong>{`${getOrderDate(order.createdAt)}`}</strong>
-                </ListItem>
-              </List>
-            ))
-          : "No orders"}
+        {data?.orders?.length ? (
+          <List>
+            {data.orders.map((order) => (
+              <ListItem key={order.id} sx={{ display: "block" }}>
+                <ListItemIcon
+                  sx={{
+                    "&, & .MuiListItemIcon-root": { minWidth: "2rem" },
+                    verticalAlign: "sub",
+                  }}
+                >
+                  <CircleIcon fontSize="small" />
+                </ListItemIcon>
+                {`#${order.id} on `}
+                <strong>{`${getOrderDate(order.createdAt)}`}</strong>
+              </ListItem>
+            ))}
+          </List>
+        ) : (
+          "No orders"
+        )}
       </Box>
     ),
     [data?.id, data?.firstName, data?.lastName, data?.orders, getOrderDate]

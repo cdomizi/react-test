@@ -89,6 +89,7 @@ const useFetch = (url, options = null, reload = null) => {
       abortController.abort();
     };
   }, [url, options, reload]);
+
   return state;
 };
 
