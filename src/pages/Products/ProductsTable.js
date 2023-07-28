@@ -20,6 +20,15 @@ const ProductsTable = memo(() => {
     []
   );
 
+  // Set URL and max. count for random data
+  const randomData = useMemo(
+    () => ({
+      url: "https://dummyjson.com/products/",
+      maxCount: 10,
+    }),
+    []
+  );
+
   const [products, setProducts] = useState(null);
 
   // State to force reload on data update
@@ -236,7 +245,7 @@ const ProductsTable = memo(() => {
         onCreate={handleCreateProduct}
         onEdit={handleEditProduct}
         onDelete={handleDeleteProduct}
-        randomData={{ url: "https://dummyjson.com/products/", maxCount: 10 }}
+        randomData={randomData}
       />
     </Card>
   );

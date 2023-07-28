@@ -8,6 +8,7 @@ import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../../contexts/SnackbarContext";
 import CustomSnackbar from "../../../components/CustomSnackbar";
+import getRandomInt from "../../../utils/getRandomInt";
 
 // MUI components
 import {
@@ -15,7 +16,9 @@ import {
   AlertTitle,
   Box,
   Button,
+  CircularProgress,
   Divider,
+  InputAdornment,
   List,
   ListItem,
   ListItemIcon,
@@ -29,16 +32,28 @@ import {
 // MUI icons
 import { Circle as CircleIcon, Edit as EditIcon } from "@mui/icons-material";
 
-const CustomerDetail = ({ loading, error, data, reload = null }) => {
+const CustomerDetail = ({
+  loading,
+  error,
+  data,
+  dataName,
+  randomData,
+  reload = null,
+}) => {
   const [edit, setEdit] = useState(false);
+
+  // Loading state for setRandomData
+  const [randomLoading, setRandomLoading] = useState(false);
 
   // State and dispatch function for snackbar component
   const [snackbarState, dispatch] = useContext(SnackbarContext);
 
   // Set the `dataName` property for the snackbar
-  snackbarState.dataName = "customer";
+  snackbarState.dataName = dataName?.singular;
 
-  const { control, handleSubmit } = useForm({ defaultValues: data });
+  const { control, handleSubmit, formState, reset } = useForm({
+    defaultValues: data,
+  });
 
   const onSubmit = useCallback(
     async (formData) => {
@@ -67,30 +82,51 @@ const CustomerDetail = ({ loading, error, data, reload = null }) => {
     [dispatch, reload]
   );
 
+  // Fill with random data
+  const setRandomData = useCallback(async () => {
+    const randomItemId = getRandomInt(10);
+    try {
+      // Disable "Fill with random data" button
+      setRandomLoading(true);
+      const response = await fetch(`${randomData?.url}/${randomItemId}`, {});
+      const randomItemData = await response.json();
+
+      if (response.ok) {
+        // Delete ID property if exists
+        randomItemData.id && delete randomItemData.id;
+        reset(randomItemData, { keepDefaultValues: true });
+      }
+    } catch (error) {
+      throw new Error(error?.message);
+    } finally {
+      setRandomLoading(false);
+    }
+  }, [randomData?.url, reset]);
+
   const CustomerSkeleton = useMemo(
     () => (
       <>
         <Skeleton
           variant="text"
-          sx={{ fontSize: "5rem", maxWidth: "32rem", marginBottom: "2rem" }}
+          sx={{ fontSize: "5rem", maxWidth: "26rem", marginBottom: "2rem" }}
         />
-        <Stack direction="row" spacing={3}>
+        <Stack direction="row" spacing={2}>
           <Stack width="20rem">
             <Skeleton
               variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "12rem" }}
+              sx={{ fontSize: "3rem", maxWidth: "16rem" }}
             />
             <Skeleton
               variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "12rem" }}
+              sx={{ fontSize: "3rem", maxWidth: "16rem" }}
             />
             <Skeleton
               variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "12rem" }}
+              sx={{ fontSize: "3rem", maxWidth: "16rem" }}
             />
             <Skeleton
               variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "12rem" }}
+              sx={{ fontSize: "3rem", maxWidth: "16rem" }}
             />
             <Skeleton
               variant="text"
@@ -104,19 +140,19 @@ const CustomerDetail = ({ loading, error, data, reload = null }) => {
             />
             <Skeleton
               variant="text"
-              sx={{ fontSize: "1rem", maxWidth: "8rem" }}
+              sx={{ fontSize: "1rem", maxWidth: "10rem" }}
             />
             <Skeleton
               variant="text"
-              sx={{ fontSize: "1rem", maxWidth: "8rem" }}
+              sx={{ fontSize: "1rem", maxWidth: "10rem" }}
             />
             <Skeleton
               variant="text"
-              sx={{ fontSize: "1rem", maxWidth: "8rem" }}
+              sx={{ fontSize: "1rem", maxWidth: "10rem" }}
             />
             <Skeleton
               variant="text"
-              sx={{ fontSize: "1rem", maxWidth: "8rem" }}
+              sx={{ fontSize: "1rem", maxWidth: "10rem" }}
             />
           </Stack>
         </Stack>
@@ -150,10 +186,32 @@ const CustomerDetail = ({ loading, error, data, reload = null }) => {
                     id={key}
                     label={key}
                     inputRef={field.ref}
-                    inputProps={{ readOnly: edit }}
                     InputLabelProps={{ shrink: true }}
+                    disabled={
+                      formState.isLoading ||
+                      formState.isSubmitting ||
+                      randomLoading ||
+                      loading
+                    }
+                    inputProps={{ readOnly: edit }}
+                    InputProps={{
+                      ...field?.InputProps,
+                      endAdornment: (
+                        <>
+                          {formState.isLoading ||
+                          formState.isSubmitting ||
+                          randomLoading ||
+                          loading ? (
+                            <InputAdornment position="end">
+                              <CircularProgress color="inherit" size={20} />
+                            </InputAdornment>
+                          ) : null}
+                        </>
+                      ),
+                    }}
                     sx={{ display: "none" }}
                     margin="normal"
+                    fullWidth
                   />
                 )}
               />
@@ -172,16 +230,47 @@ const CustomerDetail = ({ loading, error, data, reload = null }) => {
                     {...field}
                     id={key}
                     label={formatLabel(key)}
-                    inputProps={{ readOnly: !edit }}
                     InputLabelProps={{ shrink: true }}
+                    disabled={
+                      formState.isLoading ||
+                      formState.isSubmitting ||
+                      randomLoading ||
+                      loading
+                    }
+                    inputProps={{ readOnly: edit }}
+                    InputProps={{
+                      ...field?.InputProps,
+                      endAdornment: (
+                        <>
+                          {formState.isLoading ||
+                          formState.isSubmitting ||
+                          randomLoading ||
+                          loading ? (
+                            <InputAdornment position="end">
+                              <CircularProgress color="inherit" size={20} />
+                            </InputAdornment>
+                          ) : null}
+                        </>
+                      ),
+                    }}
                     margin="normal"
+                    fullWidth
                   />
                 )}
               />
             );
         }
       }),
-    [control, data, edit, formatLabel]
+    [
+      control,
+      data,
+      edit,
+      formState.isLoading,
+      formState.isSubmitting,
+      formatLabel,
+      loading,
+      randomLoading,
+    ]
   );
 
   // Format order
@@ -233,7 +322,7 @@ const CustomerDetail = ({ loading, error, data, reload = null }) => {
       <Typography variant="h2" mb="3rem">{`Customer #${data?.id}`}</Typography>
       <Stack direction="row" spacing="2rem">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={2}>
+          <Stack spacing={2} width="18rem">
             {error ? (
               <Alert severity="error">
                 <AlertTitle>Error</AlertTitle>
@@ -248,10 +337,19 @@ const CustomerDetail = ({ loading, error, data, reload = null }) => {
                   type="button"
                   variant="outlined"
                   size="small"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    console.log("fill with random data");
-                  }}
+                  onClick={setRandomData}
+                  disabled={
+                    formState.isLoading ||
+                    formState.isSubmitting ||
+                    randomLoading ||
+                    loading
+                  }
+                  endIcon={
+                    (formState.isLoading ||
+                      formState.isSubmitting ||
+                      randomLoading ||
+                      loading) && <CircularProgress color="inherit" size={20} />
+                  }
                 >
                   Fill with random data
                 </Button>

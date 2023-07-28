@@ -23,6 +23,15 @@ const CustomersTable = memo(() => {
     []
   );
 
+  // Set URL and max. count for random data
+  const randomData = useMemo(
+    () => ({
+      url: "https://api.npoint.io/aa41291918be8f428bae/customers",
+      maxCount: 10,
+    }),
+    []
+  );
+
   const [customers, setCustomers] = useState(null);
 
   // State to force reload on data update
@@ -78,7 +87,7 @@ const CustomersTable = memo(() => {
 
   // Go to customer page on row click
   const handleRowClick = (event, rowData) => {
-    navigate(`${rowData.id}`);
+    navigate(`${rowData.id}`, { state: { dataName, randomData } });
   };
 
   return (
@@ -99,10 +108,7 @@ const CustomersTable = memo(() => {
         onCreate={handleCreateCustomer}
         onEdit={handleEditCustomer}
         onDelete={handleDeleteCustomer}
-        randomData={{
-          url: "https://api.npoint.io/aa41291918be8f428bae/customers",
-          maxCount: 10,
-        }}
+        randomData={randomData}
       />
     </Card>
   );

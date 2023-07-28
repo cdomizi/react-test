@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 // project import
 import CustomerDetail from "./CustomerDetail";
@@ -14,7 +14,31 @@ const Customer = () => {
 
   const customer = useFetch(`${API_ENDPOINT}customers/${customerId}`, reload);
 
-  return <CustomerDetail {...customer} reload={() => setReload()} />;
+  const { state } = useLocation();
+  const navigate = useNavigate();
+
+  // Prevent direct access
+  useEffect(() => {
+    if (!state) {
+      // Redirect to customers' page on direct access
+      navigate("/customers", { replace: true });
+      return;
+    }
+  }, [navigate, state]);
+
+  if (!state) return null;
+
+  // Get dataName and randomData from location
+  const { dataName, randomData } = state || {};
+
+  return (
+    <CustomerDetail
+      {...customer}
+      reload={() => setReload()}
+      dataName={dataName}
+      randomData={randomData}
+    />
+  );
 };
 
 export default Customer;

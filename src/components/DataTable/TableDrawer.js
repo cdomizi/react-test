@@ -36,9 +36,6 @@ const TableDrawer = (props) => {
     defaultValues,
   });
 
-  // State to force reload on Drawer component
-  const [reload, setReload] = useState();
-
   // Loading state for setRandomData
   const [loading, setLoading] = useState(false);
 
@@ -71,7 +68,6 @@ const TableDrawer = (props) => {
         // Delete ID property if exists
         randomItemData.id && delete randomItemData.id;
         reset(randomItemData, { keepDefaultValues: true });
-        setReload({});
       }
     } catch (error) {
       throw new Error(error?.message);
@@ -339,7 +335,6 @@ const TableDrawer = (props) => {
       sx={{
         "& .MuiDrawer-paper": { boxSizing: "border-box", width: "22rem" },
       }}
-      reload={reload}
     >
       <Box sx={{ display: "flex", flexDirection: "column", p: 3 }}>
         <Typography variant="h4" mb={6}>
@@ -351,7 +346,7 @@ const TableDrawer = (props) => {
           variant="outlined"
           size="small"
           onClick={setRandomData}
-          disabled={loading}
+          disabled={formState.isLoading || formState.isSubmitting || loading}
           endIcon={
             (formState.isLoading || formState.isSubmitting || loading) && (
               <CircularProgress color="inherit" size={20} />
