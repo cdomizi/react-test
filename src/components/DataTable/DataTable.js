@@ -54,6 +54,7 @@ const DataTable = (props) => {
     globalSearch = false,
     defaultOrder = false,
     clickable = false,
+    reload = null, // eslint-disable-line no-unused-vars
     onRowClick = null,
     onCreate = null,
     onEdit = null,
@@ -167,12 +168,14 @@ const DataTable = (props) => {
       if (response?.length) {
         // Display confirmation message if the request was successful
         dispatch({ type: SNACKBAR_ACTIONS.DELETE, payload: response });
+        // Force refetch to get updated data
+        reload();
       } else {
         // Display error message if the request failed
         dispatch({ type: SNACKBAR_ACTIONS.DELETE_ERROR, payload: response });
       }
     },
-    [onDelete, dispatch]
+    [onDelete, dispatch, reload]
   );
 
   // Handle submit CreateDrawer form
@@ -183,6 +186,8 @@ const DataTable = (props) => {
       if (typeof response === "string") {
         // Display confirmation message if the request was successful
         dispatch({ type: SNACKBAR_ACTIONS.CREATE, payload: response });
+        // Force refetch to get updated data
+        reload();
       } else {
         // Check if it's a unique field error
         response?.field
@@ -198,7 +203,7 @@ const DataTable = (props) => {
             });
       }
     },
-    [onCreate, initialDrawerState, dispatch]
+    [onCreate, initialDrawerState, dispatch, reload]
   );
 
   // Handle submit EditDrawer form
@@ -209,6 +214,8 @@ const DataTable = (props) => {
       if (response?.length) {
         // Display confirmation message if the request was successful
         dispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: response });
+        // Force refetch to get updated data
+        reload();
       } else {
         // Check if it's a unique field error
         response?.field
@@ -224,7 +231,7 @@ const DataTable = (props) => {
             });
       }
     },
-    [onEdit, initialDrawerState, dispatch]
+    [onEdit, initialDrawerState, dispatch, reload]
   );
 
   // Conditionally render CustomDrawer if provided as props
@@ -539,6 +546,7 @@ DataTable.propTypes = {
   globalSearch: PropTypes.bool,
   defaultOrder: PropTypes.bool,
   clickable: PropTypes.bool,
+  reload: PropTypes.func,
   onRowClick: PropTypes.func,
   onCreate: PropTypes.func,
   onEdit: PropTypes.func,

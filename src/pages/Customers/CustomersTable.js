@@ -1,11 +1,15 @@
-import { useEffect, useState, useMemo, useCallback, memo } from "react";
+import { useEffect, useState, useMemo, memo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
 
 // Project import
 import useFetch from "../../hooks/useFetch";
-import uniqueFieldError from "../../utils/uniqueFieldError";
 import DataTable from "../../components/DataTable/DataTable";
+import {
+  handleCreateCustomer,
+  handleEditCustomer,
+  handleDeleteCustomer,
+} from "./Customer/CustomerActions";
 
 // MUI components
 import { Card } from "@mui/material";
@@ -77,83 +81,6 @@ const CustomersTable = memo(() => {
     navigate(`${rowData.id}`);
   };
 
-  // Create new customer
-  const handleCreateCustomer = useCallback(
-    async (formData) => {
-      const response = await fetch(`${API_ENDPOINT}customers`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Force reload to update table data
-        setReload({});
-        // Return customer name to display on new customer confirmation message
-        const customerName = `${data?.firstName} ${data?.lastName}`;
-        return customerName;
-      } else {
-        // Check if the user entered a duplicate value for a unique field
-        const uniqueField = uniqueFieldError(response, formData);
-        // If it's not a uniqueFieldError, return a generic error
-        return uniqueField ?? response;
-      }
-    },
-    [API_ENDPOINT]
-  );
-
-  // Edit customer
-  const handleEditCustomer = useCallback(
-    async (formData) => {
-      // This specific API requires `id` to be of type String
-      formData.id = String(formData.id);
-
-      const response = await fetch(`${API_ENDPOINT}customers/${formData.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Force reload to update table data
-        setReload({});
-        // Return customer name to display on edit confirmation message
-        const customerName = `${data?.firstName} ${data?.lastName}`;
-        return customerName;
-      } else {
-        // Check if the user entered a duplicate value for a unique field
-        const uniqueField = uniqueFieldError(response, formData);
-        // If it's not a uniqueFieldError, return a generic error
-        return uniqueField ?? response;
-      }
-    },
-    [API_ENDPOINT]
-  );
-
-  // Delete customer
-  const handleDeleteCustomer = useCallback(
-    async (customerId) => {
-      const response = await fetch(`${API_ENDPOINT}customers/${customerId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Force reload to update table data
-        setReload({});
-        // Return customer name to display on delete confirmation message
-        const customerName = `${data?.firstName} ${data?.lastName}`;
-        return customerName;
-      } else {
-        const error = await response;
-        return error;
-      }
-    },
-    [API_ENDPOINT]
-  );
-
   return (
     <Card>
       <DataTable
@@ -167,6 +94,7 @@ const CustomersTable = memo(() => {
         globalSearch={true}
         defaultOrder={true}
         clickable={true}
+        reload={() => setReload({})}
         onRowClick={handleRowClick}
         onCreate={handleCreateCustomer}
         onEdit={handleEditCustomer}
