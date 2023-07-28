@@ -54,7 +54,6 @@ const DataTable = (props) => {
     globalSearch = false,
     defaultOrder = false,
     clickable = false,
-    reload = null, // eslint-disable-line no-unused-vars
     onRowClick = null,
     onCreate = null,
     onEdit = null,
@@ -540,7 +539,6 @@ DataTable.propTypes = {
   globalSearch: PropTypes.bool,
   defaultOrder: PropTypes.bool,
   clickable: PropTypes.bool,
-  reload: PropTypes.object,
   onRowClick: PropTypes.func,
   onCreate: PropTypes.func,
   onEdit: PropTypes.func,

@@ -167,7 +167,6 @@ const CustomersTable = memo(() => {
         globalSearch={true}
         defaultOrder={true}
         clickable={true}
-        reload={reload}
         onRowClick={handleRowClick}
         onCreate={handleCreateCustomer}
         onEdit={handleEditCustomer}
