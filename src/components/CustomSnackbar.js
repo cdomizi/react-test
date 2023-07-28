@@ -60,8 +60,5 @@ CustomSnackbar.propTypes = {
   horizontal: PropTypes.oneOf(["left", "center", "right"]),
   success: PropTypes.bool,
   message: PropTypes.string,
-  dataName: PropTypes.shape({
-    singular: PropTypes.string,
-    plural: PropTypes.string,
-  }),
+  dataName: PropTypes.string,
 };

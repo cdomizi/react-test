@@ -67,7 +67,7 @@ const DataTable = (props) => {
   const [snackbarState, dispatch] = useContext(SnackbarContext);
 
   // Set the `dataName` property for the snackbar if provided
-  if (dataName) snackbarState.dataName = dataName;
+  if (dataName?.singular) snackbarState.dataName = dataName.singular;
 
   const defaultSorting = [{ id: orderBy, desc: defaultOrder }];
   const [sorting, setSorting] = useState(defaultSorting ?? []);
@@ -524,10 +524,7 @@ const DataTable = (props) => {
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleRowsPerPageChange}
         />
-        <CustomSnackbar
-          {...snackbarState}
-          onClose={() => dispatch({ type: SNACKBAR_ACTIONS.CLOSE })}
-        />
+        <CustomSnackbar {...snackbarState} />
       </Paper>
       {drawerState.edit ? EditDrawer : CreateDrawer}
     </>

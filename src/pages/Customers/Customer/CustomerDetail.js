@@ -1,6 +1,13 @@
-import { useState, useMemo, useCallback } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import moment from "moment";
+
+// Project import
+import { handleEditCustomer } from "./CustomerActions";
+import SnackbarContext, {
+  SNACKBAR_ACTIONS,
+} from "../../../contexts/SnackbarContext";
+import CustomSnackbar from "../../../components/CustomSnackbar";
 
 // MUI components
 import {
@@ -20,23 +27,44 @@ import {
 } from "@mui/material";
 
 // MUI icons
-import {
-  Circle as CircleIcon,
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-} from "@mui/icons-material";
+import { Circle as CircleIcon, Edit as EditIcon } from "@mui/icons-material";
 
-const CustomerDetail = ({ loading, error, data }) => {
+const CustomerDetail = ({ loading, error, data, reload = null }) => {
   const [edit, setEdit] = useState(false);
+
+  // State and dispatch function for snackbar component
+  const [snackbarState, dispatch] = useContext(SnackbarContext);
+
+  // Set the `dataName` property for the snackbar
+  snackbarState.dataName = "customer";
 
   const { control, handleSubmit } = useForm({ defaultValues: data });
 
   const onSubmit = useCallback(
-    (formData) => {
-      console.log(formData);
+    async (formData) => {
+      const response = await handleEditCustomer(formData);
+      if (response?.length) {
+        // Display confirmation message if the request was successful
+        dispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: response });
+        // Force refetch to get updated data
+        reload();
+      } else {
+        // Check if it's a unique field error
+        response?.field
+          ? // Display the specific error message
+            dispatch({
+              type: SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR,
+              payload: response,
+            })
+          : // Display a generic error message
+            dispatch({
+              type: SNACKBAR_ACTIONS.EDIT_ERROR,
+              payload: response,
+            });
+      }
       setEdit(false);
     },
-    [setEdit]
+    [dispatch, reload]
   );
 
   const CustomerSkeleton = useMemo(
@@ -251,47 +279,29 @@ const CustomerDetail = ({ loading, error, data }) => {
                 </Stack>
               </>
             ) : (
-              <Stack direction="row" spacing={2}>
-                <Button
-                  type="button"
-                  variant="outlined"
-                  size="large"
-                  fullWidth
-                  endIcon={<EditIcon />}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    setEdit(true);
-                  }}
-                  sx={{
-                    "&, & .MuiButtonBase-root": { alignItems: "normal" },
-                  }}
-                >
-                  Edit
-                </Button>
-                <Button
-                  type="button"
-                  variant="outlined"
-                  size="large"
-                  fullWidth
-                  endIcon={<DeleteIcon />}
-                  color="error"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    console.log("delete customer");
-                  }}
-                  sx={{
-                    "&, & .MuiButtonBase-root": { alignItems: "normal" },
-                  }}
-                >
-                  Delete
-                </Button>
-              </Stack>
+              <Button
+                type="button"
+                variant="outlined"
+                size="large"
+                fullWidth
+                endIcon={<EditIcon />}
+                onClick={(event) => {
+                  event.preventDefault();
+                  setEdit(true);
+                }}
+                sx={{
+                  "&, & .MuiButtonBase-root": { alignItems: "normal" },
+                }}
+              >
+                Edit
+              </Button>
             )}
           </Stack>
         </form>
         <Divider orientation="vertical" flexItem />
         {(!error && CustomerOrders) ?? null}
       </Stack>
+      <CustomSnackbar {...snackbarState} />
     </Box>
   );
 };

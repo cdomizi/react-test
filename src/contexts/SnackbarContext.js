@@ -1,5 +1,4 @@
 import { createContext, useReducer } from "react";
-import CustomSnackbar from "../components/CustomSnackbar";
 import { capitalize } from "@mui/material";
 
 const SnackbarContext = createContext(null);
@@ -38,14 +37,14 @@ const snackbarReducer = (state, action) => {
           action.payload.length
             ? action.payload
             : state?.dataName
-            ? capitalize(state?.dataName?.singular)
+            ? capitalize(state?.dataName)
             : "Item"
         } created successfully!`,
       };
     }
     case SNACKBAR_ACTIONS.CREATE_ERROR: {
       console.error(
-        `Error while creating the ${state?.dataName?.singular ?? "item"}: ${
+        `Error while creating the ${state?.dataName ?? "item"}: ${
           action.payload.status
         } - ${action.payload.statusText}`
       );
@@ -53,9 +52,7 @@ const snackbarReducer = (state, action) => {
         ...initialState,
         open: true,
         success: false,
-        message: `Sorry! Unable to create the ${
-          state?.dataName?.singular ?? "item"
-        }.`,
+        message: `Sorry! Unable to create the ${state?.dataName ?? "item"}.`,
       };
     }
     case SNACKBAR_ACTIONS.EDIT: {
@@ -67,14 +64,14 @@ const snackbarReducer = (state, action) => {
           action.payload.length
             ? action.payload
             : state?.dataName
-            ? capitalize(state?.dataName?.singular)
+            ? capitalize(state?.dataName)
             : "Item"
         } edited successfully!`,
       };
     }
     case SNACKBAR_ACTIONS.EDIT_ERROR: {
       console.error(
-        `Error while editing the ${state?.dataName?.singular ?? "item"}: ${
+        `Error while editing the ${state?.dataName ?? "item"}: ${
           action.payload.status
         } - ${action.payload.statusText}`
       );
@@ -82,9 +79,7 @@ const snackbarReducer = (state, action) => {
         ...initialState,
         open: true,
         success: false,
-        message: `Sorry! Unable to edit the ${
-          state?.dataName?.singular ?? "item"
-        }.`,
+        message: `Sorry! Unable to edit the ${state?.dataName ?? "item"}.`,
       };
     }
     case SNACKBAR_ACTIONS.DELETE: {
@@ -96,14 +91,14 @@ const snackbarReducer = (state, action) => {
           action.payload.length
             ? action.payload
             : state?.dataName
-            ? capitalize(state?.dataName?.singular)
+            ? capitalize(state?.dataName)
             : "Item"
         } deleted successfully!`,
       };
     }
     case SNACKBAR_ACTIONS.DELETE_ERROR: {
       console.error(
-        `Error while deleting the ${state?.dataName?.singular ?? "item"}: ${
+        `Error while deleting the ${state?.dataName ?? "item"}: ${
           action.payload.status
         } - ${action.payload.statusText}`
       );
@@ -111,9 +106,7 @@ const snackbarReducer = (state, action) => {
         ...initialState,
         open: true,
         success: false,
-        message: `Sorry! Unable to delete the ${
-          state?.dataName?.singular ?? "item"
-        }.`,
+        message: `Sorry! Unable to delete the ${state?.dataName ?? "item"}.`,
       };
     }
     case SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR: {
@@ -124,7 +117,7 @@ const snackbarReducer = (state, action) => {
         ...initialState,
         open: true,
         success: false,
-        message: `${capitalize(state?.dataName?.singular) ?? "Item"} with ${
+        message: `${capitalize(state?.dataName) ?? "Item"} with ${
           action.payload.field
         } "${action.payload.value}" already exists.`,
       };
@@ -149,7 +142,6 @@ const SnackbarProvider = ({ children }) => {
   return (
     <SnackbarContext.Provider value={[snackbarState, dispatch]}>
       {children}
-      <CustomSnackbar {...snackbarState} />
     </SnackbarContext.Provider>
   );
 };
