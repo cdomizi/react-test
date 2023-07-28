@@ -12,9 +12,9 @@ const Home = loadable(() => import("../pages/Home/Home"));
 const Orders = loadable(() => import("../pages/Orders"));
 const Order = loadable(() => import("../pages/Orders/Order"));
 const Products = loadable(() => import("../pages/Products"));
-const Product = loadable(() => import("../pages/Products/Product/Product"));
+const Product = loadable(() => import("../pages/Products/Product"));
 const Customers = loadable(() => import("../pages/Customers"));
-const Customer = loadable(() => import("../pages/Customers/Customer/Customer"));
+const Customer = loadable(() => import("../pages/Customers/Customer"));
 const Todos = loadable(() => import("../pages/Todos"));
 const Shop = loadable(() => import("../pages/Shop"));
 

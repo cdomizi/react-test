@@ -789,7 +789,7 @@ const OrdersDrawer = (props) => {
           variant="outlined"
           size="small"
           onClick={setRandomData}
-          disabled={loading}
+          disabled={formState.isLoading || formState.isSubmitting || loading}
           endIcon={
             (formState.isLoading || formState.isSubmitting || loading) && (
               <CircularProgress color="inherit" size={20} />
