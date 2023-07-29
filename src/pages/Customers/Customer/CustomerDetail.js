@@ -1,6 +1,5 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import moment from "moment";
 
 // Project import
 import { handleEditCustomer } from "../CustomerActions";
@@ -9,6 +8,7 @@ import SnackbarContext, {
 } from "../../../contexts/SnackbarContext";
 import CustomSnackbar from "../../../components/CustomSnackbar";
 import getRandomInt from "../../../utils/getRandomInt";
+import { formatLabel, formatOrderDate } from "../../../utils/formatStrings";
 
 // MUI components
 import {
@@ -26,7 +26,6 @@ import {
   Stack,
   TextField,
   Typography,
-  capitalize,
 } from "@mui/material";
 
 // MUI icons
@@ -161,12 +160,6 @@ const CustomerDetail = ({
     []
   );
 
-  const formatLabel = useCallback((label) => {
-    const split = label.split(/(?=[A-Z])|(?<=[A-Z])/g);
-
-    return capitalize(split[0]) + " " + split.slice(1).join("");
-  }, []);
-
   // Customer details section
   const FormDetails = useMemo(
     () =>
@@ -228,7 +221,7 @@ const CustomerDetail = ({
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    id={key}
+                    id={formatLabel(key)}
                     label={formatLabel(key)}
                     InputLabelProps={{ shrink: true }}
                     disabled={
@@ -267,16 +260,9 @@ const CustomerDetail = ({
       edit,
       formState.isLoading,
       formState.isSubmitting,
-      formatLabel,
       loading,
       randomLoading,
     ]
-  );
-
-  // Format order
-  const getOrderDate = useCallback(
-    (date) => moment(date).format("MMMM Do YYYY"),
-    []
   );
 
   // Customer orders section
@@ -303,7 +289,9 @@ const CustomerDetail = ({
                   <CircleIcon fontSize="small" />
                 </ListItemIcon>
                 {`#${order.id} on `}
-                <strong>{`${getOrderDate(order.createdAt)}`}</strong>
+                <Box component="span" fontWeight="bold">
+                  {`${formatOrderDate(order.createdAt)}`}
+                </Box>
               </ListItem>
             ))}
           </List>
@@ -312,7 +300,7 @@ const CustomerDetail = ({
         )}
       </Box>
     ),
-    [data?.id, data?.firstName, data?.lastName, data?.orders, getOrderDate]
+    [data?.id, data?.firstName, data?.lastName, data?.orders]
   );
 
   return loading ? (

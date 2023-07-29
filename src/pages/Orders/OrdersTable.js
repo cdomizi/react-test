@@ -11,6 +11,8 @@ import {
   handleCreateOrder,
   handleEditOrder,
   handleDeleteOrder,
+  getInvoiceStatus,
+  setInvoiceColor,
 } from "./OrderActions";
 import { formatDate, formatMoney } from "../../utils/formatStrings";
 
@@ -84,30 +86,6 @@ const OrdersTable = memo(() => {
       return titles.join(", ") || "None";
     },
     [getProduct]
-  );
-
-  // Get invoice status for a specific order
-  const getInvoiceStatus = useCallback((invoice) => {
-    const status =
-      new Date() > new Date(invoice?.paymentDue)
-        ? "overdue"
-        : invoice?.paid
-        ? "paid"
-        : "pending";
-    return invoice ? status : null;
-  }, []);
-
-  // Set text color based in invoice status
-  const setColor = useCallback(
-    (invoice) => {
-      const status = getInvoiceStatus(invoice);
-      return status === "paid"
-        ? "success.main"
-        : status === "pending"
-        ? "warning.main"
-        : "error.main";
-    },
-    [getInvoiceStatus]
   );
 
   // Create table columns
@@ -187,7 +165,7 @@ const OrdersTable = memo(() => {
       columnHelper.accessor("invoice", {
         header: () => "Invoice",
         cell: (info) => (
-          <Typography color={setColor(info.getValue())} component="span">
+          <Typography color={setInvoiceColor(info.getValue())} component="span">
             {getInvoiceStatus(info.getValue()) ?? (
               <Button variant="outlined" size="small">
                 Generate
@@ -209,7 +187,7 @@ const OrdersTable = memo(() => {
         },
       }),
     ],
-    [columnHelper, getInvoiceStatus, getOrderTotal, getProductsList, setColor]
+    [columnHelper, getOrderTotal, getProductsList]
   );
 
   // Go to order page on row click

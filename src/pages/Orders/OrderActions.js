@@ -64,4 +64,30 @@ const handleDeleteOrder = async (orderId) => {
   }
 };
 
-export { handleCreateOrder, handleEditOrder, handleDeleteOrder };
+// Get invoice status for the order
+const getInvoiceStatus = (invoice) => {
+  const status =
+    new Date() > new Date(invoice?.paymentDue)
+      ? "overdue"
+      : invoice?.paid
+      ? "paid"
+      : "pending";
+  return invoice ? status : null;
+};
+
+const setInvoiceColor = (invoice) => {
+  const status = getInvoiceStatus(invoice);
+  return status === "paid"
+    ? "success.main"
+    : status === "pending"
+    ? "warning.main"
+    : "error.main";
+};
+
+export {
+  handleCreateOrder,
+  handleEditOrder,
+  handleDeleteOrder,
+  getInvoiceStatus,
+  setInvoiceColor,
+};

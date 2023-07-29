@@ -4,8 +4,8 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 
 // Project import
 import useFetch from "../../hooks/useFetch";
+import useRandomOrderData from "../../hooks/useRandomOrderData";
 import validationRules from "../../utils/formValidation";
-import getRandomInt from "../../utils/getRandomInt";
 
 // MUI import
 import {
@@ -141,56 +141,31 @@ const OrdersDrawer = (props) => {
     setValue,
   ]);
 
-  // Loading state for setRandomData
-  const [loading, setLoading] = useState(false);
+  // Reload state to trigger new random data fetch
+  const [reload, setReload] = useState();
 
-  // Fill with random data
-  const setRandomData = useCallback(async () => {
-    // Get an array of 1 to 3 random products
-    const allProducts = [...productsData];
-    const randomProductsCount = getRandomInt(3);
-    const getUniqueId = () => {
-      const removedId = allProducts?.splice(
-        getRandomInt(allProducts?.length - 1, 0),
-        1
-      )[0];
-      return removedId;
-    };
+  // Get random data
+  const { loading, data: randomData } = useRandomOrderData(
+    productsData,
+    customerData,
+    reload
+  );
 
-    const randomProducts = [];
-    let i = 0;
-    while (i < randomProductsCount) {
-      randomProducts.push({
-        product: getUniqueId(),
-        quantity: getRandomInt(3),
-      });
-      i++;
-    }
+  // Set random order data
+  const setRandomData = useCallback(() => {
+    // Trigger new random data fetch
+    setReload({});
 
-    // Get a random customer
-    const randomCustomer = () => {
-      const randomInt = getRandomInt(customerData?.length - 1);
-      return customerData?.[randomInt];
-    };
-
-    // Get a random boolean value for the invoice
-    const randomBoolean = Boolean(getRandomInt(2, 0));
-
-    // Disable "Fill with random data" button
-    setLoading(true);
-
-    // Fill form fields
+    // Fill form fields with random data
     reset(
       {
-        customer: randomCustomer(),
-        products: randomProducts,
-        invoice: randomBoolean,
+        customer: randomData?.customer,
+        products: randomData?.products,
+        invoice: randomData?.invoice,
       },
       { keepDefaultValues: true }
     );
-
-    setLoading(false);
-  }, [customerData, productsData, reset]);
+  }, [randomData, reset]);
 
   // Create new-order-form fields based on row data
   const createFormFields = !props.edit
@@ -736,7 +711,7 @@ const OrdersDrawer = (props) => {
               </Stack>
             );
           case "invoice":
-            // Only display the checkbox if the invoice does not exist
+            // Only display the checkbox if no invoice exists for current order
             return !!item.getValue() ? null : (
               <FormControlLabel
                 key={index}

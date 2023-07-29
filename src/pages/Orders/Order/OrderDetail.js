@@ -1,32 +1,50 @@
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 
 // Project import
+import useFetch from "../../../hooks/useFetch";
+import useRandomOrderData from "../../../hooks/useRandomOrderData";
+import {
+  handleEditOrder,
+  getInvoiceStatus,
+  setInvoiceColor,
+} from "../OrderActions";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../../contexts/SnackbarContext";
 import CustomSnackbar from "../../../components/CustomSnackbar";
+import { formatLabel, formatOrderDate } from "../../../utils/formatStrings";
 
 // Mui components
 import {
   Alert,
   AlertTitle,
+  Autocomplete,
   Box,
   Button,
+  Checkbox,
   CircularProgress,
   Divider,
+  FormControl,
+  FormControlLabel,
+  IconButton,
+  InputAdornment,
   Skeleton,
   Stack,
+  TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 
 // MUI icons
-import { Edit as EditIcon } from "@mui/icons-material";
+import {
+  Check as CheckIcon,
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+} from "@mui/icons-material";
 
 const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
   const [edit, setEdit] = useState(false);
-
-  // Loading state for setRandomData
-  const [randomLoading, setRandomLoading] = useState(false);
 
   // State and dispatch function for snackbar component
   const [snackbarState, dispatch] = useContext(SnackbarContext);
@@ -34,17 +52,64 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
   // Set the `dataName` property for the snackbar
   snackbarState.dataName = dataName?.singular;
 
-  // Fill with random data
-  const setRandomData = useCallback(async () => {
-    try {
-      setRandomLoading(true);
-      console.log("fill with random data");
-    } catch (error) {
-      throw new Error(error?.message);
-    } finally {
-      setRandomLoading(false);
-    }
-  }, []);
+  const { register, control, handleSubmit, reset, formState } = useForm({
+    defaultValues: {
+      customer: data?.customerId,
+      products: data?.products,
+      invoice: !!data?.invoice,
+    },
+  });
+
+  // Products array
+  const { fields, append, remove, replace } = useFieldArray({
+    control,
+    name: "products",
+    rules: {
+      required: "Please, add at least one product",
+    },
+  });
+
+  const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
+
+  // Fetch customer data
+  const {
+    loading: customerLoading,
+    error: customerError,
+    data: customerData,
+  } = useFetch(`${API_ENDPOINT}customers`);
+
+  // Fetch product data
+  const {
+    loading: productsLoading,
+    error: productsError,
+    data: productsData,
+  } = useFetch(`${API_ENDPOINT}products`);
+
+  // Reload state to trigger new random data fetch
+  const [randomReload, setRandomReload] = useState();
+
+  // Get random data
+  const { loading: randomLoading, data: randomData } = useRandomOrderData(
+    productsData,
+    customerData,
+    randomReload
+  );
+
+  // Set random order data
+  const setRandomData = useCallback(() => {
+    // Trigger new random data fetch
+    setRandomReload({});
+
+    // Fill form fields with random data
+    reset(
+      {
+        customer: randomData?.customer,
+        products: randomData?.products,
+        invoice: randomData?.invoice,
+      },
+      { keepDefaultValues: true }
+    );
+  }, [randomData, reset]);
 
   const OrderSkeleton = useMemo(
     () => (
@@ -104,27 +169,425 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
     []
   );
 
+  // Populate the products section on page load
+  useEffect(() => {
+    if (data?.products?.length) {
+      const defaultProducts = data?.products.map((product) => ({
+        product: productsData?.find((item) => item.id === product.productId),
+        quantity: product.quantity,
+      }));
+      replace("products", defaultProducts);
+      reset({
+        products: defaultProducts,
+      });
+    }
+  }, [data, productsData, replace, reset]);
+
   // Order details section
   const FormDetails = useMemo(
     () =>
-      data && (
-        <pre>
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    [data]
+      data &&
+      Object.keys(data)?.map((key, index) => {
+        switch (key) {
+          case "id":
+          case "createdAt":
+          case "updatedAt":
+            return (
+              <Controller
+                key={index}
+                control={control}
+                name={key}
+                defaultValue={data[key]}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    id={key}
+                    label={formatLabel(key)}
+                    type="text"
+                    InputLabelProps={{ shrink: true }}
+                    inputProps={{ readOnly: !edit }}
+                    disabled={
+                      formState.isLoading ||
+                      formState.isSubmitting ||
+                      loading ||
+                      randomLoading
+                    }
+                    sx={{ display: "none" }}
+                    margin="normal"
+                    fullWidth
+                  />
+                )}
+              />
+            );
+          case "customer":
+            return (
+              <Controller
+                key={index}
+                control={control}
+                name={key}
+                defaultValue={data[key]}
+                render={({ field }) => (
+                  <Autocomplete
+                    handleHomeEndKeys
+                    id={`${dataName.singular}-${key}`}
+                    value={field.value || null}
+                    onChange={(event, value) => {
+                      field.onChange(value);
+                    }}
+                    options={customerData ?? []}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    getOptionLabel={(customer) =>
+                      `${customer?.id && "#" + customer.id} ${
+                        customer?.firstName
+                      } ${customer?.lastName}`
+                    }
+                    noOptionsText={"No customer"}
+                    readOnly={!edit}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        id={key}
+                        label={formatLabel(key)}
+                        error={!!(formState.errors[key] || customerError)}
+                        helperText={
+                          (formState.errors[key] &&
+                            formState.errors[key]?.message) ||
+                          customerError?.message
+                        }
+                        InputLabelProps={{ shrink: true }}
+                        disabled={
+                          formState.isLoading ||
+                          formState.isSubmitting ||
+                          loading ||
+                          customerLoading ||
+                          randomLoading
+                        }
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {formState.isLoading ||
+                              formState.isSubmitting ||
+                              loading ||
+                              customerLoading ||
+                              randomLoading ? (
+                                <InputAdornment position="end">
+                                  <CircularProgress color="inherit" size={20} />
+                                </InputAdornment>
+                              ) : null}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                        margin="normal"
+                        fullWidth
+                      />
+                    )}
+                  />
+                )}
+              />
+            );
+          case "products":
+            return (
+              <Stack key={index} id="order-products-form-section" mt={3}>
+                <Divider>
+                  <Typography color="text.secondary">Products</Typography>
+                </Divider>
+                {fields.map((item, prodIndex) => (
+                  <Stack key={item.id} direction="row" spacing={2} useFlexGap>
+                    <Controller
+                      control={control}
+                      name={`products.${prodIndex}.product`}
+                      render={({ field }) => (
+                        <Autocomplete
+                          handleHomeEndKeys
+                          {...register(`products.${prodIndex}.product`, {
+                            required: "Please, select a product",
+                          })}
+                          id={`products.${prodIndex}.product-input`}
+                          value={field.value || null}
+                          onChange={(event, value) => {
+                            field.onChange(value);
+                          }}
+                          options={productsData ?? []}
+                          getOptionLabel={(product) =>
+                            `${product?.id && "#" + product.id} ${
+                              product?.title
+                            }`
+                          }
+                          isOptionEqualToValue={(option, value) =>
+                            option.id === value.id
+                          }
+                          noOptionsText={"No products"}
+                          readOnly={!edit}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              id={`products.${prodIndex}.product`}
+                              label={`Product #${prodIndex + 1}`}
+                              error={
+                                !!(
+                                  formState.errors?.products?.[prodIndex]
+                                    ?.product || productsError
+                                )
+                              }
+                              helperText={
+                                (formState.errors?.products?.[prodIndex]
+                                  ?.product &&
+                                  formState.errors?.products?.[prodIndex]
+                                    ?.product?.message) ||
+                                productsError?.message
+                              }
+                              InputLabelProps={{ shrink: true }}
+                              disabled={
+                                formState.isLoading ||
+                                formState.isSubmitting ||
+                                loading ||
+                                productsLoading ||
+                                randomLoading
+                              }
+                              InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                  <>
+                                    {formState.isLoading ||
+                                    formState.isSubmitting ||
+                                    loading ||
+                                    customerLoading ||
+                                    randomLoading ? (
+                                      <InputAdornment position="end">
+                                        <CircularProgress
+                                          color="inherit"
+                                          size={20}
+                                        />
+                                      </InputAdornment>
+                                    ) : null}
+                                    {params.InputProps.endAdornment}
+                                  </>
+                                ),
+                              }}
+                              margin="normal"
+                              fullWidth
+                            />
+                          )}
+                          sx={{ width: "100%" }}
+                        />
+                      )}
+                    />
+                    <Controller
+                      control={control}
+                      name={`products.${prodIndex}.quantity`}
+                      render={({ params }) => (
+                        <FormControl margin="normal">
+                          <TextField
+                            {...params}
+                            {...register(`products.${prodIndex}.quantity`, {
+                              min: {
+                                value: 1,
+                                valueAsNumber: true,
+                                message: "Value must be >0",
+                              },
+                            })}
+                            id={`products.${prodIndex}.quantity`}
+                            label={`Quantity #${prodIndex + 1}`}
+                            type="number"
+                            error={
+                              !!(
+                                formState.errors?.products?.[prodIndex]
+                                  ?.quantity || productsError
+                              )
+                            }
+                            helperText={
+                              (formState.errors?.products?.[prodIndex]
+                                ?.quantity &&
+                                formState.errors?.products?.[prodIndex]
+                                  ?.quantity?.message) ||
+                              productsError?.message
+                            }
+                            InputLabelProps={{ shrink: true }}
+                            disabled={
+                              formState.isLoading ||
+                              formState.isSubmitting ||
+                              loading ||
+                              productsLoading ||
+                              randomLoading
+                            }
+                            InputProps={{
+                              // Set minimum quantity as 1
+                              inputProps: { min: 1, readOnly: !edit },
+                              endAdornment: (
+                                <>
+                                  {formState.isLoading ||
+                                  formState.isSubmitting ||
+                                  loading ||
+                                  customerLoading ||
+                                  randomLoading ? (
+                                    <InputAdornment position="end">
+                                      <CircularProgress
+                                        color="inherit"
+                                        size={20}
+                                      />
+                                    </InputAdornment>
+                                  ) : null}
+                                </>
+                              ),
+                            }}
+                            sx={{ maxWidth: "6.7rem", minWidth: "5rem" }}
+                          />
+                        </FormControl>
+                      )}
+                    />
+                    <Tooltip title="Delete">
+                      <>
+                        <IconButton
+                          disabled={!edit}
+                          onClick={() => remove(prodIndex)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </>
+                    </Tooltip>
+                  </Stack>
+                ))}
+                <Button
+                  type="button"
+                  variant="outlined"
+                  size="small"
+                  onClick={() => append({ product: "", quantity: 1 })}
+                  sx={{ display: edit ? "inline-flex" : "none", mt: 1 }}
+                >
+                  Add Product
+                </Button>
+              </Stack>
+            );
+          case "invoice":
+            // Only display the checkbox if no invoice exists for current order
+            return !!data[key] ? null : (
+              <FormControlLabel
+                key={index}
+                label="Generate invoice"
+                sx={{
+                  display: edit ? "inline-flex" : "none",
+                  width: "100%",
+                  mt: "1.5rem",
+                }}
+                control={
+                  <Controller
+                    control={control}
+                    id={key}
+                    name={key}
+                    render={({ field }) => (
+                      <Checkbox
+                        {...field}
+                        checked={!!field.value}
+                        onChange={field.onChange}
+                        disabled={
+                          formState.isLoading ||
+                          formState.isSubmitting ||
+                          loading ||
+                          randomLoading
+                        }
+                      />
+                    )}
+                  />
+                }
+              />
+            );
+          default:
+            return null;
+        }
+      }),
+    [
+      append,
+      control,
+      customerData,
+      customerError,
+      customerLoading,
+      data,
+      dataName.singular,
+      edit,
+      fields,
+      formState.errors,
+      formState.isLoading,
+      formState.isSubmitting,
+      loading,
+      productsData,
+      productsError,
+      productsLoading,
+      randomLoading,
+      register,
+      remove,
+    ]
   );
 
   // Invoice section
   const OrderInvoice = useMemo(
     () => (
       <Box>
-        <Typography variant="h5" mb={3}>
-          {data?.invoice ? `Invoice data for order #${data?.id}` : "No invoice"}
+        <Typography variant="h5" mb={4}>
+          Invoice
         </Typography>
+        {data?.invoice ? (
+          <>
+            <Typography paragraph>
+              Due:{" "}
+              <Box component="span" fontWeight="bold">
+                {`${formatOrderDate(data?.paymentDue)}`}
+              </Box>
+            </Typography>
+            <Typography paragraph>
+              Status:{" "}
+              <Box
+                component="span"
+                fontWeight="bold"
+                color={setInvoiceColor(data?.invoice)}
+              >{`${getInvoiceStatus(data?.invoice)}`}</Box>
+            </Typography>
+            <Stack direction="row" spacing={2} width="22rem">
+              {!data?.invoice?.paid && (
+                <Button
+                  variant="outlined"
+                  color="success"
+                  size="small"
+                  endIcon={<CheckIcon />}
+                  fullWidth
+                  sx={{
+                    "&, & .MuiButtonBase-root": { alignItems: "normal" },
+                  }}
+                >
+                  Mark as paid
+                </Button>
+              )}
+              <Button
+                variant="outlined"
+                color="error"
+                size="small"
+                endIcon={<DeleteIcon />}
+                fullWidth={!data?.invoice?.paid}
+                sx={{
+                  "&, & .MuiButtonBase-root": { alignItems: "normal" },
+                }}
+              >
+                Delete invoice
+              </Button>
+            </Stack>
+          </>
+        ) : (
+          <>
+            <Typography mb={2}>No invoice for this order.</Typography>
+            <Button variant="outlined">Generate invoice</Button>
+          </>
+        )}
+        {data && (
+          <pre>
+            <code>{JSON.stringify(data, null, 2)}</code>
+          </pre>
+        )}
       </Box>
     ),
-    [data?.id, data?.invoice]
+    [data]
   );
 
   return loading ? (
@@ -134,7 +597,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
       <Typography variant="h2" mb="3rem">{`Order #${data?.id}`}</Typography>
       <Stack direction="row" spacing="2rem">
         <form onSubmit={null}>
-          <Stack spacing={2} width="18rem">
+          <Stack spacing={2} width="24rem">
             {error ? (
               <Alert severity="error">
                 <AlertTitle>Error</AlertTitle>
@@ -150,9 +613,9 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                   variant="outlined"
                   size="small"
                   onClick={setRandomData}
-                  disabled={randomLoading || loading}
+                  disabled={randomLoading || loading || randomLoading}
                   endIcon={
-                    (randomLoading || loading) && (
+                    (randomLoading || loading || randomLoading) && (
                       <CircularProgress color="inherit" size={20} />
                     )
                   }
@@ -175,6 +638,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                     size="large"
                     onClick={(event) => {
                       event.preventDefault();
+                      reset();
                       setEdit(false);
                     }}
                   >
