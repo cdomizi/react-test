@@ -9,7 +9,7 @@ import {
   handleCreateCustomer,
   handleEditCustomer,
   handleDeleteCustomer,
-} from "./Customer/CustomerActions";
+} from "./CustomerActions";
 
 // MUI components
 import { Card } from "@mui/material";

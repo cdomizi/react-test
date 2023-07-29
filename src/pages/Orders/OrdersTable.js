@@ -5,10 +5,14 @@ import moment from "moment";
 
 // Project import
 import useFetch from "../../hooks/useFetch";
-import uniqueFieldError from "../../utils/uniqueFieldError";
 import DataTable from "../../components/DataTable/DataTable";
 import OrdersDrawer from "./OrdersDrawer";
-import { formatDate, formatMoney } from "../../utils//formatStrings";
+import {
+  handleCreateOrder,
+  handleEditOrder,
+  handleDeleteOrder,
+} from "./OrderActions";
+import { formatDate, formatMoney } from "../../utils/formatStrings";
 
 // MUI components
 import { Button, Card, Typography } from "@mui/material";
@@ -210,85 +214,8 @@ const OrdersTable = memo(() => {
 
   // Go to order page on row click
   const handleRowClick = (event, rowData) => {
-    navigate(`${rowData.id}`);
+    navigate(`${rowData.id}`, { state: { dataName } });
   };
-
-  // Create new order
-  const handleCreateOrder = useCallback(
-    async (formData) => {
-      const response = await fetch(`${API_ENDPOINT}orders`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Force reload to update table data
-        setReload({});
-        // Return order ID to display on new order confirmation message
-        const orderId = `#${data?.id}`;
-        return orderId;
-      } else {
-        // Check if the user entered a duplicate value for a unique field
-        const uniqueField = uniqueFieldError(response, formData);
-        // If it's not a uniqueFieldError, return a generic error
-        return uniqueField ?? response;
-      }
-    },
-    [API_ENDPOINT]
-  );
-
-  // Edit order
-  const handleEditOrder = useCallback(
-    async (formData) => {
-      // This specific API requires `id` to be of type String
-      formData.id = String(formData.id);
-
-      const response = await fetch(`${API_ENDPOINT}orders/${formData.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Force reload to update table data
-        setReload({});
-        // Return order ID to display on edit confirmation message
-        const orderId = `#${data?.id}`;
-        return orderId;
-      } else {
-        // Check if the user entered a duplicate value for a unique field
-        const uniqueField = uniqueFieldError(response, formData);
-        // If it's not a uniqueFieldError, return a generic error
-        return uniqueField ?? response;
-      }
-    },
-    [API_ENDPOINT]
-  );
-
-  // Delete order
-  const handleDeleteOrder = useCallback(
-    async (orderId) => {
-      const response = await fetch(`${API_ENDPOINT}orders/${orderId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Force reload to update table data
-        setReload({});
-        // Return order name to display on delete confirmation message
-        const orderTitle = `#${data?.id}`;
-        return orderTitle;
-      } else {
-        const error = await response;
-        return error;
-      }
-    },
-    [API_ENDPOINT]
-  );
 
   return (
     <Card>
@@ -303,7 +230,7 @@ const OrdersTable = memo(() => {
         globalSearch={false}
         defaultOrder={true}
         clickable={true}
-        reload={reload}
+        reload={() => setReload({})}
         onRowClick={handleRowClick}
         onCreate={handleCreateOrder}
         onEdit={handleEditOrder}

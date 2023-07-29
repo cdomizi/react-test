@@ -1,5 +1,4 @@
-// Project import
-import uniqueFieldError from "../../../utils/uniqueFieldError";
+import uniqueFieldError from "../../utils/uniqueFieldError";
 
 const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
 

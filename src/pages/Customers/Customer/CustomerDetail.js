@@ -3,7 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import moment from "moment";
 
 // Project import
-import { handleEditCustomer } from "./CustomerActions";
+import { handleEditCustomer } from "../CustomerActions";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../../contexts/SnackbarContext";
@@ -167,7 +167,7 @@ const CustomerDetail = ({
     return capitalize(split[0]) + " " + split.slice(1).join("");
   }, []);
 
-  // Customer Details section
+  // Customer details section
   const FormDetails = useMemo(
     () =>
       data &&

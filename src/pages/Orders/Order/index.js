@@ -1,17 +1,43 @@
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 // project import
+import OrderDetail from "./OrderDetail";
 import useFetch from "../../../hooks/useFetch";
 
 const Order = () => {
   const { orderId } = useParams();
   const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
 
-  const { data } = useFetch(`${API_ENDPOINT}orders/${orderId}`);
+  // State to force reload on data update
+  const [reload, setReload] = useState();
+
+  const order = useFetch(`${API_ENDPOINT}orders/${orderId}`, reload);
+
+  const { state } = useLocation();
+  const navigate = useNavigate();
+
+  // Prevent direct access
+  useEffect(() => {
+    if (!state) {
+      // Redirect to orders' page on direct access
+      navigate("/orders", { replace: true });
+      return;
+    }
+  }, [navigate, state]);
+
+  if (!state) return null;
+
+  // Get dataName and randomData from location
+  const { dataName, randomData } = state || {};
+
   return (
-    <pre>
-      <code>{JSON.stringify(data, null, 2)}</code>
-    </pre>
+    <OrderDetail
+      {...order}
+      reload={() => setReload()}
+      dataName={dataName}
+      randomData={randomData}
+    />
   );
 };
 
