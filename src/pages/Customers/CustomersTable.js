@@ -39,7 +39,7 @@ const CustomersTable = memo(() => {
 
   const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
 
-  // Fetch data from external api
+  // Fetch data from API
   const { loading, error, data } = useFetch(`${API_ENDPOINT}customers`, reload);
 
   // Set customers upon fetching data

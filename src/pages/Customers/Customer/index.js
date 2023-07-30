@@ -34,7 +34,7 @@ const Customer = () => {
   return (
     <CustomerDetail
       {...customer}
-      reload={() => setReload()}
+      reload={() => setReload({})}
       dataName={dataName}
       randomData={randomData}
     />

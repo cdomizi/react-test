@@ -8,6 +8,7 @@ import {
   handleEditOrder,
   getInvoiceStatus,
   setInvoiceColor,
+  getSubmitData,
 } from "../OrderActions";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
@@ -69,6 +70,38 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
     },
   });
 
+  const onSubmit = useCallback(
+    async (formData) => {
+      // Process form data for submit
+      const submitData = getSubmitData(formData);
+
+      const response = await handleEditOrder(submitData);
+      if (response?.length) {
+        // Display confirmation message if the request was successful
+        dispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: response });
+        // Force refetch to get updated data
+        reload();
+      } else {
+        // Check if it's a unique field error
+        response?.field
+          ? // Display the specific error message
+            dispatch({
+              type: SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR,
+              payload: response,
+            })
+          : // Display a generic error message
+            dispatch({
+              type: SNACKBAR_ACTIONS.EDIT_ERROR,
+              payload: response,
+            });
+      }
+
+      // Disable edit mode
+      setEdit(false);
+    },
+    [dispatch, reload]
+  );
+
   const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
 
   // Fetch customer data
@@ -110,12 +143,6 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
       { keepDefaultValues: true }
     );
   }, [randomData, reset]);
-
-  useEffect(
-    () => console.log("hook", randomData?.products?.[0]?.product?.id),
-    [randomData]
-  );
-  useEffect(() => console.log("fields", fields?.[0]?.product?.id), [fields]);
 
   const OrderSkeleton = useMemo(
     () => (
@@ -196,8 +223,6 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
       Object.keys(data)?.map((key, index) => {
         switch (key) {
           case "id":
-          case "createdAt":
-          case "updatedAt":
             return (
               <Controller
                 key={index}
@@ -539,9 +564,15 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
         {data?.invoice ? (
           <>
             <Typography paragraph>
+              ID:{" "}
+              <Box component="span" fontWeight="bold">
+                {`#${data?.invoice?.id}`}
+              </Box>
+            </Typography>
+            <Typography paragraph>
               Due:{" "}
               <Box component="span" fontWeight="bold">
-                {`${formatOrderDate(data?.paymentDue)}`}
+                {`${formatOrderDate(data?.invoice?.paymentDue)}`}
               </Box>
             </Typography>
             <Typography paragraph>
@@ -587,11 +618,6 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
             <Button variant="outlined">Generate invoice</Button>
           </>
         )}
-        {data && (
-          <pre>
-            <code>{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        )}
       </Box>
     ),
     [data]
@@ -603,7 +629,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
     <Box>
       <Typography variant="h2" mb="3rem">{`Order #${data?.id}`}</Typography>
       <Stack direction="row" spacing="2rem">
-        <form onSubmit={null}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2} width="24rem">
             {error ? (
               <Alert severity="error">

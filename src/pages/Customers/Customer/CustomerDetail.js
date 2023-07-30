@@ -186,7 +186,7 @@ const CustomerDetail = ({
                       randomLoading ||
                       loading
                     }
-                    inputProps={{ readOnly: edit }}
+                    inputProps={{ readOnly: !edit }}
                     InputProps={{
                       ...field?.InputProps,
                       endAdornment: (
@@ -230,7 +230,7 @@ const CustomerDetail = ({
                       randomLoading ||
                       loading
                     }
-                    inputProps={{ readOnly: edit }}
+                    inputProps={{ readOnly: !edit }}
                     InputProps={{
                       ...field?.InputProps,
                       endAdornment: (

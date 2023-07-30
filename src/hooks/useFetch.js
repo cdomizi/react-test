@@ -50,7 +50,7 @@ const useFetch = (url, options = null, reload = null) => {
 
       // If a cache exists for this url, return it
       if (cache.current[url] && reload === {}) {
-        dispatch({ type: "fetched", payload: cache.current[url] });
+        dispatch({ type: ACTIONS.SUCCESS, payload: cache.current[url] });
         return;
       }
 

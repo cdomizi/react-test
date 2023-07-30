@@ -5,6 +5,7 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 // Project import
 import useFetch from "../../hooks/useFetch";
 import useRandomOrderData from "../../hooks/useRandomOrderData";
+import { getSubmitData } from "./OrderActions";
 import validationRules from "../../utils/formValidation";
 
 // MUI import
@@ -71,28 +72,18 @@ const OrdersDrawer = (props) => {
     },
   });
 
-  // Get id from formData item
-  const getItemId = useCallback((item) => parseInt(item.id), []);
-
   const onSubmit = useCallback(
     (formData) => {
       // Process form data for submit
-      const submitData = {
-        // Pass `id` property if available (i.e. on edit)
-        ...(formData.id && { id: formData.id }),
-        customerId: getItemId(formData.customer),
-        products: formData.products.map((product) => ({
-          id: getItemId(product.product),
-          quantity: parseInt(product.quantity),
-        })),
-        invoice: !!formData.invoice,
-      };
+      const submitData = getSubmitData(formData);
+
       props.onSubmit(submitData);
+
       // Reset form and remove all product fields on submit
       reset();
       remove();
     },
-    [getItemId, props, remove, reset]
+    [props, remove, reset]
   );
 
   // Reset the form on submit/close

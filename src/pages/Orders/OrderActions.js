@@ -13,7 +13,7 @@ const handleCreateOrder = async (formData) => {
   if (response.ok) {
     const data = await response.json();
     // Return order ID to display on new order confirmation message
-    const orderId = `#${data?.id}`;
+    const orderId = `Order #${data?.id}`;
     return orderId;
   } else {
     // Check if the user entered a duplicate value for a unique field
@@ -37,7 +37,7 @@ const handleEditOrder = async (formData) => {
   if (response.ok) {
     const data = await response.json();
     // Return order ID to display on edit confirmation message
-    const orderId = `#${data?.id}`;
+    const orderId = `Order #${data?.id}`;
     return orderId;
   } else {
     // Check if the user entered a duplicate value for a unique field
@@ -56,13 +56,27 @@ const handleDeleteOrder = async (orderId) => {
   if (response.ok) {
     const data = await response.json();
     // Return order name to display on delete confirmation message
-    const orderTitle = `#${data?.id}`;
+    const orderTitle = `Order #${data?.id}`;
     return orderTitle;
   } else {
     const error = await response;
     return error;
   }
 };
+
+// Get id from formData item
+const getItemId = (item) => parseInt(item.id);
+
+const getSubmitData = (formData) => ({
+  // Pass `id` property if available (i.e. on edit)
+  ...(formData.id && { id: formData.id }),
+  customerId: getItemId(formData.customer),
+  products: formData.products.map((product) => ({
+    id: getItemId(product.product),
+    quantity: parseInt(product.quantity),
+  })),
+  invoice: !!formData.invoice,
+});
 
 // Get invoice status for the order
 const getInvoiceStatus = (invoice) => {
@@ -88,6 +102,7 @@ export {
   handleCreateOrder,
   handleEditOrder,
   handleDeleteOrder,
+  getSubmitData,
   getInvoiceStatus,
   setInvoiceColor,
 };

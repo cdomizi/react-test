@@ -12,6 +12,7 @@ const Order = () => {
   // State to force reload on data update
   const [reload, setReload] = useState();
 
+  // Fetch order data from API
   const order = useFetch(`${API_ENDPOINT}orders/${orderId}`, reload);
 
   const { state } = useLocation();
@@ -30,11 +31,10 @@ const Order = () => {
 
   // Get dataName and randomData from location
   const { dataName, randomData } = state || {};
-
   return (
     <OrderDetail
       {...order}
-      reload={() => setReload()}
+      reload={() => setReload({})}
       dataName={dataName}
       randomData={randomData}
     />
