@@ -52,7 +52,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
   // Set the `dataName` property for the snackbar
   snackbarState.dataName = dataName?.singular;
 
-  const { register, control, handleSubmit, reset, formState } = useForm({
+  const { register, control, handleSubmit, reset, formState, watch } = useForm({
     defaultValues: {
       customer: data?.customerId,
       products: data?.products,
@@ -110,6 +110,12 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
       { keepDefaultValues: true }
     );
   }, [randomData, reset]);
+
+  useEffect(
+    () => console.log("hook", randomData?.products?.[0]?.product?.id),
+    [randomData]
+  );
+  useEffect(() => console.log("fields", fields?.[0]?.product?.id), [fields]);
 
   const OrderSkeleton = useMemo(
     () => (
@@ -307,7 +313,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                             required: "Please, select a product",
                           })}
                           id={`products.${prodIndex}.product-input`}
-                          value={field.value || null}
+                          value={watch("products")[prodIndex].product || null}
                           onChange={(event, value) => {
                             field.onChange(value);
                           }}
@@ -519,6 +525,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
       randomLoading,
       register,
       remove,
+      watch,
     ]
   );
 
