@@ -63,6 +63,7 @@ const CustomerDetail = ({
         // Force refetch to get updated data
         reload();
       } else {
+        console.error(response);
         // Check if it's a unique field error
         response?.field
           ? // Display the specific error message

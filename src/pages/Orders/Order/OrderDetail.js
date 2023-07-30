@@ -9,6 +9,8 @@ import {
   getInvoiceStatus,
   setInvoiceColor,
   getSubmitData,
+  handleEditInvoice,
+  handleDeleteInvoice,
 } from "../OrderActions";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
@@ -82,6 +84,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
         // Force refetch to get updated data
         reload();
       } else {
+        console.error(response);
         // Check if it's a unique field error
         response?.field
           ? // Display the specific error message
@@ -117,6 +120,52 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
     error: productsError,
     data: productsData,
   } = useFetch(`${API_ENDPOINT}products`);
+
+  const onEditInvoice = useCallback(async () => {
+    const response = await handleEditInvoice(data?.invoice?.id, true);
+
+    if (response?.length) {
+      // Display confirmation message if the request was successful
+      dispatch({
+        type: SNACKBAR_ACTIONS.EDIT,
+        payload: response,
+        dataName: "invoice",
+      });
+      // Force refetch to get updated data
+      reload();
+    } else {
+      console.error(response);
+      // Display a generic error message
+      dispatch({
+        type: SNACKBAR_ACTIONS.EDIT_ERROR,
+        payload: response,
+        dataName: "invoice",
+      });
+    }
+  }, [data?.invoice?.id, dispatch, reload]);
+
+  const onDeleteInvoice = useCallback(async () => {
+    const response = await handleDeleteInvoice(data?.invoice?.id);
+
+    if (response?.length) {
+      // Display confirmation message if the request was successful
+      dispatch({
+        type: SNACKBAR_ACTIONS.DELETE,
+        payload: response,
+        dataName: "invoice",
+      });
+      // Force refetch to get updated data
+      reload();
+    } else {
+      console.error(response);
+      // Display a generic error message
+      dispatch({
+        type: SNACKBAR_ACTIONS.DELETE_ERROR,
+        payload: response,
+        dataName: "invoice",
+      });
+    }
+  }, [data?.invoice?.id, dispatch, reload]);
 
   // Reload state to trigger new random data fetch
   const [randomReload, setRandomReload] = useState();
@@ -589,6 +638,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                   variant="outlined"
                   color="success"
                   size="small"
+                  onClick={onEditInvoice}
                   endIcon={<CheckIcon />}
                   fullWidth
                   sx={{
@@ -602,6 +652,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                 variant="outlined"
                 color="error"
                 size="small"
+                onClick={onDeleteInvoice}
                 endIcon={<DeleteIcon />}
                 fullWidth={!data?.invoice?.paid}
                 sx={{
@@ -620,7 +671,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
         )}
       </Box>
     ),
-    [data]
+    [data?.invoice, onDeleteInvoice, onEditInvoice]
   );
 
   return loading ? (

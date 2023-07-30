@@ -35,24 +35,24 @@ const snackbarReducer = (state, action) => {
         success: true,
         message: `${
           action.payload.length
-            ? action.payload
-            : state?.dataName
-            ? capitalize(state?.dataName)
-            : "Item"
+            ? capitalize(action.payload)
+            : capitalize(action?.dataName) || (state?.dataName ?? "item")
         } created successfully!`,
       };
     }
     case SNACKBAR_ACTIONS.CREATE_ERROR: {
       console.error(
-        `Error while creating the ${state?.dataName ?? "item"}: ${
-          action.payload.status
-        } - ${action.payload.statusText}`
+        `Error while creating the ${
+          action?.dataName || (state?.dataName ?? "item")
+        }: ${action.payload.status} - ${action.payload.statusText}`
       );
       return {
         ...initialState,
         open: true,
         success: false,
-        message: `Sorry! Unable to create the ${state?.dataName ?? "item"}.`,
+        message: `Sorry! Unable to create the ${
+          action?.dataName || (state?.dataName ?? "item")
+        }.`,
       };
     }
     case SNACKBAR_ACTIONS.EDIT: {
@@ -71,15 +71,17 @@ const snackbarReducer = (state, action) => {
     }
     case SNACKBAR_ACTIONS.EDIT_ERROR: {
       console.error(
-        `Error while editing the ${state?.dataName ?? "item"}: ${
-          action.payload.status
-        } - ${action.payload.statusText}`
+        `Error while editing the ${
+          action?.dataName || (state?.dataName ?? "item")
+        }: ${action.payload.status} - ${action.payload.statusText}`
       );
       return {
         ...initialState,
         open: true,
         success: false,
-        message: `Sorry! Unable to edit the ${state?.dataName ?? "item"}.`,
+        message: `Sorry! Unable to edit the ${
+          action?.dataName || (state?.dataName ?? "item")
+        }.`,
       };
     }
     case SNACKBAR_ACTIONS.DELETE: {
@@ -90,23 +92,24 @@ const snackbarReducer = (state, action) => {
         message: `${
           action.payload.length
             ? action.payload
-            : state?.dataName
-            ? capitalize(state?.dataName)
-            : "Item"
+            : capitalize(action?.dataName) ||
+              (capitalize(state?.dataName) ?? "Item")
         } deleted successfully!`,
       };
     }
     case SNACKBAR_ACTIONS.DELETE_ERROR: {
       console.error(
-        `Error while deleting the ${state?.dataName ?? "item"}: ${
-          action.payload.status
-        } - ${action.payload.statusText}`
+        `Error while deleting the ${
+          action?.dataName || (state?.dataName ?? "item")
+        }: ${action.payload.status} - ${action.payload.statusText}`
       );
       return {
         ...initialState,
         open: true,
         success: false,
-        message: `Sorry! Unable to delete the ${state?.dataName ?? "item"}.`,
+        message: `Sorry! Unable to delete the ${
+          action?.dataName || (state?.dataName ?? "item")
+        }.`,
       };
     }
     case SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR: {
@@ -117,9 +120,12 @@ const snackbarReducer = (state, action) => {
         ...initialState,
         open: true,
         success: false,
-        message: `${capitalize(state?.dataName) ?? "Item"} with ${
-          action.payload.field
-        } "${action.payload.value}" already exists.`,
+        message: `${
+          capitalize(action?.dataName) ||
+          (capitalize(state?.dataName) ?? "item")
+        } with ${action.payload.field} "${
+          action.payload.value
+        }" already exists.`,
       };
     }
     case SNACKBAR_ACTIONS.CLOSE: {

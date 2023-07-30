@@ -78,6 +78,42 @@ const getSubmitData = (formData) => ({
   invoice: !!formData.invoice,
 });
 
+// Edit invoice
+const handleEditInvoice = async (invoiceId, paid) => {
+  const response = await fetch(`${API_ENDPOINT}invoices/${invoiceId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ paid }),
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    // Return invoice name to display on edit confirmation message
+    const invoiceTitle = `Invoice #${data?.id}`;
+    return invoiceTitle;
+  } else {
+    const error = await response;
+    return error;
+  }
+};
+
+// Delete invoice
+const handleDeleteInvoice = async (invoiceId) => {
+  const response = await fetch(`${API_ENDPOINT}invoices/${invoiceId}`, {
+    method: "DELETE",
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    // Return invoice name to display on delete confirmation message
+    const invoiceTitle = `Invoice #${data?.id}`;
+    return invoiceTitle;
+  } else {
+    const error = await response;
+    return error;
+  }
+};
+
 // Get invoice status for the order
 const getInvoiceStatus = (invoice) => {
   const status =
@@ -103,6 +139,8 @@ export {
   handleEditOrder,
   handleDeleteOrder,
   getSubmitData,
+  handleEditInvoice,
+  handleDeleteInvoice,
   getInvoiceStatus,
   setInvoiceColor,
 };
