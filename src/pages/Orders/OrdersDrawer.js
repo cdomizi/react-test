@@ -6,7 +6,6 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 import useFetch from "../../hooks/useFetch";
 import useRandomOrderData from "../../hooks/useRandomOrderData";
 import { getSubmitData } from "./OrderActions";
-import validationRules from "../../utils/formValidation";
 
 // MUI import
 import {
@@ -168,7 +167,6 @@ const OrdersDrawer = (props) => {
                 key={index}
                 control={control}
                 name={column.columnDef.accessorKey}
-                rules={validationRules(column.columnDef)}
                 render={({ field }) => (
                   <Autocomplete
                     handleHomeEndKeys
@@ -412,7 +410,6 @@ const OrdersDrawer = (props) => {
                     control={control}
                     id={column.columnDef.accessorKey}
                     name={column.columnDef.accessorKey}
-                    rules={validationRules(column.columnDef)}
                     render={({ field }) => (
                       <Checkbox
                         {...field}
@@ -441,7 +438,6 @@ const OrdersDrawer = (props) => {
                 control={control}
                 name={item.column.columnDef.accessorKey}
                 defaultValue={item?.getValue()}
-                rules={validationRules(item.column.columnDef)}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -465,7 +461,6 @@ const OrdersDrawer = (props) => {
                 key={index}
                 control={control}
                 name={item.column.columnDef.accessorKey}
-                rules={validationRules(item.column.columnDef)}
                 render={({ field }) => (
                   <Autocomplete
                     handleHomeEndKeys
@@ -713,7 +708,6 @@ const OrdersDrawer = (props) => {
                     control={control}
                     id={item.column.columnDef.accessorKey}
                     name={item.column.columnDef.accessorKey}
-                    rules={validationRules(item.column.columnDef)}
                     render={({ field }) => (
                       <Checkbox
                         {...field}

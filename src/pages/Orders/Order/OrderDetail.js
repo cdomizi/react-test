@@ -739,6 +739,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                 endIcon={<EditIcon />}
                 onClick={(event) => {
                   event.preventDefault();
+                  reset();
                   setEdit(true);
                 }}
                 sx={{

@@ -59,6 +59,7 @@ const DataTable = (props) => {
     onCreate = null,
     onEdit = null,
     onDelete = null,
+    validation = null,
     randomData = null,
     customDrawer: CustomDrawer = null,
   } = props;
@@ -244,6 +245,7 @@ const DataTable = (props) => {
           onSubmit={(formData) => handleOnCreateSubmit(formData)}
           onClose={() => setDrawerState(initialDrawerState)}
           edit={drawerState.edit}
+          validation={validation}
           dataName={dataName}
         />
       ) : (
@@ -253,6 +255,7 @@ const DataTable = (props) => {
           onSubmit={(formData) => handleOnCreateSubmit(formData)}
           onClose={() => setDrawerState(initialDrawerState)}
           edit={drawerState.edit}
+          validation={validation}
           dataName={dataName}
           randomData={randomData}
         />
@@ -262,6 +265,7 @@ const DataTable = (props) => {
       drawerState.open,
       drawerState.payload,
       drawerState.edit,
+      validation,
       dataName,
       randomData,
       handleOnCreateSubmit,
@@ -279,6 +283,7 @@ const DataTable = (props) => {
           onSubmit={(formData) => handleOnEditSubmit(formData)}
           onClose={() => setDrawerState(initialDrawerState)}
           edit={drawerState.edit}
+          validation={validation}
           dataName={dataName}
         />
       ) : (
@@ -288,6 +293,7 @@ const DataTable = (props) => {
           onSubmit={(formData) => handleOnEditSubmit(formData)}
           onClose={() => setDrawerState(initialDrawerState)}
           edit={drawerState.edit}
+          validation={validation}
           dataName={dataName}
           randomData={randomData}
         />
@@ -297,6 +303,7 @@ const DataTable = (props) => {
       drawerState.open,
       drawerState.payload,
       drawerState.edit,
+      validation,
       dataName,
       randomData,
       handleOnEditSubmit,
@@ -548,6 +555,7 @@ DataTable.propTypes = {
   onCreate: PropTypes.func,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
+  validation: PropTypes.object,
   randomData: PropTypes.object,
   customDrawer: PropTypes.func,
 };

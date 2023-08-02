@@ -1,3 +1,4 @@
+import * as yup from "yup";
 import checkUniqueField from "../../utils/checkUniqueField";
 
 const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
@@ -64,4 +65,22 @@ const handleDeleteCustomer = async (customerId) => {
   }
 };
 
-export { handleCreateCustomer, handleEditCustomer, handleDeleteCustomer };
+const customerSchema = yup
+  .object()
+  .shape({
+    firstName: yup.string().required("This field cannot be empty"),
+    lastName: yup.string().required("This field cannot be empty"),
+    email: yup
+      .string()
+      .email("Please enter a valid email")
+      .required("This field cannot be empty"),
+    address: yup.string().required("This field cannot be empty"),
+  })
+  .required();
+
+export {
+  handleCreateCustomer,
+  handleEditCustomer,
+  handleDeleteCustomer,
+  customerSchema,
+};

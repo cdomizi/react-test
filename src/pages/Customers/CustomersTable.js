@@ -9,6 +9,7 @@ import {
   handleCreateCustomer,
   handleEditCustomer,
   handleDeleteCustomer,
+  customerSchema,
 } from "./CustomerActions";
 
 // MUI components
@@ -108,6 +109,7 @@ const CustomersTable = memo(() => {
         onCreate={handleCreateCustomer}
         onEdit={handleEditCustomer}
         onDelete={handleDeleteCustomer}
+        validation={customerSchema}
         randomData={randomData}
       />
     </Card>

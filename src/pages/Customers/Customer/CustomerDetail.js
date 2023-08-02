@@ -1,8 +1,9 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 // Project import
-import { handleEditCustomer } from "../CustomerActions";
+import { handleEditCustomer, customerSchema } from "../CustomerActions";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../../contexts/SnackbarContext";
@@ -50,8 +51,14 @@ const CustomerDetail = ({
   // Set the `dataName` property for the snackbar
   snackbarState.dataName = dataName?.singular;
 
-  const { control, handleSubmit, formState, reset } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isLoading, isSubmitting },
+    reset,
+  } = useForm({
     defaultValues: data,
+    resolver: yupResolver(customerSchema),
   });
 
   const onSubmit = useCallback(
@@ -182,18 +189,15 @@ const CustomerDetail = ({
                     inputRef={field.ref}
                     InputLabelProps={{ shrink: true }}
                     disabled={
-                      formState.isLoading ||
-                      formState.isSubmitting ||
-                      randomLoading ||
-                      loading
+                      isLoading || isSubmitting || randomLoading || loading
                     }
                     inputProps={{ readOnly: !edit }}
                     InputProps={{
                       ...field?.InputProps,
                       endAdornment: (
                         <>
-                          {formState.isLoading ||
-                          formState.isSubmitting ||
+                          {isLoading ||
+                          isSubmitting ||
                           randomLoading ||
                           loading ? (
                             <InputAdornment position="end">
@@ -226,18 +230,15 @@ const CustomerDetail = ({
                     label={formatLabel(key)}
                     InputLabelProps={{ shrink: true }}
                     disabled={
-                      formState.isLoading ||
-                      formState.isSubmitting ||
-                      randomLoading ||
-                      loading
+                      isLoading || isSubmitting || randomLoading || loading
                     }
                     inputProps={{ readOnly: !edit }}
                     InputProps={{
                       ...field?.InputProps,
                       endAdornment: (
                         <>
-                          {formState.isLoading ||
-                          formState.isSubmitting ||
+                          {isLoading ||
+                          isSubmitting ||
                           randomLoading ||
                           loading ? (
                             <InputAdornment position="end">
@@ -247,6 +248,8 @@ const CustomerDetail = ({
                         </>
                       ),
                     }}
+                    error={!!errors[key]}
+                    helperText={errors[key] && errors[key]?.message}
                     margin="normal"
                     fullWidth
                   />
@@ -259,8 +262,9 @@ const CustomerDetail = ({
       control,
       data,
       edit,
-      formState.isLoading,
-      formState.isSubmitting,
+      errors,
+      isLoading,
+      isSubmitting,
       loading,
       randomLoading,
     ]
@@ -328,16 +332,12 @@ const CustomerDetail = ({
                   size="small"
                   onClick={setRandomData}
                   disabled={
-                    formState.isLoading ||
-                    formState.isSubmitting ||
-                    randomLoading ||
-                    loading
+                    isLoading || isSubmitting || randomLoading || loading
                   }
                   endIcon={
-                    (formState.isLoading ||
-                      formState.isSubmitting ||
-                      randomLoading ||
-                      loading) && <CircularProgress color="inherit" size={20} />
+                    (isLoading || isSubmitting || randomLoading || loading) && (
+                      <CircularProgress color="inherit" size={20} />
+                    )
                   }
                 >
                   Fill with random data
@@ -358,6 +358,7 @@ const CustomerDetail = ({
                     size="large"
                     onClick={(event) => {
                       event.preventDefault();
+                      reset();
                       setEdit(false);
                     }}
                   >

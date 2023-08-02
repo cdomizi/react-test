@@ -1,9 +1,9 @@
 import PropTypes from "prop-types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 // Project import
-import validationRules from "../../utils/formValidation";
 import getRandomInt from "../../utils/getRandomInt";
 
 import {
@@ -34,6 +34,7 @@ const TableDrawer = (props) => {
   const defaultValues = useMemo(() => props.itemData, [props.itemData]);
   const { control, handleSubmit, reset, formState } = useForm({
     defaultValues,
+    ...(props?.validation && { resolver: yupResolver(props?.validation) }),
   });
 
   // Loading state for setRandomData
@@ -84,7 +85,6 @@ const TableDrawer = (props) => {
             key={index}
             control={control}
             name={column.columnDef.accessorKey}
-            rules={validationRules(column.columnDef)}
             render={({ field }) => (
               <Autocomplete
                 freeSolo
@@ -143,7 +143,6 @@ const TableDrawer = (props) => {
             control={control}
             name={column.columnDef.accessorKey}
             defaultValue={""}
-            rules={validationRules(column.columnDef)}
             render={({ field }) => (
               <TextField
                 {...field}
@@ -205,7 +204,6 @@ const TableDrawer = (props) => {
             key={index}
             control={control}
             name={item.column.columnDef.accessorKey}
-            rules={validationRules(item.column.columnDef)}
             render={({ field }) => (
               <Autocomplete
                 freeSolo
@@ -269,7 +267,6 @@ const TableDrawer = (props) => {
             control={control}
             name={item.column.columnDef.accessorKey}
             defaultValue={item?.getValue()}
-            rules={validationRules(item.column.columnDef)}
             render={({ field }) => (
               <TextField
                 {...field}
@@ -399,6 +396,7 @@ TableDrawer.propTypes = {
   onSubmit: PropTypes.func,
   onClose: PropTypes.func,
   edit: PropTypes.bool,
+  validation: PropTypes.object,
   dataName: PropTypes.object,
   randomData: PropTypes.object,
 };
