@@ -65,6 +65,7 @@ const handleDeleteCustomer = async (customerId) => {
   }
 };
 
+// Form validation schema
 const customerSchema = yup
   .object()
   .shape({

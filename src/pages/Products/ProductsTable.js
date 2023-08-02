@@ -1,13 +1,17 @@
 import { useEffect, useState, useMemo, useCallback, memo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
-import * as yup from "yup";
 
 // Project import
 import useFetch from "../../hooks/useFetch";
 import { formatMoney } from "../../utils/formatStrings";
-import checkUniqueField from "../../utils/checkUniqueField";
 import DataTable from "../../components/DataTable/DataTable";
+import {
+  handleCreateProduct,
+  handleEditProduct,
+  handleDeleteProduct,
+  productSchema,
+} from "./ProductActions";
 
 // MUI components
 import { Card, Typography } from "@mui/material";
@@ -160,127 +164,6 @@ const ProductsTable = memo(() => {
     navigate(`${rowData.id}`);
   };
 
-  // Create new product
-  const handleCreateProduct = useCallback(
-    async (formData) => {
-      const response = await fetch(`${API_ENDPOINT}products`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Force reload to update table data
-        setReload({});
-        // Return product name to display on new product confirmation message
-        const productTitle = data?.title;
-        return productTitle;
-      } else {
-        // Check if the user entered a duplicate value for a unique field
-        const uniqueField = checkUniqueField(response, formData);
-        // If it's not a uniqueFieldError, return a generic error
-        return uniqueField ?? response;
-      }
-    },
-    [API_ENDPOINT]
-  );
-
-  // Edit product
-  const handleEditProduct = useCallback(
-    async (formData) => {
-      // This specific API requires `id` to be of type String
-      formData.id = String(formData.id);
-
-      const response = await fetch(`${API_ENDPOINT}products/${formData.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Force reload to update table data
-        setReload({});
-        // Return product name to display on edit confirmation message
-        const productTitle = data?.title;
-        return productTitle;
-      } else {
-        // Check if the user entered a duplicate value for a unique field
-        const uniqueField = checkUniqueField(response, formData);
-        // If it's not a uniqueFieldError, return a generic error
-        return uniqueField ?? response;
-      }
-    },
-    [API_ENDPOINT]
-  );
-
-  // Delete product
-  const handleDeleteProduct = useCallback(
-    async (productId) => {
-      const response = await fetch(`${API_ENDPOINT}products/${productId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Force reload to update table data
-        setReload({});
-        // Return product name to display on delete confirmation message
-        const productTitle = data?.title;
-        return productTitle;
-      } else {
-        const error = await response;
-        return error;
-      }
-    },
-    [API_ENDPOINT]
-  );
-
-  const convertToNull = (value) => (value === "" ? null : parseFloat(value));
-
-  const productsSchema = yup
-    .object()
-    .shape({
-      title: yup.string().required("This field cannot be empty"),
-      brand: yup.string().notRequired(),
-      category: yup.string().notRequired(),
-      rating: yup
-        .number()
-        .integer()
-        .min(1, "Please enter a number between 1 and 5")
-        .max(5, "Please enter a number between 1 and 5")
-        .typeError("Please enter a number")
-        .notRequired()
-        .transform((event, value) => convertToNull(value)),
-      price: yup
-        .number()
-        .min(0, "Price must be at least 0")
-        .typeError("Please enter a number")
-        .notRequired()
-        .transform((event, value) => convertToNull(value)),
-      discountPercentage: yup
-        .number()
-        .moreThan(0, "Discount must be > 0")
-        .max(100, "Enter a valid discount percentage")
-        .typeError("Please enter a number")
-        .notRequired()
-        .transform((event, value) => convertToNull(value)),
-      stock: yup
-        .number()
-        .positive("Please enter a valid stock amount")
-        .typeError("Please enter a number")
-        .notRequired()
-        .transform((event, value) => convertToNull(value)),
-      description: yup.string().notRequired(),
-      thumbnail: yup.string().url("Please enter a valid URL").notRequired(),
-      images: yup
-        .array()
-        .of(yup.string().url("Please enter a valid URL"))
-        .notRequired(),
-    })
-    .required();
-
   return (
     <Card>
       <DataTable
@@ -294,12 +177,12 @@ const ProductsTable = memo(() => {
         globalSearch={true}
         defaultOrder={true}
         clickable={true}
-        reload={reload}
+        reload={() => setReload({})}
         onRowClick={handleRowClick}
         onCreate={handleCreateProduct}
         onEdit={handleEditProduct}
         onDelete={handleDeleteProduct}
-        validation={productsSchema}
+        validation={productSchema}
         randomData={randomData}
       />
     </Card>
