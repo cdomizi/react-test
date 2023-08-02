@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 // Project import
 import useFetch from "../../hooks/useFetch";
 import { formatMoney } from "../../utils/formatStrings";
-import uniqueFieldError from "../../utils/uniqueFieldError";
+import checkUniqueField from "../../utils/checkUniqueField";
 import DataTable from "../../components/DataTable/DataTable";
 
 // MUI components
@@ -114,9 +114,18 @@ const ProductsTable = memo(() => {
           const [min, max] = value.map((amount) =>
             amount?.length ? parseInt(amount) : NaN
           );
-          return min >= 0 && max >= 0
-            ? stock >= min && stock <= max
-            : stock >= min || stock <= max;
+
+          return !isNaN(min) && !isNaN(max)
+            ? // Both fields are filled
+              stock >= min && stock <= max
+            : // Only `min` is filled
+            !isNaN(min) && isNaN(max)
+            ? stock >= min
+            : // Only `max` is filled
+            isNaN(min) && !isNaN(max)
+            ? stock <= max
+            : // Both fields are empty => do not filter
+              true;
         },
         align: "right",
         fieldFormat: { min: 0 },
@@ -168,7 +177,7 @@ const ProductsTable = memo(() => {
         return productTitle;
       } else {
         // Check if the user entered a duplicate value for a unique field
-        const uniqueField = uniqueFieldError(response, formData);
+        const uniqueField = checkUniqueField(response, formData);
         // If it's not a uniqueFieldError, return a generic error
         return uniqueField ?? response;
       }
@@ -197,7 +206,7 @@ const ProductsTable = memo(() => {
         return productTitle;
       } else {
         // Check if the user entered a duplicate value for a unique field
-        const uniqueField = uniqueFieldError(response, formData);
+        const uniqueField = checkUniqueField(response, formData);
         // If it's not a uniqueFieldError, return a generic error
         return uniqueField ?? response;
       }

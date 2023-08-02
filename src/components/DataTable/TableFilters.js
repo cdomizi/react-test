@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Fragment, useCallback } from "react";
+import { Fragment, useCallback, useMemo, useState } from "react";
 
 // MUI components
 import {
@@ -14,6 +14,7 @@ import {
 
 // MUI icons
 import {
+  Clear as ClearIcon,
   FilterAlt as FilterAltIcon,
   FilterAltOff as FilterAltOffIcon,
 } from "@mui/icons-material";
@@ -26,6 +27,39 @@ const TableFilters = ({
   onGlobalSearch,
   children,
 }) => {
+  const defaultValues = useMemo(() => {
+    const fields = filters?.map((filter) =>
+      filter?.type?.type === "number"
+        ? // For number fields, split value in `min` & `max`
+          { [filter.id]: { min: null, max: null } }
+        : filter?.type?.type === "date"
+        ? // For date fields, split value in `from` & `before`
+          { [filter.id]: { from: null, before: null } }
+        : { [filter.id]: "" }
+    );
+    return fields;
+  }, [filters]);
+
+  // Form fields values
+  const [values, setValues] = useState(defaultValues);
+
+  const handleChange = useCallback(
+    (event, prop) => {
+      const { name, value } = event.target;
+
+      prop
+        ? setValues({
+            ...values,
+            [name]: { ...values[name], [prop]: value },
+          })
+        : setValues({
+            ...values,
+            [name]: value,
+          });
+    },
+    [values]
+  );
+
   const handleSubmit = useCallback(
     (event) => {
       event.preventDefault();
@@ -40,7 +74,6 @@ const TableFilters = ({
               value,
             ])
           : filtersArray.push({ id: key, value: value });
-        // filtersArray.push({ id: key, value: value });
       });
       // Only set non-empty filters
       onFiltersSubmit(filtersArray.filter((filter) => filter.value.length));
@@ -52,7 +85,6 @@ const TableFilters = ({
     <Stack
       component="form"
       onSubmit={handleSubmit}
-      onReset={onFiltersReset}
       sx={{ py: "2rem", px: "1rem" }}
       spacing={1}
     >
@@ -89,13 +121,14 @@ const TableFilters = ({
                     <TextField
                       select
                       key={filter.id}
-                      margin="normal"
                       id={filter.id}
                       name={filter.id}
-                      defaultValue={""}
+                      value={values[filter.id] || ""}
+                      onChange={(event) => handleChange(event)}
                       label={filter.label}
                       InputLabelProps={{ shrink: true }}
                       inputProps={{ sx: { width: "12rem", textAlign: "left" } }}
+                      margin="normal"
                     >
                       {filter.type.options.map((option) => (
                         <MenuItem key={option} value={option}>
@@ -111,10 +144,9 @@ const TableFilters = ({
                         key={`${filter.id}.min`}
                         id={`${filter.id}.min`}
                         name={filter.id}
-                        defaultValue={null}
+                        value={values[filter.id]?.min || ""}
+                        onChange={(event) => handleChange(event, "min")}
                         label={`Min. ${filter.label}`}
-                        type="number"
-                        margin="normal"
                         InputLabelProps={{ shrink: true }}
                         inputProps={{
                           sx: { width: "6rem" },
@@ -122,15 +154,16 @@ const TableFilters = ({
                             min: filter.type.min,
                           }),
                         }}
+                        type="number"
+                        margin="normal"
                       />
                       <TextField
                         key={`${filter.id}.max`}
                         id={`${filter.id}.max`}
                         name={filter.id}
-                        defaultValue={null}
+                        value={values[filter.id]?.max || ""}
+                        onChange={(event) => handleChange(event, "max")}
                         label={`Max. ${filter.label}`}
-                        type="number"
-                        margin="normal"
                         InputLabelProps={{ shrink: true }}
                         inputProps={{
                           sx: { width: "6rem" },
@@ -138,6 +171,8 @@ const TableFilters = ({
                             min: filter.type.min,
                           }),
                         }}
+                        type="number"
+                        margin="normal"
                       />
                     </Fragment>
                   );
@@ -148,21 +183,63 @@ const TableFilters = ({
                         key={`${filter.id}.from`}
                         id={`${filter.id}.from`}
                         name={filter.id}
-                        defaultValue={null}
+                        value={values[filter.id]?.from || ""}
+                        onChange={(event) => handleChange(event, "from")}
                         label="From"
+                        InputLabelProps={{ shrink: true }}
+                        InputProps={{
+                          ...(values[filter.id]?.from && {
+                            endAdornment: (
+                              <IconButton
+                                onClick={() =>
+                                  // Clear value
+                                  setValues({
+                                    ...values,
+                                    [filter.id]: {
+                                      ...values[filter.id],
+                                      from: "",
+                                    },
+                                  })
+                                }
+                              >
+                                <ClearIcon />
+                              </IconButton>
+                            ),
+                          }),
+                        }}
                         type="date"
                         margin="normal"
-                        InputLabelProps={{ shrink: true }}
                       />
                       <TextField
                         key={`${filter.id}.before`}
                         id={`${filter.id}.before`}
                         name={filter.id}
-                        defaultValue={null}
+                        value={values[filter.id]?.before || ""}
+                        onChange={(event) => handleChange(event, "before")}
                         label="Before"
+                        InputLabelProps={{ shrink: true }}
+                        InputProps={{
+                          ...(values[filter.id]?.before && {
+                            endAdornment: (
+                              <IconButton
+                                onClick={() =>
+                                  // Clear value
+                                  setValues({
+                                    ...values,
+                                    [filter.id]: {
+                                      ...values[filter.id],
+                                      before: "",
+                                    },
+                                  })
+                                }
+                              >
+                                <ClearIcon />
+                              </IconButton>
+                            ),
+                          }),
+                        }}
                         type="date"
                         margin="normal"
-                        InputLabelProps={{ shrink: true }}
                       />
                     </Fragment>
                   );
@@ -170,11 +247,13 @@ const TableFilters = ({
                   return (
                     <TextField
                       key={filter.id}
-                      margin="normal"
                       id={filter.id}
                       name={filter.id}
+                      value={values[filter.id] || ""}
+                      onChange={(event) => handleChange(event)}
                       label={filter.label}
                       InputLabelProps={{ shrink: true }}
+                      margin="normal"
                     />
                   );
               }
@@ -187,7 +266,15 @@ const TableFilters = ({
               </IconButton>
             </Tooltip>
             <Tooltip title="Reset Filters">
-              <IconButton type="reset" color="primary" size="large">
+              <IconButton
+                onClick={() => {
+                  setValues(defaultValues);
+                  onFiltersReset();
+                }}
+                type="reset"
+                color="primary"
+                size="large"
+              >
                 <FilterAltOffIcon fontSize="inherit" />
               </IconButton>
             </Tooltip>

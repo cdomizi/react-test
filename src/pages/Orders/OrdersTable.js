@@ -111,9 +111,17 @@ const OrdersTable = memo(() => {
             date?.length ? moment(date) : NaN
           );
 
-          return from >= 0 && before >= 0
-            ? date >= from && date <= before
-            : date >= from || date <= before;
+          return !isNaN(from) && !isNaN(before)
+            ? // Both fields are filled
+              date >= from && date <= before
+            : // Only `from` is filled
+            !isNaN(from) && isNaN(before)
+            ? date >= from
+            : // Only `before` is filled
+            isNaN(from) && !isNaN(before)
+            ? date <= before
+            : // Both fields are empty => do not filter
+              true;
         },
       }),
       columnHelper.accessor("updatedAt", {
@@ -177,7 +185,7 @@ const OrdersTable = memo(() => {
         // Filter invoice by status
         filterFn: (row, columnId, value) => {
           const status = getInvoiceStatus(row.getValue(columnId)) ?? "none";
-          console.log(status);
+
           return status === value;
         },
         fieldFormat: { checkbox: true },

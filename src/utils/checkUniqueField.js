@@ -1,4 +1,4 @@
-const uniqueFieldError = async (response, formData) => {
+const checkUniqueField = async (response, formData) => {
   const body = await response.text();
 
   // Check if the response body contains "Duplicate field"
@@ -12,4 +12,4 @@ const uniqueFieldError = async (response, formData) => {
   return false;
 };
 
-export default uniqueFieldError;
+export default checkUniqueField;

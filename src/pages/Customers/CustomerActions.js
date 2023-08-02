@@ -1,4 +1,4 @@
-import uniqueFieldError from "../../utils/uniqueFieldError";
+import checkUniqueField from "../../utils/checkUniqueField";
 
 const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
 
@@ -17,7 +17,7 @@ const handleCreateCustomer = async (formData) => {
     return customerName;
   } else {
     // Check if the user entered a duplicate value for a unique field
-    const uniqueField = uniqueFieldError(response, formData);
+    const uniqueField = checkUniqueField(response, formData);
     // If it's not a uniqueFieldError, return a generic error
     return uniqueField ?? response;
   }
@@ -41,7 +41,7 @@ const handleEditCustomer = async (formData) => {
     return customerName;
   } else {
     // Check if the user entered a duplicate value for a unique field
-    const uniqueField = uniqueFieldError(response, formData);
+    const uniqueField = checkUniqueField(response, formData);
     // If it's not a uniqueFieldError, return a generic error
     return uniqueField ?? response;
   }

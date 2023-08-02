@@ -150,7 +150,7 @@ const TableDrawer = (props) => {
                 id={column.columnDef.accessorKey}
                 label={column.columnDef.header()}
                 inputRef={field.ref}
-                type={column.columnDef?.fieldFormat?.type ?? "text"}
+                type={column.columnDef?.fieldFormat?.type ?? "string"}
                 error={!!formState.errors[column.columnDef.accessorKey]}
                 helperText={
                   formState.errors[column.columnDef.accessorKey] &&
@@ -276,7 +276,7 @@ const TableDrawer = (props) => {
                 id={item.column.columnDef.accessorKey}
                 label={item.column.columnDef.header()}
                 inputRef={field.ref}
-                type={item.column.columnDef?.fieldFormat?.type ?? "text"}
+                type={item.column.columnDef?.fieldFormat?.type ?? "string"}
                 error={!!formState.errors[item.column.columnDef.accessorKey]}
                 helperText={
                   formState.errors[item.column.columnDef.accessorKey] &&
