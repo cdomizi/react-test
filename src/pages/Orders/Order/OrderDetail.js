@@ -9,8 +9,10 @@ import {
   getInvoiceStatus,
   setInvoiceColor,
   getSubmitData,
+  handleCreateInvoice,
   handleEditInvoice,
   handleDeleteInvoice,
+  printInvoice,
 } from "../OrderActions";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
@@ -44,6 +46,7 @@ import {
   Check as CheckIcon,
   Delete as DeleteIcon,
   Edit as EditIcon,
+  Print as PrintIcon,
 } from "@mui/icons-material";
 
 const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
@@ -120,6 +123,41 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
     error: productsError,
     data: productsData,
   } = useFetch(`${API_ENDPOINT}products`);
+
+  const onCreateInvoice = useCallback(async () => {
+    const submitData = {
+      // Leave order data untouched
+      id: data?.id,
+      customerId: data?.customerId,
+      // Correctly format products
+      products: data?.products?.map((product) => ({
+        id: product.productId,
+        quantity: product.quantity,
+      })),
+      // Set invoice as true
+      invoice: true,
+    };
+    const response = await handleCreateInvoice(submitData);
+
+    if (response?.length) {
+      // Display confirmation message if the request was successful
+      dispatch({
+        type: SNACKBAR_ACTIONS.CREATE,
+        payload: response,
+        dataName: "invoice",
+      });
+      // Force refetch to get updated data
+      reload();
+    } else {
+      console.error(response);
+      // Display a generic error message
+      dispatch({
+        type: SNACKBAR_ACTIONS.CREATE_ERROR,
+        payload: response,
+        dataName: "invoice",
+      });
+    }
+  }, [data, dispatch, reload]);
 
   const onEditInvoice = useCallback(async () => {
     const response = await handleEditInvoice(data?.invoice?.id, true);
@@ -632,7 +670,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                 color={setInvoiceColor(data?.invoice)}
               >{`${getInvoiceStatus(data?.invoice)}`}</Box>
             </Typography>
-            <Stack direction="row" spacing={2} width="22rem">
+            <Box width="14rem">
               {!data?.invoice?.paid && (
                 <Button
                   variant="outlined"
@@ -640,38 +678,55 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                   size="small"
                   onClick={onEditInvoice}
                   endIcon={<CheckIcon />}
-                  fullWidth
                   sx={{
+                    mb: 1.5,
                     "&, & .MuiButtonBase-root": { alignItems: "normal" },
                   }}
+                  fullWidth
                 >
                   Mark as paid
                 </Button>
               )}
-              <Button
-                variant="outlined"
-                color="error"
-                size="small"
-                onClick={onDeleteInvoice}
-                endIcon={<DeleteIcon />}
-                fullWidth={!data?.invoice?.paid}
-                sx={{
-                  "&, & .MuiButtonBase-root": { alignItems: "normal" },
-                }}
-              >
-                Delete invoice
-              </Button>
-            </Stack>
+              <Stack direction="row" spacing={2}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => printInvoice(data)}
+                  endIcon={<PrintIcon />}
+                  sx={{
+                    "&, & .MuiButtonBase-root": { alignItems: "normal" },
+                  }}
+                  fullWidth
+                >
+                  Print
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  size="small"
+                  onClick={onDeleteInvoice}
+                  endIcon={<DeleteIcon />}
+                  sx={{
+                    "&, & .MuiButtonBase-root": { alignItems: "normal" },
+                  }}
+                  fullWidth
+                >
+                  Delete
+                </Button>
+              </Stack>
+            </Box>
           </>
         ) : (
           <>
             <Typography mb={2}>No invoice for this order.</Typography>
-            <Button variant="outlined">Generate invoice</Button>
+            <Button variant="outlined" onClick={onCreateInvoice}>
+              Generate invoice
+            </Button>
           </>
         )}
       </Box>
     ),
-    [data?.invoice, onDeleteInvoice, onEditInvoice]
+    [data, onCreateInvoice, onDeleteInvoice, onEditInvoice]
   );
 
   return loading ? (

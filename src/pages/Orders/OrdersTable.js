@@ -17,7 +17,7 @@ import {
 import { formatDate, formatMoney } from "../../utils/formatStrings";
 
 // MUI components
-import { Button, Card, Typography } from "@mui/material";
+import { Card, Typography } from "@mui/material";
 
 const OrdersTable = memo(() => {
   const navigate = useNavigate();
@@ -173,12 +173,13 @@ const OrdersTable = memo(() => {
       columnHelper.accessor("invoice", {
         header: () => "Invoice",
         cell: (info) => (
-          <Typography color={setInvoiceColor(info.getValue())} component="span">
-            {getInvoiceStatus(info.getValue()) ?? (
-              <Button variant="outlined" size="small">
-                Generate
-              </Button>
-            )}
+          <Typography
+            color={
+              !!info.getValue() ? setInvoiceColor(info.getValue()) : "inherit"
+            }
+            component="span"
+          >
+            {getInvoiceStatus(info.getValue()) ?? "None"}
           </Typography>
         ),
         enableColumnFilter: true,

@@ -78,6 +78,30 @@ const getSubmitData = (formData) => ({
   invoice: !!formData.invoice,
 });
 
+// Create invoice
+const handleCreateInvoice = async (formData) => {
+  // This specific API requires `id` to be of type String
+  formData.id = String(formData.id);
+
+  const response = await fetch(`${API_ENDPOINT}orders/${formData.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...formData }),
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    // Return invoice ID to display on edit confirmation message
+    const orderId = `Invoice #${data?.invoice?.id}`;
+    return orderId;
+  } else {
+    // Check if the user entered a duplicate value for a unique field
+    const uniqueField = checkUniqueField(response, formData);
+    // If it's not a uniqueFieldError, return a generic error
+    return uniqueField ?? response;
+  }
+};
+
 // Edit invoice
 const handleEditInvoice = async (invoiceId, paid) => {
   const response = await fetch(`${API_ENDPOINT}invoices/${invoiceId}`, {
@@ -134,13 +158,19 @@ const setInvoiceColor = (invoice) => {
     : "error.main";
 };
 
+const printInvoice = (data) => {
+  console.log(data);
+};
+
 export {
   handleCreateOrder,
   handleEditOrder,
   handleDeleteOrder,
   getSubmitData,
+  handleCreateInvoice,
   handleEditInvoice,
   handleDeleteInvoice,
   getInvoiceStatus,
   setInvoiceColor,
+  printInvoice,
 };
