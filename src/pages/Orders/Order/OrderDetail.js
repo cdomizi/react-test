@@ -1,4 +1,11 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 
 // Project import
@@ -19,6 +26,7 @@ import SnackbarContext, {
 } from "../../../contexts/SnackbarContext";
 import CustomSnackbar from "../../../components/CustomSnackbar";
 import { formatLabel, formatOrderDate } from "../../../utils/formatStrings";
+import InvoiceTemplate from "./InvoiceTemplate";
 
 // Mui components
 import {
@@ -51,6 +59,9 @@ import {
 
 const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
   const [edit, setEdit] = useState(false);
+
+  // Ref for the invoice template
+  const invoiceTemplateRef = useRef(null);
 
   // State and dispatch function for snackbar component
   const [snackbarState, dispatch] = useContext(SnackbarContext);
@@ -691,7 +702,12 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                 <Button
                   variant="outlined"
                   size="small"
-                  onClick={() => printInvoice(data)}
+                  onClick={() =>
+                    printInvoice(
+                      invoiceTemplateRef.current,
+                      data?.invoice?.idNumber
+                    )
+                  }
                   endIcon={<PrintIcon />}
                   sx={{
                     "&, & .MuiButtonBase-root": { alignItems: "normal" },
@@ -808,6 +824,9 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
         </form>
         <Divider orientation="vertical" flexItem />
         {(!error && OrderInvoice) ?? null}
+        <Box>
+          <InvoiceTemplate ref={invoiceTemplateRef} data={data} />
+        </Box>
       </Stack>
       <CustomSnackbar {...snackbarState} />
     </Box>

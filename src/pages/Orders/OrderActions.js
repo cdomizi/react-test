@@ -1,3 +1,4 @@
+import jsPDF from "jspdf";
 import checkUniqueField from "../../utils/checkUniqueField";
 
 const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
@@ -158,8 +159,25 @@ const setInvoiceColor = (invoice) => {
     : "error.main";
 };
 
-const printInvoice = (data) => {
-  console.log(data);
+// Print the order invoice
+const printInvoice = (invoiceTemplateRef, idNumber) => {
+  const doc = new jsPDF("p", "mm", "a4", true);
+  doc.setDocumentProperties({
+    title: `Invoice-${idNumber}`,
+    subject: "Invoice for your order",
+    author: "myERP",
+    creator: "myERP",
+  });
+
+  doc.html(invoiceTemplateRef, {
+    callback: function (doc) {
+      // doc.save(`Invoice-${idNumber}`);
+      doc.output("dataurlnewwindow", { filename: `Invoice-${idNumber}` });
+    },
+    html2canvas: { scale: 0.2 },
+    x: 0,
+    y: 0,
+  });
 };
 
 export {
