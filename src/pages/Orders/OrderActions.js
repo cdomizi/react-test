@@ -168,16 +168,21 @@ const printInvoice = (invoiceTemplateRef, idNumber) => {
     author: "myERP",
     creator: "myERP",
   });
+  doc.saveGraphicsState();
+  doc.setGState(new doc.GState({ opacity: 1 }));
 
   doc.html(invoiceTemplateRef, {
     callback: function (doc) {
       // doc.save(`Invoice-${idNumber}`);
       doc.output("dataurlnewwindow", { filename: `Invoice-${idNumber}` });
     },
-    html2canvas: { scale: 0.2 },
+    autoPaging: true,
+    html2canvas: { scale: 0.2644 },
     x: 0,
     y: 0,
   });
+
+  doc.restoreGraphicsState();
 };
 
 export {

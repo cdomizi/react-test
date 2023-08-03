@@ -10,7 +10,7 @@ const ContentCard = ({ title, url, icon }) => {
   return (
     <Card sx={{ minWidth: 275, textAlign: "center" }}>
       <CardActionArea href={url}>
-        {itemIcon || <ArrowOutwardIcon></ArrowOutwardIcon>}
+        {itemIcon || <ArrowOutwardIcon />}
         <Typography variant="h3">{capitalize(title)}</Typography>
       </CardActionArea>
     </Card>

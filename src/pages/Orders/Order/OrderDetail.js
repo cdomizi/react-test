@@ -824,10 +824,11 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
         </form>
         <Divider orientation="vertical" flexItem />
         {(!error && OrderInvoice) ?? null}
-        <Box>
-          <InvoiceTemplate ref={invoiceTemplateRef} data={data} />
-        </Box>
       </Stack>
+      {/* <Box visibility="hidden"> */}
+      <Box>
+        <InvoiceTemplate ref={invoiceTemplateRef} data={data} />
+      </Box>
       <CustomSnackbar {...snackbarState} />
     </Box>
   );
