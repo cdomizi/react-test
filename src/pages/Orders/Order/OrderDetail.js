@@ -69,7 +69,15 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
   // Set the `dataName` property for the snackbar
   snackbarState.dataName = dataName?.singular;
 
-  const { register, control, handleSubmit, reset, formState, watch } = useForm({
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    formState,
+    getValues,
+    watch,
+  } = useForm({
     defaultValues: {
       customer: data?.customerId,
       products: data?.products,
@@ -247,25 +255,25 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
       <>
         <Skeleton
           variant="text"
-          sx={{ fontSize: "5rem", maxWidth: "26rem", marginBottom: "2rem" }}
+          sx={{ fontSize: "5rem", maxWidth: "16rem", marginBottom: "2rem" }}
         />
-        <Stack direction="row" spacing={2}>
-          <Stack width="20rem">
+        <Stack direction="row" spacing={6}>
+          <Stack width="24rem">
             <Skeleton
               variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "16rem" }}
+              sx={{ fontSize: "3rem", width: "24rem" }}
             />
             <Skeleton
               variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "16rem" }}
+              sx={{ fontSize: "3rem", width: "24rem" }}
             />
             <Skeleton
               variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "16rem" }}
+              sx={{ fontSize: "3rem", width: "24rem" }}
             />
             <Skeleton
               variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "16rem" }}
+              sx={{ fontSize: "3rem", width: "24rem" }}
             />
             <Skeleton
               variant="text"
@@ -827,7 +835,10 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
       </Stack>
       {/* <Box visibility="hidden"> */}
       <Box>
-        <InvoiceTemplate ref={invoiceTemplateRef} data={data} />
+        <InvoiceTemplate
+          ref={invoiceTemplateRef}
+          data={{ data, products: getValues("products") }}
+        />
       </Box>
       <CustomSnackbar {...snackbarState} />
     </Box>

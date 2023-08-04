@@ -1,11 +1,44 @@
-import { forwardRef } from "react";
-import { formatOrderDate } from "../../../utils/formatStrings";
+import { forwardRef, useCallback, useMemo } from "react";
+import { formatOrderDate, formatMoney } from "../../../utils/formatStrings";
 import "./InvoiceTemplate.css";
 
 // MUI components & icons
-import { Box, Divider, Stack, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import {
+  Box,
+  Divider,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 
-const InvoiceTemplate = forwardRef(function InvoiceTemplate({ data }, ref) {
+const InvoiceTemplate = forwardRef(function InvoiceTemplate(props, ref) {
+  const { data, products } = props?.data;
+
+  const getItemTotal = useCallback(
+    (price = 0, discount = 0, quantity = 1) =>
+      formatMoney(price * (1 - discount / 100) * quantity, "dollars"),
+    []
+  );
+
+  const subtotal = useMemo(() => 100, []);
+  const taxRate = 19;
+  const taxes = useMemo(() => subtotal * (taxRate / 100), [subtotal]);
+  const total = useMemo(() => subtotal + taxes, [taxes, subtotal]);
+
+  const InvoiceTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-last-of-type(-n + 3) td": {
+      borderBottom: 0,
+    },
+    "& td:nth-last-of-type(-n + 2)": {
+      borderBottom: `1px solid ${theme.palette.divider}`,
+    },
+  }));
+
   return (
     <Box
       className="InvoiceContainer"
@@ -21,7 +54,9 @@ const InvoiceTemplate = forwardRef(function InvoiceTemplate({ data }, ref) {
             <Typography mt={1} variant="h5">
               GenCart Ltd.
             </Typography>
-            <em>Your One-Stop Shop for Quality Products</em>
+            <Typography variant="subtitle2">
+              <Box component="em">Your One-Stop Shop for Quality Products</Box>
+            </Typography>
           </Box>
         </Stack>
         <Typography align="right" variant="body2">
@@ -33,21 +68,88 @@ const InvoiceTemplate = forwardRef(function InvoiceTemplate({ data }, ref) {
         </Typography>
       </Stack>
       <Divider className="InvoiceDivider" sx={{ my: 1 }} />
+      <Stack direction="row" justifyContent="space-between" my={5}>
+        <Box>
+          <Typography variant="h6">Billed to:</Typography>
+          <Typography>
+            {`${data?.customer?.firstName} ${data?.customer?.lastName}`}
+            <br />
+            {`${data?.customer?.email}`}
+            <br />
+            {`${data?.customer?.address}`}
+          </Typography>
+        </Box>
+        <Box>
+          <Typography align="right">
+            Invoice N.:{" "}
+            <Box
+              component="span"
+              fontWeight="bold"
+            >{`${data?.invoice?.idNumber}`}</Box>
+            <br />
+            Date:{" "}
+            <Box component="span" fontWeight="bold">{`${formatOrderDate(
+              data?.createdAt
+            )}`}</Box>
+            <br />
+            Order:{" "}
+            <Box component="span" fontWeight="bold">{`#${data?.id}`}</Box>
+          </Typography>
+        </Box>
+      </Stack>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell>Product</TableCell>
+            <TableCell>Price</TableCell>
+            <TableCell>Discount</TableCell>
+            <TableCell>Quantity</TableCell>
+            <TableCell>Total</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {products?.map((product, index) => (
+            <InvoiceTableRow key={index}>
+              <TableCell>{product?.product?.id}</TableCell>
+              <TableCell>{product?.product?.title}</TableCell>
+              <TableCell align="right">
+                {formatMoney(product?.product?.price, "dollars")}
+              </TableCell>
+              <TableCell align="right">
+                {product?.product?.discountPercentage}%
+              </TableCell>
+              <TableCell align="right">{product?.quantity}</TableCell>
+              <TableCell align="right">
+                {getItemTotal(
+                  product?.product?.price,
+                  product?.product?.discountPercentage,
+                  product?.quantity
+                )}
+              </TableCell>
+            </InvoiceTableRow>
+          ))}
+          <InvoiceTableRow>
+            <TableCell rowSpan={3} />
+            <TableCell rowSpan={3} />
+            <TableCell rowSpan={3} />
+            <TableCell rowSpan={3} />
+            <TableCell>Subtotal</TableCell>
+            <TableCell align="right">{formatMoney(100, "dollars")}</TableCell>
+          </InvoiceTableRow>
+          <InvoiceTableRow>
+            <TableCell>{`Tax (${taxRate}%)`}</TableCell>
+            <TableCell align="right">{formatMoney(taxes)}</TableCell>
+          </InvoiceTableRow>
+          <InvoiceTableRow>
+            <TableCell>Total</TableCell>
+            <TableCell align="right">{formatMoney(total)}</TableCell>
+          </InvoiceTableRow>
+        </TableBody>
+      </Table>
       <pre>
-        <code>{JSON.stringify(data, null, 2)}</code>
+        <code>{JSON.stringify(products, null, 2)}</code>
       </pre>
-      <Typography>
-        Invoice N.{" "}
-        <Box
-          component="span"
-          fontWeight="bold"
-        >{`${data?.invoice?.idNumber}`}</Box>
-        <br />
-        Date:{" "}
-        <Box component="span" fontWeight="bold">{`${formatOrderDate(
-          data?.invoice?.createdAt
-        )}`}</Box>
-      </Typography>
     </Box>
   );
 });

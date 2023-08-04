@@ -150,6 +150,7 @@ const getInvoiceStatus = (invoice) => {
   return invoice ? status : null;
 };
 
+// Set text color based on invoice status
 const setInvoiceColor = (invoice) => {
   const status = getInvoiceStatus(invoice);
   return status === "paid"
@@ -159,20 +160,22 @@ const setInvoiceColor = (invoice) => {
     : "error.main";
 };
 
-// Print the order invoice
+// Download the order invoice
 const printInvoice = (invoiceTemplateRef, idNumber) => {
+  // Create the PDF object
   const doc = new jsPDF("p", "mm", "a4", true);
+  // Set PDF document properties
   doc.setDocumentProperties({
     title: `Invoice-${idNumber}`,
     subject: "Invoice for your order",
     author: "myERP",
     creator: "myERP",
   });
-  doc.saveGraphicsState();
-  doc.setGState(new doc.GState({ opacity: 1 }));
 
+  // Set content from the invoice template HTML
   doc.html(invoiceTemplateRef, {
     callback: function (doc) {
+      // Download the invoice PDF
       // doc.save(`Invoice-${idNumber}`);
       doc.output("dataurlnewwindow", { filename: `Invoice-${idNumber}` });
     },
@@ -181,8 +184,6 @@ const printInvoice = (invoiceTemplateRef, idNumber) => {
     x: 0,
     y: 0,
   });
-
-  doc.restoreGraphicsState();
 };
 
 export {

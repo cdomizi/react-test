@@ -18,7 +18,7 @@ const formatDecimals = (num, decimals = 2) => {
   return (Math.round(parseFloat(num) * 100) / 100).toFixed(decimals);
 };
 
-const formatMoney = (value, currency) => {
+const formatMoney = (value, currency = "dollars") => {
   const decimalValue = formatDecimals(value);
   switch (currency) {
     case "dollars": {
