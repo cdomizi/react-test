@@ -1,6 +1,5 @@
-import { forwardRef, useCallback, useMemo } from "react";
+import { forwardRef, memo, useCallback, useMemo } from "react";
 import { formatOrderDate, formatMoney } from "../../../utils/formatStrings";
-import "./InvoiceTemplate.css";
 
 // MUI components & icons
 import { styled } from "@mui/material/styles";
@@ -30,24 +29,27 @@ const InvoiceTemplate = forwardRef(function InvoiceTemplate(props, ref) {
   const taxes = useMemo(() => subtotal * (taxRate / 100), [subtotal]);
   const total = useMemo(() => subtotal + taxes, [taxes, subtotal]);
 
-  const InvoiceTableRow = styled(TableRow)(({ theme }) => ({
-    "&:nth-last-of-type(-n + 3) td": {
-      borderBottom: 0,
-    },
+  const textColor = "#212121";
+  const InvoiceContainer = styled(Box)(() => ({ color: textColor }));
+
+  const InvoiceDivider = styled(Divider)(() => ({ borderColor: "#ddd" }));
+
+  const InvoiceTableRow = styled(TableRow)(() => ({
+    "& th": { fontWeight: "bold" },
+    "&:nth-last-of-type(-n + 3) td": { borderBottom: 0 },
     "& td:nth-last-of-type(-n + 2)": {
-      borderBottom: `1px solid ${theme.palette.divider}`,
+      borderBottom: `1px solid #ddd`,
     },
+    "&:last-of-type td": { borderBottom: 0, fontWeight: "bold" },
   }));
 
-  return (
-    <Box
-      className="InvoiceContainer"
-      ref={ref}
-      border="1px solid red"
-      width="210mm"
-      height="297mm"
-      p="10mm"
-    >
+  const InvoiceTableCell = styled(TableCell)(() => ({
+    color: textColor,
+    borderColor: "#ddd",
+  }));
+
+  const InvoiceHeader = memo(
+    () => (
       <Stack direction="row" alignItems="end" justifyContent="space-between">
         <Stack direction="row" spacing={1}>
           <Box>
@@ -67,8 +69,13 @@ const InvoiceTemplate = forwardRef(function InvoiceTemplate(props, ref) {
           123 Main Street, Anytown AB, 12345
         </Typography>
       </Stack>
-      <Divider className="InvoiceDivider" sx={{ my: 1 }} />
-      <Stack direction="row" justifyContent="space-between" my={5}>
+    ),
+    []
+  );
+
+  const InvoiceInfo = memo(
+    () => (
+      <Stack direction="row" justifyContent="space-between" my={9}>
         <Box>
           <Typography variant="h6">Billed to:</Typography>
           <Typography>
@@ -92,65 +99,88 @@ const InvoiceTemplate = forwardRef(function InvoiceTemplate(props, ref) {
               data?.createdAt
             )}`}</Box>
             <br />
-            Order:{" "}
+            Order ID:{" "}
             <Box component="span" fontWeight="bold">{`#${data?.id}`}</Box>
           </Typography>
         </Box>
       </Stack>
-      <Table>
+    ),
+    []
+  );
+
+  const InvoiceTable = memo(
+    () => (
+      <Table size={products?.length > 10 ? "small" : "medium"}>
         <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Product</TableCell>
-            <TableCell>Price</TableCell>
-            <TableCell>Discount</TableCell>
-            <TableCell>Quantity</TableCell>
-            <TableCell>Total</TableCell>
-          </TableRow>
+          <InvoiceTableRow className="InvoiceTable">
+            <InvoiceTableCell align="center">ID</InvoiceTableCell>
+            <InvoiceTableCell align="center">Product</InvoiceTableCell>
+            <InvoiceTableCell align="right">Qty.</InvoiceTableCell>
+            <InvoiceTableCell align="right">Price</InvoiceTableCell>
+            <InvoiceTableCell align="right">Discount</InvoiceTableCell>
+            <InvoiceTableCell align="right">Total</InvoiceTableCell>
+          </InvoiceTableRow>
         </TableHead>
         <TableBody>
           {products?.map((product, index) => (
             <InvoiceTableRow key={index}>
-              <TableCell>{product?.product?.id}</TableCell>
-              <TableCell>{product?.product?.title}</TableCell>
-              <TableCell align="right">
+              <InvoiceTableCell align="center">
+                {product?.product?.id}
+              </InvoiceTableCell>
+              <InvoiceTableCell>{product?.product?.title}</InvoiceTableCell>
+              <InvoiceTableCell align="right">
+                {product?.quantity}
+              </InvoiceTableCell>
+              <InvoiceTableCell align="right">
                 {formatMoney(product?.product?.price, "dollars")}
-              </TableCell>
-              <TableCell align="right">
+              </InvoiceTableCell>
+              <InvoiceTableCell align="right">
                 {product?.product?.discountPercentage}%
-              </TableCell>
-              <TableCell align="right">{product?.quantity}</TableCell>
-              <TableCell align="right">
+              </InvoiceTableCell>
+              <InvoiceTableCell align="right">
                 {getItemTotal(
                   product?.product?.price,
                   product?.product?.discountPercentage,
                   product?.quantity
                 )}
-              </TableCell>
+              </InvoiceTableCell>
             </InvoiceTableRow>
           ))}
           <InvoiceTableRow>
-            <TableCell rowSpan={3} />
-            <TableCell rowSpan={3} />
-            <TableCell rowSpan={3} />
-            <TableCell rowSpan={3} />
-            <TableCell>Subtotal</TableCell>
-            <TableCell align="right">{formatMoney(100, "dollars")}</TableCell>
+            <InvoiceTableCell rowSpan={3} />
+            <InvoiceTableCell rowSpan={3} />
+            <InvoiceTableCell rowSpan={3} />
+            <InvoiceTableCell rowSpan={3} />
+            <InvoiceTableCell align="right">Subtotal</InvoiceTableCell>
+            <InvoiceTableCell align="right">
+              {formatMoney(100, "dollars")}
+            </InvoiceTableCell>
           </InvoiceTableRow>
           <InvoiceTableRow>
-            <TableCell>{`Tax (${taxRate}%)`}</TableCell>
-            <TableCell align="right">{formatMoney(taxes)}</TableCell>
+            <InvoiceTableCell align="right">{`Tax (${taxRate}%)`}</InvoiceTableCell>
+            <InvoiceTableCell align="right">
+              {formatMoney(taxes)}
+            </InvoiceTableCell>
           </InvoiceTableRow>
           <InvoiceTableRow>
-            <TableCell>Total</TableCell>
-            <TableCell align="right">{formatMoney(total)}</TableCell>
+            <InvoiceTableCell align="right">Total</InvoiceTableCell>
+            <InvoiceTableCell align="right">
+              {formatMoney(total)}
+            </InvoiceTableCell>
           </InvoiceTableRow>
         </TableBody>
       </Table>
-      <pre>
-        <code>{JSON.stringify(products, null, 2)}</code>
-      </pre>
-    </Box>
+    ),
+    [getItemTotal, products, taxes, total]
+  );
+
+  return (
+    <InvoiceContainer ref={ref} width="210mm" height="297mm">
+      <InvoiceHeader />
+      <InvoiceDivider sx={{ my: 1 }} />
+      <InvoiceInfo />
+      <InvoiceTable />
+    </InvoiceContainer>
   );
 });
 

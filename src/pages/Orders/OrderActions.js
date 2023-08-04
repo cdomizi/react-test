@@ -179,8 +179,9 @@ const printInvoice = (invoiceTemplateRef, idNumber) => {
       // doc.save(`Invoice-${idNumber}`);
       doc.output("dataurlnewwindow", { filename: `Invoice-${idNumber}` });
     },
-    autoPaging: true,
-    html2canvas: { scale: 0.2644 },
+    autoPaging: "text",
+    html2canvas: { scale: 0.2395 },
+    margin: [10, 10, 10, 10],
     x: 0,
     y: 0,
   });
