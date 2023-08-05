@@ -27,6 +27,7 @@ import SnackbarContext, {
 import CustomSnackbar from "../../../components/CustomSnackbar";
 import { formatLabel, formatOrderDate } from "../../../utils/formatStrings";
 import InvoiceTemplate from "./InvoiceTemplate";
+import CustomDivider from "../../../components/CustomDivider";
 
 // Mui components
 import {
@@ -429,7 +430,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
           case "products":
             return (
               <Stack key={index} id="order-products-form-section" mt={3}>
-                <Divider>
+                <Divider sx={{ my: 1.5 }}>
                   <Typography color="text.secondary">Products</Typography>
                 </Divider>
                 {fields.map((item, prodIndex) => (
@@ -660,6 +661,77 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
     ]
   );
 
+  // Edit form
+  const OrderEditForm = (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Stack spacing={2} width="24rem">
+        {error ? (
+          <Alert severity="error">
+            <AlertTitle>Error</AlertTitle>
+            Sorry, an error occurred while getting customer's data.
+          </Alert>
+        ) : (
+          FormDetails
+        )}
+        {edit ? (
+          // Form actions
+          <Box>
+            <Button
+              type="button"
+              variant="outlined"
+              size="small"
+              onClick={setRandomData}
+              disabled={randomLoading || loading || randomLoading}
+              endIcon={
+                (randomLoading || loading || randomLoading) && (
+                  <CircularProgress color="inherit" size={20} />
+                )
+              }
+            >
+              Fill with random data
+            </Button>
+            <Stack direction="row" spacing={2}>
+              <Button type="submit" variant="contained" size="large" fullWidth>
+                Save
+              </Button>
+              <Button
+                type="button"
+                variant="outlined"
+                color="secondary"
+                size="large"
+                onClick={(event) => {
+                  event.preventDefault();
+                  reset();
+                  setEdit(false);
+                }}
+              >
+                Undo
+              </Button>
+            </Stack>
+          </Box>
+        ) : (
+          <Button
+            type="button"
+            variant="outlined"
+            size="large"
+            fullWidth
+            endIcon={<EditIcon />}
+            onClick={(event) => {
+              event.preventDefault();
+              reset();
+              setEdit(true);
+            }}
+            sx={{
+              "&, & .MuiButtonBase-root": { alignItems: "normal" },
+            }}
+          >
+            Edit
+          </Button>
+        )}
+      </Stack>
+    </form>
+  );
+
   // Invoice section
   const OrderInvoice = useMemo(
     () => (
@@ -758,83 +830,12 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
   ) : (
     <Box>
       <Typography variant="h2" mb="3rem">{`Order #${data?.id}`}</Typography>
-      <Stack direction="row" spacing="2rem">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={2} width="24rem">
-            {error ? (
-              <Alert severity="error">
-                <AlertTitle>Error</AlertTitle>
-                Sorry, an error occurred while getting customer's data.
-              </Alert>
-            ) : (
-              FormDetails
-            )}
-            {edit ? (
-              <>
-                <Button
-                  type="button"
-                  variant="outlined"
-                  size="small"
-                  onClick={setRandomData}
-                  disabled={randomLoading || loading || randomLoading}
-                  endIcon={
-                    (randomLoading || loading || randomLoading) && (
-                      <CircularProgress color="inherit" size={20} />
-                    )
-                  }
-                >
-                  Fill with random data
-                </Button>
-                <Stack direction="row" spacing={2}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    size="large"
-                    fullWidth
-                  >
-                    Save
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outlined"
-                    color="secondary"
-                    size="large"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      reset();
-                      setEdit(false);
-                    }}
-                  >
-                    Undo
-                  </Button>
-                </Stack>
-              </>
-            ) : (
-              <Button
-                type="button"
-                variant="outlined"
-                size="large"
-                fullWidth
-                endIcon={<EditIcon />}
-                onClick={(event) => {
-                  event.preventDefault();
-                  reset();
-                  setEdit(true);
-                }}
-                sx={{
-                  "&, & .MuiButtonBase-root": { alignItems: "normal" },
-                }}
-              >
-                Edit
-              </Button>
-            )}
-          </Stack>
-        </form>
-        <Divider orientation="vertical" flexItem />
-        {(!error && OrderInvoice) ?? null}
+      <Stack direction={{ xs: "column", md: "row" }} spacing="5rem">
+        {OrderEditForm}
+        <CustomDivider flexItem />
+        {error ? null : OrderInvoice}
       </Stack>
-      {/* <Box visibility="hidden"> */}
-      <Box>
+      <Box display="none">
         <InvoiceTemplate
           ref={invoiceTemplateRef}
           data={{ data, products: getValues("products") }}

@@ -18,14 +18,33 @@ import {
 const InvoiceTemplate = forwardRef(function InvoiceTemplate(props, ref) {
   const { data, products } = props?.data;
 
-  const getItemTotal = useCallback(
-    (price = 0, discount = 0, quantity = 1) =>
-      formatMoney(price * (1 - discount / 100) * quantity, "dollars"),
+  const getUnitTotal = useCallback(
+    (price = 0, discount = 0, quantity = 1, format = false) => {
+      const unitPrice =
+        parseFloat(price) *
+        (1 - parseFloat(discount) / 100) *
+        parseInt(quantity);
+      // Return formatted/unformatted price based on `format` parameter
+      return format ? formatMoney(unitPrice) : unitPrice;
+    },
     []
   );
 
-  const subtotal = useMemo(() => 100, []);
   const taxRate = 19;
+  const subtotal = useMemo(
+    () =>
+      products?.reduce(
+        (total, current) =>
+          total +
+          getUnitTotal(
+            current?.product?.price,
+            current?.product?.discountPercentage,
+            current?.quantity
+          ),
+        0
+      ),
+    [getUnitTotal, products]
+  );
   const taxes = useMemo(() => subtotal * (taxRate / 100), [subtotal]);
   const total = useMemo(() => subtotal + taxes, [taxes, subtotal]);
 
@@ -138,10 +157,11 @@ const InvoiceTemplate = forwardRef(function InvoiceTemplate(props, ref) {
                 {product?.product?.discountPercentage}%
               </InvoiceTableCell>
               <InvoiceTableCell align="right">
-                {getItemTotal(
+                {getUnitTotal(
                   product?.product?.price,
                   product?.product?.discountPercentage,
-                  product?.quantity
+                  product?.quantity,
+                  true
                 )}
               </InvoiceTableCell>
             </InvoiceTableRow>
@@ -153,7 +173,7 @@ const InvoiceTemplate = forwardRef(function InvoiceTemplate(props, ref) {
             <InvoiceTableCell rowSpan={3} />
             <InvoiceTableCell align="right">Subtotal</InvoiceTableCell>
             <InvoiceTableCell align="right">
-              {formatMoney(100, "dollars")}
+              {formatMoney(subtotal, "dollars")}
             </InvoiceTableCell>
           </InvoiceTableRow>
           <InvoiceTableRow>
@@ -171,7 +191,7 @@ const InvoiceTemplate = forwardRef(function InvoiceTemplate(props, ref) {
         </TableBody>
       </Table>
     ),
-    [getItemTotal, products, taxes, total]
+    [getUnitTotal, products, taxes, subtotal]
   );
 
   return (

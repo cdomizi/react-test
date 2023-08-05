@@ -175,8 +175,7 @@ const printInvoice = (invoiceTemplateRef, idNumber) => {
   // Set content from the invoice template HTML
   doc.html(invoiceTemplateRef, {
     callback: function (doc) {
-      // Download the invoice PDF
-      // doc.save(`Invoice-${idNumber}`);
+      // Open the invoice PDF in another tab
       doc.output("dataurlnewwindow", { filename: `Invoice-${idNumber}` });
     },
     autoPaging: "text",
