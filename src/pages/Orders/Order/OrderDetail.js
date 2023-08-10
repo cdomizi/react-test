@@ -1,4 +1,5 @@
 import {
+  memo,
   useCallback,
   useContext,
   useEffect,
@@ -732,6 +733,16 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
     </form>
   );
 
+  // Invoice detail item
+  const InvoiceItem = memo(({ name, value, id, color = "auto" }) => (
+    <Typography paragraph id={`invoice.${id}`}>
+      {`${name}: `}
+      <Box component="span" fontWeight="bold" color={color}>
+        {value}
+      </Box>
+    </Typography>
+  ));
+
   // Invoice section
   const OrderInvoice = useMemo(
     () => (
@@ -741,26 +752,18 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
         </Typography>
         {data?.invoice ? (
           <>
-            <Typography paragraph>
-              ID:{" "}
-              <Box component="span" fontWeight="bold">
-                {`#${data?.invoice?.id}`}
-              </Box>
-            </Typography>
-            <Typography paragraph>
-              Due:{" "}
-              <Box component="span" fontWeight="bold">
-                {`${formatOrderDate(data?.invoice?.paymentDue)}`}
-              </Box>
-            </Typography>
-            <Typography paragraph>
-              Status:{" "}
-              <Box
-                component="span"
-                fontWeight="bold"
-                color={setInvoiceColor(data?.invoice)}
-              >{`${getInvoiceStatus(data?.invoice)}`}</Box>
-            </Typography>
+            <InvoiceItem name="ID" value={data?.invoice?.id} id="id" />
+            <InvoiceItem
+              name="Due"
+              value={formatOrderDate(data?.invoice?.paymentDue)}
+              id="dueDate"
+            />
+            <InvoiceItem
+              name="Status"
+              value={getInvoiceStatus(data?.invoice)}
+              color={setInvoiceColor(data?.invoice)}
+              id="dueDate"
+            />
             <Box width="14rem">
               {!data?.invoice?.paid && (
                 <Button
