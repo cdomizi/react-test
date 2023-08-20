@@ -71,6 +71,15 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
   // Set the `dataName` property for the snackbar
   snackbarState.dataName = dataName?.singular;
 
+  const defaultValues = useMemo(
+    () => ({
+      customer: data?.customerId,
+      products: data?.products,
+      invoice: !!data?.invoice,
+    }),
+    [data?.customerId, data?.invoice, data?.products]
+  );
+
   const {
     register,
     control,
@@ -79,13 +88,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
     formState,
     getValues,
     watch,
-  } = useForm({
-    defaultValues: {
-      customer: data?.customerId,
-      products: data?.products,
-      invoice: !!data?.invoice,
-    },
-  });
+  } = useForm({ defaultValues });
 
   // Products array
   const { fields, append, remove, replace } = useFieldArray({
@@ -322,7 +325,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
         products: defaultProducts,
       });
     }
-  }, [data, productsData, replace, reset]);
+  }, [data, productsData, replace, reset, edit]);
 
   // Order details section
   const FormDetails = useMemo(
@@ -581,6 +584,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                     <Tooltip title="Delete">
                       <>
                         <IconButton
+                          sx={{ display: !!edit ? "auto" : "none" }}
                           disabled={!edit}
                           onClick={() => remove(prodIndex)}
                         >
@@ -676,7 +680,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
         )}
         {edit ? (
           // Form actions
-          <Box>
+          <Stack spacing={2}>
             <Button
               type="button"
               variant="outlined"
@@ -688,6 +692,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                   <CircularProgress color="inherit" size={20} />
                 )
               }
+              fullWidth
             >
               Fill with random data
             </Button>
@@ -709,7 +714,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                 Undo
               </Button>
             </Stack>
-          </Box>
+          </Stack>
         ) : (
           <Button
             type="button"
