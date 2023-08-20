@@ -346,15 +346,23 @@ const DataTable = (props) => {
     () => (
       <TableFilters
         filters={enabledFilters}
-        onFiltersSubmit={(filters) => setColumnFilters(filters)}
+        onFiltersSubmit={(filters) => {
+          // Set table pagination to 0 to prevent errors
+          table.setPageIndex(0);
+          setColumnFilters(filters);
+        }}
         onFiltersReset={handleFiltersReset}
         globalSearch={globalSearch}
-        onGlobalSearch={(value) => setGlobalFilter(value)}
+        onGlobalSearch={(value) => {
+          // Set table pagination to 0 to prevent errors
+          table.setPageIndex(0);
+          setGlobalFilter(value);
+        }}
       >
         {createItemButton}
       </TableFilters>
     ),
-    [enabledFilters, globalSearch, createItemButton, handleFiltersReset]
+    [enabledFilters, handleFiltersReset, globalSearch, createItemButton, table]
   );
 
   // Display skeleton rows on loading
