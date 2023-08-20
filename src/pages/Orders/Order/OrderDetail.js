@@ -454,6 +454,15 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                             field.onChange(value);
                           }}
                           options={productsData ?? []}
+                          filterOptions={(options, state) =>
+                            options?.filter(
+                              (product) =>
+                                !watch("products").find(
+                                  (selectedProduct) =>
+                                    selectedProduct.product.id === product.id
+                                )
+                            )
+                          }
                           getOptionLabel={(product) =>
                             `${product?.id && "#" + product.id} ${
                               product?.title

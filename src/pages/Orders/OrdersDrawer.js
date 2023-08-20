@@ -256,6 +256,15 @@ const OrdersDrawer = (props) => {
                             field.onChange(value);
                           }}
                           options={productsData ?? []}
+                          filterOptions={(options, state) =>
+                            options?.filter(
+                              (product) =>
+                                !watch("products").find(
+                                  (selectedProduct) =>
+                                    selectedProduct.product.id === product.id
+                                )
+                            )
+                          }
                           isOptionEqualToValue={(option, value) =>
                             option.id === value.id
                           }
@@ -553,6 +562,15 @@ const OrdersDrawer = (props) => {
                             field.onChange(value);
                           }}
                           options={productsData ?? []}
+                          filterOptions={(options, state) =>
+                            options?.filter(
+                              (product) =>
+                                !watch("products").find(
+                                  (selectedProduct) =>
+                                    selectedProduct.product.id === product.id
+                                )
+                            )
+                          }
                           getOptionLabel={(product) =>
                             `${product?.id && "#" + product.id} ${
                               product?.title
