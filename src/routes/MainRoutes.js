@@ -8,7 +8,8 @@ import {
 // project import
 const RootLayout = loadable(() => import("../layouts/RootLayout"));
 const ErrorPage = loadable(() => import("../pages/Error"));
-const Home = loadable(() => import("../pages/Home/Home"));
+const Login = loadable(() => import("../pages/Login"));
+const Home = loadable(() => import("../pages/Home"));
 const Orders = loadable(() => import("../pages/Orders"));
 const Order = loadable(() => import("../pages/Orders/Order"));
 const Products = loadable(() => import("../pages/Products"));
@@ -23,6 +24,7 @@ const MainRoutes = createBrowserRouter(
     <Route path="/" element={<RootLayout />} errorElement={<ErrorPage />}>
       <Route errorElement={<ErrorPage />}>
         <Route index element={<Home />} />
+        <Route path="login" element={<Login />} />
         <Route path="orders" element={<Orders />} />
         <Route path="orders/:orderId" element={<Order />} />
         <Route path="products" element={<Products />} />
