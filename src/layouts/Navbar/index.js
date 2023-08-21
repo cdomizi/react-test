@@ -1,8 +1,9 @@
 // project import
 import NavItem from "./NavItem";
+import ProfileTab from "../ProfileTab";
 
 // mui components
-import { Drawer, List, Typography, Divider } from "@mui/material";
+import { Drawer, List, Divider } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -32,8 +33,8 @@ function Navbar({ open, onToggle, menuItems, window }) {
         },
       }}
     >
-      <Typography variant="h6" sx={{ my: 3 }} />
-      <Divider />
+      <ProfileTab direction="column" sx={{ my: 3 }} />
+      <Divider sx={{ borderWidth: "1px" }} />
       <List>{items}</List>
     </Drawer>
   );

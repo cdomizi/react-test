@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
 // project import
-import Navbar from "./Navbar/Navbar";
-import Topbar from "./Topbar/Topbar";
+import Navbar from "./Navbar";
+import Topbar from "./Topbar";
 import menuItems from "../menu-items";
 
 // mui components

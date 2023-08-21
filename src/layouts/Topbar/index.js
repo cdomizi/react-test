@@ -3,8 +3,9 @@ import { useContext } from "react";
 // project import
 import ColorModeContext from "../../contexts/ColorModeContext";
 import MenuItem from "./MenuItem";
+import ProfileTab from "../ProfileTab";
 
-// mui components
+// MUI components
 import {
   useTheme,
   Box,
@@ -15,7 +16,7 @@ import {
   Tooltip,
 } from "@mui/material";
 
-// mui icons
+// MUI icons
 import {
   Menu as MenuIcon,
   Brightness4 as Brightness4Icon,
@@ -25,13 +26,14 @@ import {
 function TopBar({ onToggle, menuItems }) {
   const theme = useTheme();
   const colorMode = useContext(ColorModeContext);
+
   return (
     <AppBar component="nav">
       <Toolbar>
         <IconButton
           color="inherit"
           edge="start"
-          sx={{ display: { sm: "none" }, mr: 2 }}
+          sx={{ display: { md: "none" }, mr: 2 }}
           onClick={onToggle(true)}
         >
           <MenuIcon />
@@ -49,11 +51,15 @@ function TopBar({ onToggle, menuItems }) {
         >
           React Test
         </Typography>
-        <Box sx={{ display: { xs: "none", sm: "block" } }}>
+        <Box sx={{ display: { xs: "none", md: "block" } }}>
           {menuItems.map((item) => (
             <MenuItem key={item.id} title={item.title} url={item.url} />
           ))}
         </Box>
+        <ProfileTab
+          direction="row"
+          sx={{ display: { xs: "none", sm: "flex" } }}
+        />
         <Tooltip
           title={theme.palette.mode === "dark" ? "Light Mode" : "Dark Mode"}
         >
