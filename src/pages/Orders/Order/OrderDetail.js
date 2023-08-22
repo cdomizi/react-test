@@ -720,7 +720,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                   setEdit(false);
                 }}
               >
-                Undo
+                Cancel
               </Button>
             </Stack>
           </Stack>

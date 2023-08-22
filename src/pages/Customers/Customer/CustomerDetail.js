@@ -362,7 +362,7 @@ const CustomerDetail = ({
                       setEdit(false);
                     }}
                   >
-                    Undo
+                    Cancel
                   </Button>
                 </Stack>
               </>

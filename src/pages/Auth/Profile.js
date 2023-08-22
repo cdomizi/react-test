@@ -1,8 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 
-import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 // Fake data for testing - REMOVE
 const userData = {
@@ -17,6 +29,11 @@ const Profile = () => {
 
   const [edit, setEdit] = useState(false);
 
+  const [openDialog, setOpenDialog] = useState(false);
+  const passwordRef = useRef(null);
+  const [requiredError, setRequiredError] = useState(false);
+
+  // Password edit form
   const {
     control,
     handleSubmit,
@@ -30,9 +47,9 @@ const Profile = () => {
     },
   });
 
-  const onSubmit = (formData) => {
+  const onPasswordEditSubmit = useCallback((formData) => {
     console.log(formData);
-  };
+  }, []);
 
   useEffect(() => {
     if (isSubmitSuccessful) {
@@ -41,30 +58,34 @@ const Profile = () => {
     }
   }, [isSubmitSuccessful, reset]);
 
-  const adminSection = useMemo(
-    () => (
-      <Stack spacing={2}>
-        <Typography variant="h5" mx="auto">
-          Admin Panel
-        </Typography>
-        <Button variant="contained">Manage users</Button>
-      </Stack>
-    ),
-    []
-  );
+  const onDialogSubmit = useCallback((event) => {
+    event.preventDefault();
+
+    const password = passwordRef.current.value;
+
+    if (!password?.length) {
+      setRequiredError(true);
+    } else {
+      if (password === userData?.password) {
+        console.log(password);
+        passwordRef.current = null;
+        setOpenDialog(false);
+      }
+      console.error("Wrong password");
+    }
+  }, []);
 
   const accountSettings = useMemo(
     () => (
-      <>
+      <Box maxWidth="22rem">
+        <Typography variant="h5">Account Settings</Typography>
         <Stack
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(onPasswordEditSubmit)}
           component="form"
-          spacing={2}
           id="profile-account-settings"
+          spacing={2}
+          my={5}
         >
-          <Typography variant="h5" mx="auto">
-            Account Settings
-          </Typography>
           <Controller
             control={control}
             name="password"
@@ -78,12 +99,12 @@ const Profile = () => {
             render={({ field }) => (
               <TextField
                 {...field}
-                id="password"
+                id="edit-password"
                 label="Password"
                 type="password"
                 error={!!errors?.password}
                 helperText={errors?.password && errors?.password?.message}
-                InputLabelProps={{ required: true }}
+                InputLabelProps={{ required: true, shrink: true }}
                 disabled={!edit}
                 fullWidth
                 margin="normal"
@@ -111,7 +132,7 @@ const Profile = () => {
                       errors?.confirmPassword &&
                       errors?.confirmPassword?.message
                     }
-                    InputLabelProps={{ required: true }}
+                    InputLabelProps={{ required: true, shrink: true }}
                     disabled={!edit}
                     fullWidth
                     margin="normal"
@@ -123,12 +144,15 @@ const Profile = () => {
                   Save
                 </Button>
                 <Button
-                  onClick={() => setEdit(false)}
+                  onClick={() => {
+                    setEdit(false);
+                    reset();
+                  }}
                   type="button"
                   variant="outlined"
                   color="secondary"
                 >
-                  Undo
+                  Cancel
                 </Button>
               </Stack>
             </>
@@ -138,17 +162,87 @@ const Profile = () => {
             </Button>
           )}
         </Stack>
-        <Button variant="outlined" color="error">
+        <Button
+          onClick={() => setOpenDialog(true)}
+          variant="outlined"
+          color="error"
+        >
           Delete my account
         </Button>
-      </>
+      </Box>
     ),
-    [control, edit, errors, handleSubmit, watch]
+    [control, edit, errors, handleSubmit, onPasswordEditSubmit, reset, watch]
+  );
+
+  const AdminSection = () => (
+    <>
+      <Divider sx={{ my: 7 }} />
+      <Typography variant="h5" mb={5}>
+        Admin Panel
+      </Typography>
+      <Button variant="contained" sx={{ maxWidth: "fit-content" }}>
+        Manage users
+      </Button>
+    </>
+  );
+
+  const deleteDialog = useMemo(
+    () => (
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        component="form"
+        onSubmit={(event) => onDialogSubmit(event)}
+      >
+        <DialogTitle>Account delete confirmation</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete your account?
+            <br />
+            Enter your password to confirm:
+          </DialogContentText>
+          <TextField
+            id="edit-password"
+            name="password"
+            label="Password"
+            type="password"
+            inputRef={passwordRef}
+            onChange={(event) =>
+              passwordRef.current?.value?.length && setRequiredError(false)
+            }
+            error={!!requiredError}
+            helperText={!!requiredError && "Please enter your password"}
+            InputLabelProps={{ required: true, shrink: true }}
+            fullWidth
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={(event) => onDialogSubmit(event)}
+            type="submit"
+            color="error"
+          >
+            Delete my account
+          </Button>
+          <Button
+            onClick={() => {
+              passwordRef.current = "";
+              setOpenDialog(false);
+            }}
+            type="button"
+          >
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+    ),
+    [onDialogSubmit, openDialog, requiredError]
   );
 
   return (
-    <Stack>
-      <Box id="profile-title" mb={6}>
+    <Box>
+      <Box id="profile-title" mb={8}>
         <Typography variant="h3">
           Hi, {userData.username}!
           {userData?.isAdmin && (
@@ -156,11 +250,10 @@ const Profile = () => {
           )}
         </Typography>
       </Box>
-      <Stack spacing={5} maxWidth="22rem" id="profile-admin-section">
-        {accountSettings}
-        {userData?.isAdmin && adminSection}
-      </Stack>
-    </Stack>
+      {accountSettings}
+      {userData?.isAdmin && <AdminSection />}
+      {deleteDialog}
+    </Box>
   );
 };
 
