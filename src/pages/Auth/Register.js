@@ -28,9 +28,9 @@ const Register = () => {
     <Box sx={{ maxWidth: "24rem", mx: "auto", mt: 6 }}>
       <Stack
         onSubmit={handleSubmit(onSubmit)}
-        spacing={3}
         component="form"
         id="register-form"
+        spacing={3}
       >
         <Typography variant="h2" mx="auto">
           Register

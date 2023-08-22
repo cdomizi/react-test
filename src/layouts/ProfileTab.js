@@ -24,7 +24,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
         Hi,{" "}
         <Tooltip title="User's profile">
           <Link
-            href="#"
+            href="users/1"
             sx={{
               ...(theme.palette.mode === "light" && {
                 color: "inherit",
