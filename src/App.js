@@ -1,6 +1,7 @@
 import { RouterProvider } from "react-router-dom";
 import ThemeCustomization from "./themes/ThemeCustomization";
 import { SnackbarProvider } from "./contexts/SnackbarContext";
+import { DialogProvider } from "./contexts/DialogContext";
 
 // project import
 import MainRoutes from "./routes/MainRoutes";
@@ -13,7 +14,9 @@ function App() {
     <Box className="App">
       <ThemeCustomization>
         <SnackbarProvider>
-          <RouterProvider router={MainRoutes} />
+          <DialogProvider>
+            <RouterProvider router={MainRoutes} />
+          </DialogProvider>
         </SnackbarProvider>
       </ThemeCustomization>
     </Box>

@@ -1,15 +1,18 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
+import DialogContext, { DIALOG_ACTIONS } from "../../contexts/DialogContext";
 
 import {
   Box,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   Divider,
   Stack,
   TextField,
@@ -29,11 +32,7 @@ const Profile = () => {
 
   const [edit, setEdit] = useState(false);
 
-  const [openDialog, setOpenDialog] = useState(false);
-  const passwordRef = useRef(null);
-  const [requiredError, setRequiredError] = useState(false);
-
-  // Password edit form
+  // ====== Password edit section ====== //
   const {
     control,
     handleSubmit,
@@ -57,23 +56,88 @@ const Profile = () => {
       setEdit(false);
     }
   }, [isSubmitSuccessful, reset]);
+  // ====== End Password edit section ====== //
 
-  const onDialogSubmit = useCallback((event) => {
-    event.preventDefault();
+  // ====== Delete dialog section ====== //
+  const passwordRef = useRef(null);
+  const [deleteDialogError, setDeleteDialogError] = useState(false);
 
-    const password = passwordRef.current.value;
+  // State and dispatch function for dialog component
+  const dispatch = useContext(DialogContext);
 
-    if (!password?.length) {
-      setRequiredError(true);
-    } else {
-      if (password === userData?.password) {
-        console.log(password);
-        passwordRef.current = null;
-        setOpenDialog(false);
+  useEffect(() => {
+    if (deleteDialogError)
+      dispatch({
+        type: DIALOG_ACTIONS.OPEN,
+        payload: {
+          open: false,
+          title: "Error: Wrong password",
+          contentText: "The password you entered is wrong",
+          contentForm: null,
+          confirm: {
+            buttonText: "Ok",
+            onConfirm: () => {
+              dispatch({
+                type: DIALOG_ACTIONS.CLOSE,
+              });
+              setDeleteDialogError(false);
+            },
+          },
+          cancel: null,
+        },
+      });
+  }, [deleteDialogError, dispatch]);
+
+  const onDialogSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+      const submittedPassword = passwordRef.current.value;
+
+      if (submittedPassword === userData?.password) {
+        console.log(submittedPassword);
+
+        return;
+      } else {
+        dispatch({ type: DIALOG_ACTIONS.CLOSE });
+        setDeleteDialogError(true);
+
+        return;
       }
-      console.error("Wrong password");
-    }
-  }, []);
+    },
+    [dispatch]
+  );
+
+  const passwordField = useMemo(
+    () => (
+      <TextField
+        id="edit-password"
+        inputRef={passwordRef}
+        name="password"
+        label="Password"
+        type="password"
+        InputLabelProps={{ shrink: true }}
+        required
+        fullWidth
+        margin="normal"
+      />
+    ),
+    []
+  );
+
+  const initialDeleteDialogState = useMemo(
+    () => ({
+      open: false,
+      title: "Account delete confirmation",
+      contentText:
+        "Are you sure you want to delete your account?\nEnter your password to confirm:",
+      contentForm: passwordField,
+      confirm: { buttonText: "Delete my account", onConfirm: onDialogSubmit },
+      cancel: true,
+    }),
+    [passwordField, onDialogSubmit]
+  );
+
+  // ====== End Delete dialog section ====== //
 
   const accountSettings = useMemo(
     () => (
@@ -163,7 +227,12 @@ const Profile = () => {
           )}
         </Stack>
         <Button
-          onClick={() => setOpenDialog(true)}
+          onClick={() =>
+            dispatch({
+              type: DIALOG_ACTIONS.OPEN,
+              payload: initialDeleteDialogState,
+            })
+          }
           variant="outlined"
           color="error"
         >
@@ -171,7 +240,18 @@ const Profile = () => {
         </Button>
       </Box>
     ),
-    [control, edit, errors, handleSubmit, onPasswordEditSubmit, reset, watch]
+    [
+      control,
+      dispatch,
+      edit,
+      errors?.confirmPassword,
+      errors?.password,
+      handleSubmit,
+      initialDeleteDialogState,
+      onPasswordEditSubmit,
+      reset,
+      watch,
+    ]
   );
 
   const AdminSection = () => (
@@ -186,60 +266,6 @@ const Profile = () => {
     </>
   );
 
-  const deleteDialog = useMemo(
-    () => (
-      <Dialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-        component="form"
-        onSubmit={(event) => onDialogSubmit(event)}
-      >
-        <DialogTitle>Account delete confirmation</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete your account?
-            <br />
-            Enter your password to confirm:
-          </DialogContentText>
-          <TextField
-            id="edit-password"
-            name="password"
-            label="Password"
-            type="password"
-            inputRef={passwordRef}
-            onChange={(event) =>
-              passwordRef.current?.value?.length && setRequiredError(false)
-            }
-            error={!!requiredError}
-            helperText={!!requiredError && "Please enter your password"}
-            InputLabelProps={{ required: true, shrink: true }}
-            fullWidth
-            margin="normal"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={(event) => onDialogSubmit(event)}
-            type="submit"
-            color="error"
-          >
-            Delete my account
-          </Button>
-          <Button
-            onClick={() => {
-              passwordRef.current = "";
-              setOpenDialog(false);
-            }}
-            type="button"
-          >
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
-    ),
-    [onDialogSubmit, openDialog, requiredError]
-  );
-
   return (
     <Box>
       <Box id="profile-title" mb={8}>
@@ -252,7 +278,6 @@ const Profile = () => {
       </Box>
       {accountSettings}
       {userData?.isAdmin && <AdminSection />}
-      {deleteDialog}
     </Box>
   );
 };

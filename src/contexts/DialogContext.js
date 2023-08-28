@@ -1,4 +1,5 @@
 import { createContext, useReducer } from "react";
+import CustomDialog from "../components/CustomDialog";
 
 const DialogContext = createContext(null);
 
@@ -8,11 +9,8 @@ const initialState = {
   title: null,
   contentText: null,
   contentFields: null,
-  actions: {
-    confirm: null,
-    cancel: null,
-    submit: null,
-  },
+  confirm: null,
+  cancel: null,
 };
 
 // Dialog reducer actions
@@ -20,7 +18,6 @@ const DIALOG_ACTIONS = {
   OPEN: "open",
   CLOSE: "close",
   CONFIRM: "confirm",
-  SUBMIT: "submit",
   ERROR: "error",
 };
 
@@ -30,6 +27,7 @@ const dialogReducer = (state, action) => {
     case DIALOG_ACTIONS.OPEN: {
       return {
         ...initialState,
+        ...action.payload,
         open: true,
       };
     }
@@ -42,15 +40,6 @@ const dialogReducer = (state, action) => {
         actions: {
           ...initialState.actions,
           confirm: action.payload,
-        },
-      };
-    }
-    case DIALOG_ACTIONS.SUBMIT: {
-      return {
-        ...initialState,
-        actions: {
-          ...initialState.actions,
-          submit: action.payload,
         },
       };
     }
@@ -74,8 +63,9 @@ const DialogProvider = ({ children }) => {
   const [dialogState, dispatch] = useReducer(dialogReducer, initialState);
 
   return (
-    <DialogContext.Provider value={[dialogState, dispatch]}>
+    <DialogContext.Provider value={dispatch}>
       {children}
+      <CustomDialog {...dialogState} />
     </DialogContext.Provider>
   );
 };
