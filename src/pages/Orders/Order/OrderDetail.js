@@ -66,7 +66,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
   const invoiceTemplateRef = useRef(null);
 
   // State and dispatch function for snackbar component
-  const [snackbarState, dispatch] = useContext(SnackbarContext);
+  const { snackbarState, dispatch } = useContext(SnackbarContext);
 
   // Set the `dataName` property for the snackbar
   snackbarState.dataName = dataName?.singular;

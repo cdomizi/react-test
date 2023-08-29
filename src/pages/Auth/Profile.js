@@ -58,13 +58,14 @@ const Profile = () => {
   }, [isSubmitSuccessful, reset]);
   // ====== End Password edit section ====== //
 
-  // ====== Delete dialog section ====== //
+  // ====== Dialog section ====== //
   const passwordRef = useRef(null);
   const [deleteDialogError, setDeleteDialogError] = useState(false);
 
   // State and dispatch function for dialog component
   const dispatch = useContext(DialogContext);
 
+  // If the password is wrong, alert the user
   useEffect(() => {
     if (deleteDialogError)
       dispatch({
@@ -93,20 +94,23 @@ const Profile = () => {
       event.preventDefault();
       const submittedPassword = passwordRef.current.value;
 
+      // On correct password, delete the account
       if (submittedPassword === userData?.password) {
         console.log(submittedPassword);
-
-        return;
+        // On wrong password, set the error state to `true`
       } else {
         dispatch({ type: DIALOG_ACTIONS.CLOSE });
         setDeleteDialogError(true);
-
-        return;
       }
+
+      // Always clear input value
+      passwordRef.current.value = null;
+      return;
     },
     [dispatch]
   );
 
+  // Field to enter password for delete confirmation
   const passwordField = useMemo(
     () => (
       <TextField
@@ -124,6 +128,7 @@ const Profile = () => {
     []
   );
 
+  // Initial state for password delete confirmation dialog
   const initialDeleteDialogState = useMemo(
     () => ({
       open: false,
@@ -136,9 +141,9 @@ const Profile = () => {
     }),
     [passwordField, onDialogSubmit]
   );
+  // ====== End dialog section ====== //
 
-  // ====== End Delete dialog section ====== //
-
+  // ====== Account settings section ====== //
   const accountSettings = useMemo(
     () => (
       <Box maxWidth="22rem">
@@ -253,7 +258,9 @@ const Profile = () => {
       watch,
     ]
   );
+  // ====== End Account settings section ====== //
 
+  // ====== Admin section ====== //
   const AdminSection = () => (
     <>
       <Divider sx={{ my: 7 }} />
@@ -265,6 +272,7 @@ const Profile = () => {
       </Button>
     </>
   );
+  // ====== End Admin section ====== //
 
   return (
     <Box>

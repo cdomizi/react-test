@@ -31,6 +31,7 @@ const Register = () => {
         component="form"
         id="register-form"
         spacing={3}
+        autoComplete="off"
       >
         <Typography variant="h2" mx="auto">
           Register

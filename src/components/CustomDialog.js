@@ -31,6 +31,7 @@ const CustomDialog = ({
         event.preventDefault();
         confirm?.onConfirm(event) || dispatch({ type: DIALOG_ACTIONS.CLOSE });
       }}
+      autoomplete="off"
     >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>

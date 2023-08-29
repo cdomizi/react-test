@@ -146,7 +146,7 @@ const SnackbarProvider = ({ children }) => {
   const [snackbarState, dispatch] = useReducer(snackbarReducer, initialState);
 
   return (
-    <SnackbarContext.Provider value={[snackbarState, dispatch]}>
+    <SnackbarContext.Provider value={{ snackbarState, dispatch }}>
       {children}
     </SnackbarContext.Provider>
   );

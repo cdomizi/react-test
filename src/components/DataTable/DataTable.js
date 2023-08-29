@@ -65,7 +65,7 @@ const DataTable = (props) => {
   } = props;
 
   // State and dispatch function for snackbar component
-  const [snackbarState, dispatch] = useContext(SnackbarContext);
+  const { snackbarState, dispatch } = useContext(SnackbarContext);
 
   // Set the `dataName` property for the snackbar if provided
   if (dataName?.singular) snackbarState.dataName = dataName.singular;

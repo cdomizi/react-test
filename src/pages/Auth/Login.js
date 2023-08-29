@@ -30,6 +30,7 @@ const Login = () => {
         component="form"
         id="login-form"
         spacing={3}
+        autoComplete="off"
       >
         <Typography variant="h2" mx="auto">
           Log In
