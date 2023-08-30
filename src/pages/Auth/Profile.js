@@ -41,13 +41,16 @@ const Profile = () => {
     watch,
   } = useForm({
     defaultValues: {
-      password: userData?.password || "",
+      currentPassword: "",
+      newPassword: "",
       confirmPassword: "",
     },
   });
 
   const onPasswordEditSubmit = useCallback((formData) => {
-    console.log(formData);
+    formData.currentPassword === userData?.password
+      ? console.log(formData)
+      : console.error("The password you entered is wrong");
   }, []);
 
   useEffect(() => {
@@ -148,89 +151,123 @@ const Profile = () => {
     () => (
       <Box maxWidth="22rem">
         <Typography variant="h5">Account Settings</Typography>
-        <Stack
-          onSubmit={handleSubmit(onPasswordEditSubmit)}
-          component="form"
-          id="profile-account-settings"
-          spacing={2}
-          my={5}
-        >
-          <Controller
-            control={control}
-            name="password"
-            rules={{
-              required: "Please enter your password",
-              minLength: {
-                value: 6,
-                message: "Password must be at least 6 characters",
-              },
-            }}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                id="edit-password"
-                label="Password"
-                type="password"
-                error={!!errors?.password}
-                helperText={errors?.password && errors?.password?.message}
-                InputLabelProps={{ required: true, shrink: true }}
-                disabled={!edit}
-                fullWidth
-                margin="normal"
-              />
-            )}
-          />
-          {edit ? (
-            <>
-              <Controller
-                control={control}
-                name="confirmPassword"
-                rules={{
-                  required: "Please confirm your password",
-                  validate: (val) =>
-                    val === watch("password") || "Passwords do not match",
+        {edit ? (
+          <Stack
+            onSubmit={handleSubmit(onPasswordEditSubmit)}
+            component="form"
+            id="profile-account-settings"
+            spacing={2}
+            my={5}
+          >
+            <Controller
+              control={control}
+              name="currentPassword"
+              rules={{
+                required: "Please enter your current password",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+                validate: (val) =>
+                  val === userData?.password ||
+                  "The password you entered is wrong",
+              }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  id="currentPassword"
+                  label="Current Password"
+                  type="password"
+                  error={!!errors?.currentPassword}
+                  helperText={
+                    errors?.currentPassword && errors?.currentPassword?.message
+                  }
+                  InputLabelProps={{ required: true, shrink: true }}
+                  disabled={!edit}
+                  fullWidth
+                  margin="normal"
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="newPassword"
+              rules={{
+                required: "Please enter your new password",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  id="newPassword"
+                  label="New Password"
+                  type="password"
+                  error={!!errors?.newPassword}
+                  helperText={
+                    errors?.newPassword && errors?.newPassword?.message
+                  }
+                  InputLabelProps={{ required: true, shrink: true }}
+                  disabled={!edit}
+                  fullWidth
+                  margin="normal"
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="confirmPassword"
+              rules={{
+                required: "Please confirm your new password",
+                validate: (val) =>
+                  val === watch("newPassword") || "Passwords do not match",
+              }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  id="confirmPassword"
+                  label="Confirm Password"
+                  type="password"
+                  error={!!errors?.confirmPassword}
+                  helperText={
+                    errors?.confirmPassword && errors?.confirmPassword?.message
+                  }
+                  InputLabelProps={{ required: true, shrink: true }}
+                  disabled={!edit}
+                  fullWidth
+                  margin="normal"
+                />
+              )}
+            />
+            <Stack direction="row" spacing={2}>
+              <Button type="submit" variant="contained" fullWidth>
+                Save
+              </Button>
+              <Button
+                onClick={() => {
+                  setEdit(false);
+                  reset();
                 }}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    id="confirmPassword"
-                    label="Confirm Password"
-                    type="password"
-                    error={!!errors?.confirmPassword}
-                    helperText={
-                      errors?.confirmPassword &&
-                      errors?.confirmPassword?.message
-                    }
-                    InputLabelProps={{ required: true, shrink: true }}
-                    disabled={!edit}
-                    fullWidth
-                    margin="normal"
-                  />
-                )}
-              />
-              <Stack direction="row" spacing={2}>
-                <Button type="submit" variant="contained" fullWidth>
-                  Save
-                </Button>
-                <Button
-                  onClick={() => {
-                    setEdit(false);
-                    reset();
-                  }}
-                  type="button"
-                  variant="outlined"
-                  color="secondary"
-                >
-                  Cancel
-                </Button>
-              </Stack>
-            </>
-          ) : (
-            <Button onClick={() => setEdit(true)} variant="outlined">
-              Change my password
-            </Button>
-          )}
-        </Stack>
+                type="button"
+                variant="outlined"
+                color="secondary"
+              >
+                Cancel
+              </Button>
+            </Stack>
+          </Stack>
+        ) : (
+          <Button
+            onClick={() => setEdit(true)}
+            variant="outlined"
+            fullWidth={false}
+            sx={{ mt: 5, mb: 3 }}
+          >
+            Change my password
+          </Button>
+        )}
         <Button
           onClick={() =>
             dispatch({
@@ -249,8 +286,7 @@ const Profile = () => {
       control,
       dispatch,
       edit,
-      errors?.confirmPassword,
-      errors?.password,
+      errors,
       handleSubmit,
       initialDeleteDialogState,
       onPasswordEditSubmit,
