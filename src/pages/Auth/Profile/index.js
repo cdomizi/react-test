@@ -6,6 +6,7 @@ import { Box, Typography } from "@mui/material";
 
 // Fake data for testing - REMOVE
 const userData = {
+  id: 1,
   username: "testUsername",
   password: "testPassword",
   isAdmin: true,

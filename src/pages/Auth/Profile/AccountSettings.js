@@ -14,6 +14,7 @@ import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 
 // Fake data for testing - REMOVE
 const userData = {
+  id: 1,
   username: "testUsername",
   password: "testPassword",
   isAdmin: true,
@@ -54,14 +55,14 @@ const AccountSettings = () => {
 
   // ============ Dialog section ============= //
   const passwordRef = useRef(null);
-  const [deleteDialogError, setDeleteDialogError] = useState(false);
+  const [dialogError, setdialogError] = useState(false);
 
   // State and dispatch function for dialog component
   const dispatch = useContext(DialogContext);
 
   // If the password is wrong, alert the user
   useEffect(() => {
-    if (deleteDialogError)
+    if (dialogError)
       dispatch({
         type: DIALOG_ACTIONS.OPEN,
         payload: {
@@ -75,13 +76,13 @@ const AccountSettings = () => {
               dispatch({
                 type: DIALOG_ACTIONS.CLOSE,
               });
-              setDeleteDialogError(false);
+              setdialogError(false);
             },
           },
           cancel: null,
         },
       });
-  }, [deleteDialogError, dispatch]);
+  }, [dialogError, dispatch]);
 
   const onDialogSubmit = useCallback(
     (event) => {
@@ -94,7 +95,7 @@ const AccountSettings = () => {
         // On wrong password, set the error state to `true`
       } else {
         dispatch({ type: DIALOG_ACTIONS.CLOSE });
-        setDeleteDialogError(true);
+        setdialogError(true);
       }
 
       // Always clear input value
@@ -135,18 +136,34 @@ const AccountSettings = () => {
     }),
     [passwordField, onDialogSubmit]
   );
+
+  // Initial state for role change confirmation dialog
+  const initialRoleDialogState = useMemo(
+    () => ({
+      open: false,
+      title: "Role change confirmation",
+      contentText:
+        "Are you sure you want to change the role to User for your account?\nEnter your password to confirm:",
+      contentForm: passwordField,
+      confirm: { buttonText: "Change role to User", onConfirm: onDialogSubmit },
+      cancel: true,
+    }),
+    [passwordField, onDialogSubmit]
+  );
   // ========== End dialog section =========== //
 
   return (
     <Box maxWidth="22rem">
-      <Typography variant="h5">Account Settings</Typography>
+      <Typography variant="h5" mb={5}>
+        Account Settings
+      </Typography>
       {edit ? (
         <Stack
           onSubmit={handleSubmit(onPasswordEditSubmit)}
           component="form"
           id="profile-account-settings"
           spacing={2}
-          my={5}
+          mb={5}
         >
           <Controller
             control={control}
@@ -250,9 +267,23 @@ const AccountSettings = () => {
           onClick={() => setEdit(true)}
           variant="outlined"
           fullWidth={false}
-          sx={{ mt: 5, mb: 3 }}
+          sx={{ mb: 3 }}
         >
           Change my password
+        </Button>
+      )}
+      {userData?.isAdmin && (
+        <Button
+          onClick={() =>
+            dispatch({
+              type: DIALOG_ACTIONS.OPEN,
+              payload: initialRoleDialogState,
+            })
+          }
+          variant="outlined"
+          sx={{ display: "block", mb: 3 }}
+        >
+          Change my role
         </Button>
       )}
       <Button
@@ -262,6 +293,7 @@ const AccountSettings = () => {
             payload: initialDeleteDialogState,
           })
         }
+        sx={{ display: "block" }}
         variant="outlined"
         color="error"
       >

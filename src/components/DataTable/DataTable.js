@@ -36,6 +36,7 @@ import {
   Tooltip,
   IconButton,
   Button,
+  Box,
 } from "@mui/material";
 
 // MUI icons
@@ -43,7 +44,7 @@ import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 
 const DataTable = (props) => {
   const {
-    minWidth,
+    sx = {},
     data,
     dataName = null,
     columns,
@@ -170,7 +171,7 @@ const DataTable = (props) => {
         // Display confirmation message if the request was successful
         dispatch({ type: SNACKBAR_ACTIONS.DELETE, payload: response });
         // Force refetch to get updated data
-        reload();
+        reload && reload();
       } else {
         // Display error message if the request failed
         dispatch({ type: SNACKBAR_ACTIONS.DELETE_ERROR, payload: response });
@@ -188,7 +189,7 @@ const DataTable = (props) => {
         // Display confirmation message if the request was successful
         dispatch({ type: SNACKBAR_ACTIONS.CREATE, payload: response });
         // Force refetch to get updated data
-        reload();
+        reload && reload();
       } else {
         // Check if it's a unique field error
         response?.field
@@ -216,7 +217,7 @@ const DataTable = (props) => {
         // Display confirmation message if the request was successful
         dispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: response });
         // Force refetch to get updated data
-        reload();
+        reload && reload();
       } else {
         // Check if it's a unique field error
         response?.field
@@ -359,10 +360,17 @@ const DataTable = (props) => {
           setGlobalFilter(value);
         }}
       >
-        {createItemButton}
+        {onCreate && createItemButton}
       </TableFilters>
     ),
-    [enabledFilters, handleFiltersReset, globalSearch, createItemButton, table]
+    [
+      enabledFilters,
+      handleFiltersReset,
+      globalSearch,
+      onCreate,
+      createItemButton,
+      table,
+    ]
   );
 
   // Display skeleton rows on loading
@@ -384,13 +392,12 @@ const DataTable = (props) => {
   );
 
   return (
-    <>
+    <Box sx={{ minWidth: "auto", ...sx }}>
       {Filters}
       <Divider />
       <Paper>
         <TableContainer>
           <Table
-            xs={{ minWidth: `${minWidth ?? "auto"}` }}
             size={
               // Automatically set table padding based on screen width
               useMediaQuery("(min-width:600px)") ? "medium" : "small"
@@ -542,12 +549,12 @@ const DataTable = (props) => {
         <CustomSnackbar {...snackbarState} />
       </Paper>
       {drawerState.edit ? EditDrawer : CreateDrawer}
-    </>
+    </Box>
   );
 };
 
 DataTable.propTypes = {
-  minWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  sx: PropTypes.object,
   data: PropTypes.array,
   dataName: PropTypes.object,
   columns: PropTypes.array,

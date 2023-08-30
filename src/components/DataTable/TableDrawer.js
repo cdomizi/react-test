@@ -339,20 +339,22 @@ const TableDrawer = (props) => {
             props.dataName ? capitalize(props?.dataName?.singular) : "Item"
           }`}
         </Typography>
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={setRandomData}
-          disabled={formState.isLoading || formState.isSubmitting || loading}
-          endIcon={
-            (formState.isLoading || formState.isSubmitting || loading) && (
-              <CircularProgress color="inherit" size={20} />
-            )
-          }
-          sx={{ mb: 3, ml: "auto", height: "fit-content" }}
-        >
-          Fill With Random Data
-        </Button>
+        {props?.randomData && (
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={setRandomData}
+            disabled={formState.isLoading || formState.isSubmitting || loading}
+            endIcon={
+              (formState.isLoading || formState.isSubmitting || loading) && (
+                <CircularProgress color="inherit" size={20} />
+              )
+            }
+            sx={{ mb: 3, ml: "auto", height: "fit-content" }}
+          >
+            Fill With Random Data
+          </Button>
+        )}
         <form onSubmit={handleSubmit(onSubmit)}>
           {(createFormFields || editFormFields) ?? (
             <Alert severity="info">
