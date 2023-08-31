@@ -24,7 +24,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
         Hi,{" "}
         <Tooltip title="User's profile">
           <Link
-            href="users/1"
+            href="/users/1"
             sx={{
               ...(theme.palette.mode === "light" && {
                 color: "inherit",
@@ -38,7 +38,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
       </Typography>
       <Button
         variant="outlined"
-        href="logout"
+        href="/logout"
         sx={{
           whiteSpace: "nowrap",
           ...(theme.palette.mode === "light" && {
@@ -54,7 +54,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
       </Button>
       <Button
         variant="contained"
-        href="register"
+        href="/register"
         sx={{
           ...(theme.palette.mode === "light" && {
             ml: "auto",
@@ -71,7 +71,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
       </Button>
       <Button
         variant="outlined"
-        href="login"
+        href="/login"
         sx={{
           whiteSpace: "nowrap",
           ...(theme.palette.mode === "light" && {
