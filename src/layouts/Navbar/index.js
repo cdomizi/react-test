@@ -3,7 +3,7 @@ import NavItem from "./NavItem";
 import ProfileTab from "../ProfileTab";
 
 // mui components
-import { Drawer, List, Divider } from "@mui/material";
+import { Drawer, List, Divider, Box } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -33,9 +33,11 @@ function Navbar({ open, onToggle, menuItems, window }) {
         },
       }}
     >
-      <ProfileTab direction="column" sx={{ my: 3 }} />
-      <Divider sx={{ borderWidth: "1px" }} />
-      <List>{items}</List>
+      <Box onClick={onToggle(false)}>
+        <ProfileTab direction="column" sx={{ my: 3 }} />
+        <Divider sx={{ borderWidth: "1px" }} />
+        <List>{items}</List>
+      </Box>
     </Drawer>
   );
 }

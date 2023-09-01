@@ -1,9 +1,10 @@
-import { useRouteError } from "react-router-dom";
+import { useNavigate, useRouteError } from "react-router-dom";
 
 // mui components
 import { Box, Button, Typography } from "@mui/material";
 
 function ErrorPage() {
+  const navigate = useNavigate();
   const error = useRouteError();
   console.error(error);
 
@@ -19,7 +20,7 @@ function ErrorPage() {
           variant="contained"
           size="large"
           sx={{ marginTop: "20%" }}
-          href="/"
+          onClick={() => navigate("/")}
         >
           Back to Home
         </Button>

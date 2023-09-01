@@ -1,4 +1,5 @@
 import { useForm, Controller } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 // MUI components
 const {
@@ -11,6 +12,8 @@ const {
 } = require("@mui/material");
 
 const Register = () => {
+  const navigate = useNavigate();
+
   const {
     control,
     handleSubmit,
@@ -114,7 +117,7 @@ const Register = () => {
       <Divider sx={{ my: 3 }}>
         <Typography color="text.disabled">Already have an account?</Typography>
       </Divider>
-      <Button href="login" variant="outlined" fullWidth>
+      <Button onClick={() => navigate("/login")} variant="outlined" fullWidth>
         Log in
       </Button>
     </Box>

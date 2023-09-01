@@ -1,11 +1,12 @@
 import { useContext } from "react";
+import { useNavigate } from "react-router";
 
 // project import
 import ColorModeContext from "../../contexts/ColorModeContext";
 import MenuItem from "./MenuItem";
 import ProfileTab from "../ProfileTab";
 
-// MUI components
+// MUI components & icons
 import {
   useTheme,
   Box,
@@ -15,17 +16,17 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-
-// MUI icons
 import {
   Menu as MenuIcon,
   Brightness4 as Brightness4Icon,
   Brightness7 as Brightness7Icon,
 } from "@mui/icons-material";
 
-function TopBar({ onToggle, menuItems }) {
+const TopBar = ({ onToggle, menuItems }) => {
   const theme = useTheme();
   const colorMode = useContext(ColorModeContext);
+
+  const navigate = useNavigate();
 
   return (
     <AppBar component="nav">
@@ -39,7 +40,7 @@ function TopBar({ onToggle, menuItems }) {
           <MenuIcon />
         </IconButton>
         <Typography
-          href="/"
+          onClick={() => navigate("/")}
           variant="h6"
           noWrap
           component="a"
@@ -47,6 +48,7 @@ function TopBar({ onToggle, menuItems }) {
             color: "inherit",
             textDecoration: "none",
             flexGrow: 1,
+            cursor: "pointer",
           }}
         >
           React Test
@@ -74,6 +76,6 @@ function TopBar({ onToggle, menuItems }) {
       </Toolbar>
     </AppBar>
   );
-}
+};
 
 export default TopBar;

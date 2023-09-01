@@ -1,15 +1,20 @@
+import { useNavigate } from "react-router";
+
 import { Typography } from "@mui/material";
 
 const MenuItem = ({ title, url }) => {
+  const navigate = useNavigate();
+
   return (
     <Typography
-      href={url}
+      onClick={() => navigate(url)}
       noWrap
       component="a"
       sx={{
         color: "inherit",
         textDecoration: "none",
         mr: 4,
+        cursor: "pointer",
       }}
     >
       {title.toUpperCase()}

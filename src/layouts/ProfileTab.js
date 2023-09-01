@@ -1,4 +1,11 @@
 import PropTypes from "prop-types";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+
+// Project import
+import AuthContext from "../contexts/AuthContext";
+import publicApi from "../api/axios";
+import SnackbarContext, { SNACKBAR_ACTIONS } from "../contexts/SnackbarContext";
 
 // MUI components
 import {
@@ -9,9 +16,44 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import { useCallback } from "react";
+import CustomSnackbar from "../components/CustomSnackbar";
 
 const ProfileTab = ({ direction = "row", sx }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
+
+  const { setAuth } = useContext(AuthContext);
+
+  // Set up snackbar
+  const { snackbarState, dispatch } = useContext(SnackbarContext);
+
+  const handleLogout = useCallback(async () => {
+    // Empty out auth context
+    setAuth({});
+
+    // Delete `jwt` cookie containing the refreshToken
+    try {
+      // eslint-disable-next-line no-unused-vars
+      const response = await publicApi.get("logout", {
+        withCredentials: true,
+      });
+
+      // Display confirmation message on successful logout
+      dispatch({
+        type: SNACKBAR_ACTIONS.LOGOUT_SUCCESS,
+        payload: { status: response?.status },
+      });
+
+      // Redirect the user to the home page on successful logout
+      response?.status === 200 && navigate("/");
+    } catch (err) {
+      // Display error message on failed logout
+      dispatch({
+        type: SNACKBAR_ACTIONS.LOGOUT_ERROR,
+      });
+    }
+  }, [dispatch, navigate, setAuth]);
 
   return (
     <Stack
@@ -24,12 +66,13 @@ const ProfileTab = ({ direction = "row", sx }) => {
         Hi,{" "}
         <Tooltip title="User's profile">
           <Link
-            href="/users/1"
+            onClick={() => navigate("users/1")}
             sx={{
               ...(theme.palette.mode === "light" && {
                 color: "inherit",
                 textDecorationColor: "inherit",
               }),
+              cursor: "pointer",
             }}
           >
             User
@@ -38,7 +81,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
       </Typography>
       <Button
         variant="outlined"
-        href="/logout"
+        onClick={handleLogout}
         sx={{
           whiteSpace: "nowrap",
           ...(theme.palette.mode === "light" && {
@@ -54,7 +97,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
       </Button>
       <Button
         variant="contained"
-        href="/register"
+        onClick={() => navigate("/register")}
         sx={{
           ...(theme.palette.mode === "light" && {
             ml: "auto",
@@ -71,7 +114,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
       </Button>
       <Button
         variant="outlined"
-        href="/login"
+        onClick={() => navigate("/login")}
         sx={{
           whiteSpace: "nowrap",
           ...(theme.palette.mode === "light" && {
@@ -85,6 +128,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
       >
         Log in
       </Button>
+      <CustomSnackbar {...snackbarState} />
     </Stack>
   );
 };

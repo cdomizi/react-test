@@ -22,7 +22,31 @@ const SNACKBAR_ACTIONS = {
   DELETE: "delete",
   DELETE_ERROR: "delete error",
   UNIQUE_FIELD_ERROR: "unique field error",
+  LOGIN_SUCCESS: "login success",
+  LOGIN_ERROR: "login error",
+  LOGOUT_SUCCESS: "logout success",
+  LOGOUT_ERROR: "logout error",
   CLOSE: "close",
+};
+
+// Get login error message based on error status code
+const loginErrorMessage = (payload) => {
+  switch (payload?.status) {
+    case 400: {
+      return "Login failed: Missing credentials";
+    }
+    case 401: {
+      return `Login failed: Wrong password for user ${payload?.user}`;
+    }
+    case 404: {
+      return `Login failed: User ${payload?.user} does not exist`;
+    }
+    default: {
+      return payload?.status >= 500
+        ? "Login failed: Service termporarily unavailable"
+        : "User login failed";
+    }
+  }
 };
 
 // Snackbar reducer function
@@ -126,6 +150,45 @@ const snackbarReducer = (state, action) => {
         } with ${action.payload.field} "${
           action.payload.value
         }" already exists.`,
+      };
+    }
+    case SNACKBAR_ACTIONS.LOGIN_SUCCESS: {
+      return {
+        ...initialState,
+        open: true,
+        success: true,
+        message: `Welcome ${action.payload.username}!`,
+      };
+    }
+    case SNACKBAR_ACTIONS.LOGIN_ERROR: {
+      console.error(
+        `Error: User login failed: ${action.payload?.status} ${action.payload?.statusText}`,
+        action.payload?.error
+      );
+      return {
+        ...initialState,
+        open: true,
+        success: false,
+        message: loginErrorMessage(action.payload),
+      };
+    }
+    case SNACKBAR_ACTIONS.LOGOUT_SUCCESS: {
+      return {
+        ...initialState,
+        open: true,
+        success: true,
+        message:
+          action?.payload?.status === 204
+            ? "You are already logged out"
+            : "You successfully logged out",
+      };
+    }
+    case SNACKBAR_ACTIONS.LOGOUT_ERROR: {
+      return {
+        ...initialState,
+        open: true,
+        success: false,
+        message: "Error: User logout failed",
       };
     }
     case SNACKBAR_ACTIONS.CLOSE: {
