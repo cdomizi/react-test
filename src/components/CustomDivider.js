@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { Divider, useMediaQuery, useTheme } from "@mui/material";
 
 const CustomDivider = (props) => {
-  const bp = props?.customBreakpoint ?? "md";
+  const bp = props?.breakpoint ?? "md";
   const theme = useTheme();
 
   return (
@@ -21,5 +21,5 @@ const CustomDivider = (props) => {
 export default CustomDivider;
 
 CustomDivider.propTypes = {
-  customBreakpoint: PropTypes.oneOf(["xs", "sm", "md", "lg", "xl"]),
+  breakpoint: PropTypes.oneOf(["xs", "sm", "md", "lg", "xl"]),
 };

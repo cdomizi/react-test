@@ -1,9 +1,8 @@
 import { useNavigate, useRouteError } from "react-router-dom";
 
-// mui components
 import { Box, Button, Typography } from "@mui/material";
 
-function ErrorPage() {
+const ErrorPage = () => {
   const navigate = useNavigate();
   const error = useRouteError();
   console.error(error);
@@ -27,6 +26,6 @@ function ErrorPage() {
       </Box>
     </Box>
   );
-}
+};
 
 export default ErrorPage;

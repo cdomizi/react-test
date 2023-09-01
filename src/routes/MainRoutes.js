@@ -5,9 +5,10 @@ import {
   Route,
 } from "react-router-dom";
 
-// project import
+// Project import
 const RootLayout = loadable(() => import("../layouts/RootLayout"));
 const ErrorPage = loadable(() => import("../pages/Error"));
+const RequireAuth = loadable(() => import("../pages/Auth/RequireAuth"));
 const Login = loadable(() => import("../pages/Auth/Login"));
 const Register = loadable(() => import("../pages/Auth/Register"));
 const Profile = loadable(() => import("../pages/Auth/Profile"));
@@ -28,7 +29,10 @@ const MainRoutes = createBrowserRouter(
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-        <Route path="users/:id" element={<Profile />} />
+        <Route element={<RequireAuth />}>
+          {/* Restrict access to user profile page */}
+          <Route path="users/:username" element={<Profile />} />
+        </Route>
         <Route path="orders" element={<Orders />} />
         <Route path="orders/:orderId" element={<Order />} />
         <Route path="products" element={<Products />} />

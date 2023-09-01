@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 
 // Project import
 import publicApi from "../../api/axios";
@@ -22,6 +22,8 @@ const {
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
   const { auth, setAuth } = useContext(AuthContext);
 
@@ -67,6 +69,9 @@ const Login = () => {
           type: SNACKBAR_ACTIONS.LOGIN_SUCCESS,
           payload: { username },
         });
+
+        // Redirect user to previously requested route
+        navigate(from, { replace: true });
       } catch (err) {
         // Display error message on failed login
         dispatch({
@@ -80,7 +85,7 @@ const Login = () => {
         });
       }
     },
-    [dispatch, setAuth]
+    [dispatch, from, navigate, setAuth]
   );
 
   useEffect(() => {

@@ -14,13 +14,13 @@ const userData = {
 };
 
 const Profile = () => {
-  const { id } = useParams();
+  const { username } = useParams();
 
   return (
     <Box>
       <Box id="profile-title" mb={8}>
         <Typography variant="h3">
-          Hi, {userData.username}!
+          Hi, {username}!
           {userData?.isAdmin && (
             <Typography color="text.disabled">Admin account</Typography>
           )}
