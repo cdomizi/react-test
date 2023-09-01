@@ -36,6 +36,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
     try {
       // eslint-disable-next-line no-unused-vars
       const response = await publicApi.get("logout", {
+        headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
 

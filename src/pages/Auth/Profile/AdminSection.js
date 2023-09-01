@@ -182,7 +182,7 @@ const AdminSection = memo(() => {
           }
         </Box>
       </Typography>
-      <Card>
+      <Card sx={{ maxWidth: "fit-content" }}>
         <DataTable
           sx={{ maxWidth: "fit-content" }}
           data={users}

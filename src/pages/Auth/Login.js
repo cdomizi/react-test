@@ -54,8 +54,13 @@ const Login = () => {
         );
 
         // Update auth context with login response data
-        const accessToken = response?.data?.accessToken;
-        setAuth({ username, password, accessToken });
+        const { accessToken, isAdmin } = response.data;
+        setAuth({
+          username,
+          password,
+          isAdmin,
+          accessToken,
+        });
 
         // Display welcome message on successful login
         dispatch({
