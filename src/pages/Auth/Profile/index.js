@@ -1,33 +1,26 @@
-import { useParams } from "react-router-dom";
+import { useContext } from "react";
+
+import AuthContext from "../../../contexts/AuthContext";
 import AccountSettings from "./AccountSettings";
 import AdminSection from "./AdminSection";
 
 import { Box, Typography } from "@mui/material";
 
-// Fake data for testing - REMOVE
-const userData = {
-  id: 1,
-  username: "testUsername",
-  password: "testPassword",
-  isAdmin: true,
-  // "isAdmin": false,
-};
-
 const Profile = () => {
-  const { username } = useParams();
+  const { auth } = useContext(AuthContext);
 
   return (
     <Box>
       <Box id="profile-title" mb={8}>
         <Typography variant="h3">
-          Hi, {username}!
-          {userData?.isAdmin && (
+          Hi, {auth?.username}!
+          {auth?.isAdmin && (
             <Typography color="text.disabled">Admin account</Typography>
           )}
         </Typography>
       </Box>
       <AccountSettings />
-      {userData?.isAdmin && <AdminSection />}
+      {auth?.isAdmin && <AdminSection />}
     </Box>
   );
 };

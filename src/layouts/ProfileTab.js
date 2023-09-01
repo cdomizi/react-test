@@ -23,7 +23,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
   const theme = useTheme();
   const navigate = useNavigate();
 
-  const { setAuth } = useContext(AuthContext);
+  const { auth, setAuth } = useContext(AuthContext);
 
   // Set up snackbar
   const { snackbarState, dispatch } = useContext(SnackbarContext);
@@ -63,72 +63,79 @@ const ProfileTab = ({ direction = "row", sx }) => {
       useFlexGap
       sx={{ ...sx, alignItems: "center", mr: 2 }}
     >
-      <Typography noWrap>
-        Hi,{" "}
-        <Tooltip title="User's profile">
-          <Link
-            onClick={() => navigate("users/1")}
+      {auth?.username ? (
+        <>
+          <Typography noWrap>
+            Hi,{" "}
+            <Tooltip title="User's profile">
+              <Link
+                onClick={() => navigate(`users/${auth?.username}`)}
+                sx={{
+                  ...(theme.palette.mode === "light" && {
+                    color: "inherit",
+                    textDecorationColor: "inherit",
+                  }),
+                  cursor: "pointer",
+                }}
+              >
+                {auth?.username}
+              </Link>
+            </Tooltip>
+          </Typography>
+          <Button
+            variant="outlined"
+            onClick={handleLogout}
             sx={{
+              whiteSpace: "nowrap",
               ...(theme.palette.mode === "light" && {
-                color: "inherit",
-                textDecorationColor: "inherit",
+                color: "primary.contrastText",
+                borderColor: "primary.contrastText",
+                "&:hover": {
+                  borderColor: "primary.contrastText",
+                },
               }),
-              cursor: "pointer",
             }}
           >
-            User
-          </Link>
-        </Tooltip>
-      </Typography>
-      <Button
-        variant="outlined"
-        onClick={handleLogout}
-        sx={{
-          whiteSpace: "nowrap",
-          ...(theme.palette.mode === "light" && {
-            color: "primary.contrastText",
-            borderColor: "primary.contrastText",
-            "&:hover": {
-              borderColor: "primary.contrastText",
-            },
-          }),
-        }}
-      >
-        Log out
-      </Button>
-      <Button
-        variant="contained"
-        onClick={() => navigate("/register")}
-        sx={{
-          ...(theme.palette.mode === "light" && {
-            ml: "auto",
-            color: "primary.main",
-            backgroundColor: "primary.contrastText",
-            "&:hover": {
-              color: "primary.dark",
-              backgroundColor: "primary.contrastText",
-            },
-          }),
-        }}
-      >
-        Register
-      </Button>
-      <Button
-        variant="outlined"
-        onClick={() => navigate("/login")}
-        sx={{
-          whiteSpace: "nowrap",
-          ...(theme.palette.mode === "light" && {
-            color: "primary.contrastText",
-            borderColor: "primary.contrastText",
-            "&:hover": {
-              borderColor: "primary.contrastText",
-            },
-          }),
-        }}
-      >
-        Log in
-      </Button>
+            Log out
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button
+            variant="contained"
+            onClick={() => navigate("/register")}
+            sx={{
+              ...(theme.palette.mode === "light" && {
+                ml: "auto",
+                color: "primary.main",
+                backgroundColor: "primary.contrastText",
+                "&:hover": {
+                  color: "primary.dark",
+                  backgroundColor: "primary.contrastText",
+                },
+              }),
+            }}
+          >
+            Register
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => navigate("/login")}
+            sx={{
+              whiteSpace: "nowrap",
+              ...(theme.palette.mode === "light" && {
+                color: "primary.contrastText",
+                borderColor: "primary.contrastText",
+                "&:hover": {
+                  borderColor: "primary.contrastText",
+                },
+              }),
+            }}
+          >
+            Log in
+          </Button>
+        </>
+      )}
       <CustomSnackbar {...snackbarState} />
     </Stack>
   );

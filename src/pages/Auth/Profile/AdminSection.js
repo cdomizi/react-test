@@ -1,23 +1,28 @@
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useNavigate } from "react-router";
-import useFetch from "../../../hooks/useFetch";
 
-import { Box, Button, Card, Divider, Stack, Typography } from "@mui/material";
+// Project import
+import AuthContext from "../../../contexts/AuthContext";
+import useFetch from "../../../hooks/useFetch";
 import DataTable from "../../../components/DataTable/DataTable";
 
-// Fake data for testing - REMOVE
-const userData = {
-  id: 1,
-  username: "testUsername",
-  password: "testPassword",
-  isAdmin: true,
-  // "isAdmin": false,
-};
+// MUI components
+import { Box, Button, Card, Divider, Stack, Typography } from "@mui/material";
 
 const AdminSection = memo(() => {
-  const navigate = useNavigate();
+  const { auth } = useContext(AuthContext);
+
   const [users, setUsers] = useState(null);
+
+  const navigate = useNavigate();
 
   // State to force reload on data update
   const [reload, setReload] = useState();
@@ -33,11 +38,11 @@ const AdminSection = memo(() => {
     if (data?.users) {
       // Exclude current user from table data
       const filteredUsers = data.users.filter(
-        (user) => user.id !== userData.id
+        (user) => user.username !== auth?.username
       );
       setUsers(filteredUsers);
     }
-  }, [data]);
+  }, [auth?.username, data]);
 
   // Edit user
   const handleEditUser = useCallback(

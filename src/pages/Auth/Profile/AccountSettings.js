@@ -7,21 +7,17 @@ import {
   useState,
 } from "react";
 import { Controller, useForm } from "react-hook-form";
+
+// Project import
+import AuthContext from "../../../contexts/AuthContext";
 import DialogContext, { DIALOG_ACTIONS } from "../../../contexts/DialogContext";
 
 // MUI components
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 
-// Fake data for testing - REMOVE
-const userData = {
-  id: 1,
-  username: "testUsername",
-  password: "testPassword",
-  isAdmin: true,
-  // "isAdmin": false,
-};
-
 const AccountSettings = () => {
+  const { auth } = useContext(AuthContext);
+
   const [edit, setEdit] = useState(false);
 
   // ======== Password change section ======== //
@@ -39,11 +35,14 @@ const AccountSettings = () => {
     },
   });
 
-  const onPasswordEditSubmit = useCallback((formData) => {
-    formData.currentPassword === userData?.password
-      ? console.log(formData)
-      : console.error("The password you entered is wrong");
-  }, []);
+  const onPasswordEditSubmit = useCallback(
+    (formData) => {
+      formData.currentPassword === auth?.password
+        ? console.log(formData)
+        : console.error("The password you entered is wrong");
+    },
+    [auth?.password]
+  );
 
   useEffect(() => {
     if (isSubmitSuccessful) {
@@ -90,7 +89,7 @@ const AccountSettings = () => {
       const submittedPassword = passwordRef.current.value;
 
       // On correct password, delete the account
-      if (submittedPassword === userData?.password) {
+      if (submittedPassword === auth?.password) {
         console.log(submittedPassword);
         // On wrong password, set the error state to `true`
       } else {
@@ -102,7 +101,7 @@ const AccountSettings = () => {
       passwordRef.current.value = null;
       return;
     },
-    [dispatch]
+    [auth?.password, dispatch]
   );
 
   // Field to enter password for delete confirmation
@@ -175,8 +174,7 @@ const AccountSettings = () => {
                 message: "Password must be at least 6 characters",
               },
               validate: (val) =>
-                val === userData?.password ||
-                "The password you entered is wrong",
+                val === auth?.password || "The password you entered is wrong",
             }}
             render={({ field }) => (
               <TextField
@@ -272,7 +270,7 @@ const AccountSettings = () => {
           Change my password
         </Button>
       )}
-      {userData?.isAdmin && (
+      {auth?.isAdmin && (
         <Button
           onClick={() =>
             dispatch({

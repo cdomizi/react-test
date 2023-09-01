@@ -5,10 +5,10 @@ import { useNavigate, useLocation } from "react-router";
 // Project import
 import publicApi from "../../api/axios";
 import AuthContext from "../../contexts/AuthContext";
+import CustomSnackbar from "../../components/CustomSnackbar";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../contexts/SnackbarContext";
-import CustomSnackbar from "../../components/CustomSnackbar";
 
 // MUI components
 const {
@@ -25,7 +25,7 @@ const Login = () => {
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
 
-  const { auth, setAuth } = useContext(AuthContext);
+  const { setAuth } = useContext(AuthContext);
 
   // Set up snackbar
   const { snackbarState, dispatch } = useContext(SnackbarContext);
@@ -92,10 +92,6 @@ const Login = () => {
     // Reset form fields on successful submit
     if (isSubmitSuccessful) reset();
   }, [isSubmitSuccessful, reset]);
-
-  useEffect(() => {
-    console.log("AuthContext", auth);
-  }, [auth]);
 
   return (
     <Box sx={{ maxWidth: "24rem", mx: "auto", mt: 6 }}>
