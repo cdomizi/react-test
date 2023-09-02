@@ -5,7 +5,7 @@ import moment from "moment";
 
 // Project import
 import useFetch from "../../hooks/useFetch";
-import DataTable from "../../components/DataTable/DataTable";
+import DataTable from "../../components/DataTable";
 import OrdersDrawer from "./OrdersDrawer";
 import {
   handleCreateOrder,

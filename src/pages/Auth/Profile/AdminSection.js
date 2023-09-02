@@ -7,47 +7,110 @@ import {
   useState,
 } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 // Project import
+import useAuthApi from "../../../hooks/useAuthApi";
 import AuthContext from "../../../contexts/AuthContext";
-import useFetch from "../../../hooks/useFetch";
-import DataTable from "../../../components/DataTable/DataTable";
+import DataTable from "../../../components/DataTable";
 
 // MUI components
 import { Box, Button, Card, Divider, Stack, Typography } from "@mui/material";
 
 const AdminSection = memo(() => {
-  const { auth } = useContext(AuthContext);
-
-  const [users, setUsers] = useState(null);
-
+  const location = useLocation();
   const navigate = useNavigate();
 
-  // State to force reload on data update
-  const [reload, setReload] = useState();
+  const { auth, setAuth } = useContext(AuthContext);
 
-  // Fetch data from API
-  const { loading, error, data } = useFetch(
-    "https://api.npoint.io/0718ccb955c2c322beaa",
-    reload
+  const fetchInitialState = useMemo(
+    () => ({
+      loading: true,
+      error: null,
+      data: undefined,
+    }),
+    []
   );
+  const [fetchState, setfetchState] = useState(fetchInitialState);
 
-  // Set users upon fetching data from API
+  const authApi = useAuthApi();
+
   useEffect(() => {
-    if (data?.users) {
-      // Exclude current user from table data
-      const filteredUsers = data.users.filter(
-        (user) => user.username !== auth?.username
-      );
-      setUsers(filteredUsers);
-    }
-  }, [auth?.username, data]);
+    // Initialize AbortController & variable for cleanup
+    const abortController = new AbortController();
+    let ignore = false;
+
+    const getUsers = async () => {
+      try {
+        const response = await authApi.get("users", {
+          signal: abortController.signal,
+        });
+
+        // Exclude current user from table data
+        const filteredUsers = response?.data?.filter(
+          (user) => user.username !== auth?.username
+        );
+
+        !ignore &&
+          setfetchState((prevState) => ({
+            ...prevState,
+            loading: false,
+            error: undefined,
+            data: filteredUsers,
+          }));
+      } catch (err) {
+        // Check that error was not caused by abortController
+        if (!abortController.signal.aborted) {
+          console.error(err);
+
+          // Session expired, set error state
+          setfetchState((prevState) => ({
+            ...prevState,
+            loading: false,
+            error: err,
+            data: undefined,
+          }));
+          // Clean auth context
+          setAuth({});
+          // Redirect user to login page
+          navigate("/login", {
+            state: { from: location, sessionExpired: true },
+            replace: true,
+          });
+        }
+
+        return;
+      }
+    };
+
+    getUsers();
+
+    return function cleanup() {
+      ignore = true;
+      abortController.abort();
+    };
+  }, [auth?.username, authApi, location, navigate, setAuth]);
+
+  // // Set users upon fetching data from API
+  // useEffect(() => {
+  //   if (fetchState?.data) {
+  //     // Exclude current user from table data
+  //     const filteredUsers = fetchState.data.filter(
+  //       (user) => user.username !== props?.username
+  //     );
+  //     setfetchState((prevState) => ({
+  //       ...prevState,
+  //       loading: false,
+  //       error: false,
+  //       data: filteredUsers,
+  //     }));
+  //   }
+  // }, [fetchState?.data, props?.username]);
 
   // Edit user
   const handleEditUser = useCallback(
     async (formData) => {
-      // const response = await fetch(`${API_ENDPOINT}usrs/${formData.id}`, {
+      // const response = await fetch(`${API_ENDPOINT}users/${formData.id}`, {
       //   method: "PUT",
       //   headers: { "Content-Type": "application/json" },
       //   body: JSON.stringify(formData),
@@ -62,7 +125,7 @@ const AdminSection = memo(() => {
       //   return error;
       // }
       const editedUser =
-        users?.find((user) => user.id === formData?.id) || null;
+        fetchState?.data?.find((user) => user.id === formData?.id) || null;
 
       return editedUser
         ? editedUser?.username
@@ -75,7 +138,7 @@ const AdminSection = memo(() => {
             },
           };
     },
-    [users]
+    [fetchState?.data]
   );
 
   // Delete user
@@ -93,7 +156,8 @@ const AdminSection = memo(() => {
       //   const error = await response;
       //   return error;
       // }
-      const deletedUser = users?.find((user) => user.id === userId) || null;
+      const deletedUser =
+        fetchState?.data?.find((user) => user.id === userId) || null;
 
       return deletedUser
         ? deletedUser?.username
@@ -106,7 +170,7 @@ const AdminSection = memo(() => {
             },
           };
     },
-    [users]
+    [fetchState?.data]
   );
 
   // Specify the name for table data
@@ -183,23 +247,22 @@ const AdminSection = memo(() => {
           {
             // Add 1 to the number of registered users
             // since the current user is filtered out from the table
-            users?.length + 1 || 0
+            fetchState?.data?.length + 1 || 0
           }
         </Box>
       </Typography>
       <Card sx={{ maxWidth: "fit-content" }}>
         <DataTable
           sx={{ maxWidth: "fit-content" }}
-          data={users}
+          data={fetchState?.data}
           dataName={dataName}
           columns={columns}
-          loading={loading}
-          error={error}
+          loading={fetchState.loading}
+          error={fetchState.error}
           orderBy={"id"}
           globalSearch={false}
           defaultOrder={false}
           clickable={false}
-          reload={() => setReload({})}
           onRowClick={handleRowClick}
           onDelete={handleDeleteUser}
         />

@@ -7,7 +7,7 @@ const RequireAuth = () => {
   const location = useLocation();
 
   // If the user credentials are set in auth context, return page content
-  return auth?.username ? (
+  return auth?.accessToken ? (
     <Outlet />
   ) : (
     // Else redirect to login

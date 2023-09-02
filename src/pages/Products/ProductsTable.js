@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 // Project import
 import useFetch from "../../hooks/useFetch";
 import { formatMoney } from "../../utils/formatStrings";
-import DataTable from "../../components/DataTable/DataTable";
+import DataTable from "../../components/DataTable";
 import {
   handleCreateProduct,
   handleEditProduct,

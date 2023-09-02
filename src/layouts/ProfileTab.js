@@ -63,7 +63,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
       useFlexGap
       sx={{ ...sx, alignItems: "center", mr: 2 }}
     >
-      {auth?.username ? (
+      {auth?.accessToken ? (
         <>
           <Typography noWrap>
             Hi,{" "}
@@ -92,6 +92,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
                 borderColor: "primary.contrastText",
                 "&:hover": {
                   borderColor: "primary.contrastText",
+                  backgroundColor: "primary.light",
                 },
               }),
             }}
@@ -107,11 +108,11 @@ const ProfileTab = ({ direction = "row", sx }) => {
             sx={{
               ...(theme.palette.mode === "light" && {
                 ml: "auto",
-                color: "primary.main",
-                backgroundColor: "primary.contrastText",
+                color: "primary.contrastText",
+                backgroundColor: "primary.dark",
                 "&:hover": {
-                  color: "primary.dark",
-                  backgroundColor: "primary.contrastText",
+                  color: "primary.contrastText",
+                  backgroundColor: "primary.light",
                 },
               }),
             }}
@@ -128,6 +129,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
                 borderColor: "primary.contrastText",
                 "&:hover": {
                   borderColor: "primary.contrastText",
+                  backgroundColor: "primary.light",
                 },
               }),
             }}

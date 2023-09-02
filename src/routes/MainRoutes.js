@@ -8,6 +8,7 @@ import {
 // Project import
 const RootLayout = loadable(() => import("../layouts/RootLayout"));
 const ErrorPage = loadable(() => import("../pages/Error"));
+const PersistLogin = loadable(() => import("../pages/Auth/PersistLogin"));
 const RequireAuth = loadable(() => import("../pages/Auth/RequireAuth"));
 const Login = loadable(() => import("../pages/Auth/Login"));
 const Register = loadable(() => import("../pages/Auth/Register"));
@@ -29,9 +30,11 @@ const MainRoutes = createBrowserRouter(
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-        <Route element={<RequireAuth />}>
-          {/* Restrict access to user profile page */}
-          <Route path="users/:username" element={<Profile />} />
+        {/* Restrict access to user profile page */}
+        <Route element={<PersistLogin />}>
+          <Route element={<RequireAuth />}>
+            <Route path="users/:username" element={<Profile />} />
+          </Route>
         </Route>
         <Route path="orders" element={<Orders />} />
         <Route path="orders/:orderId" element={<Order />} />

@@ -1,22 +1,26 @@
-// project import
+// Project import
 import menuItems from "../../menu-items";
 import ContentCard from "../../components/ContentCard";
 
-// mui components
+// MUI components
 import { Box, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
+import { useMemo } from "react";
 
 const Home = () => {
-  const cards =
-    menuItems.length &&
-    menuItems.map((item) => (
-      <ContentCard
-        key={item.id}
-        title={item.title}
-        url={item.url}
-        icon={item.icon}
-      />
-    ));
+  const cards = useMemo(
+    () =>
+      menuItems.length &&
+      menuItems.map((item) => (
+        <ContentCard
+          key={item.id}
+          title={item.title}
+          url={item.url}
+          icon={item.icon}
+        />
+      )),
+    []
+  );
 
   return (
     <Box textAlign="center">

@@ -19,6 +19,7 @@ const useRefreshToken = () => {
       isAdmin,
       accessToken: newAccessToken,
     }));
+    return response.data.accessToken;
   };
 
   return refreshToken;

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 // Project import
 import useFetch from "../../hooks/useFetch";
-import DataTable from "../../components/DataTable/DataTable";
+import DataTable from "../../components/DataTable";
 import {
   handleCreateCustomer,
   handleEditCustomer,

@@ -72,10 +72,12 @@ const useFetch = (url, options = null, reload = null) => {
           payload: data,
         });
       } catch (error) {
+        // Check that error was not caused by abortController
         if (!abortController.signal.aborted) {
           console.error(
             `Error while fetching data: ${error?.message || "Unexpected error"}`
           );
+
           dispatch({
             type: ACTIONS.ERROR,
             payload: error,

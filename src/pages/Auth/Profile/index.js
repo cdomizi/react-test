@@ -20,7 +20,7 @@ const Profile = () => {
         </Typography>
       </Box>
       <AccountSettings />
-      {auth?.isAdmin && <AdminSection />}
+      {auth?.isAdmin && <AdminSection username={auth?.username} />}
     </Box>
   );
 };

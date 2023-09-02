@@ -18,6 +18,7 @@ const {
   Button,
   Box,
   Divider,
+  Alert,
 } = require("@mui/material");
 
 const Login = () => {
@@ -105,6 +106,15 @@ const Login = () => {
         <Typography variant="h2" mx="auto">
           Log In
         </Typography>
+        {location.state?.sessionExpired && (
+          <Alert
+            severity="error"
+            variant="outlined"
+            sx={{ "& .MuiAlert-message": { pt: 1.3 } }}
+          >
+            Your session expired - <strong>log back in</strong>
+          </Alert>
+        )}
         <Controller
           control={control}
           name="username"
