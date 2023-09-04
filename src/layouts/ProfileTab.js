@@ -29,9 +29,6 @@ const ProfileTab = ({ direction = "row", sx }) => {
   const { snackbarState, dispatch } = useContext(SnackbarContext);
 
   const handleLogout = useCallback(async () => {
-    // Empty out auth context
-    setAuth({});
-
     // Delete `jwt` cookie containing the refreshToken
     try {
       // eslint-disable-next-line no-unused-vars
@@ -45,6 +42,9 @@ const ProfileTab = ({ direction = "row", sx }) => {
         type: SNACKBAR_ACTIONS.LOGOUT_SUCCESS,
         payload: { status: response?.status },
       });
+
+      // Empty out auth context
+      setAuth({});
 
       // Redirect the user to the home page on successful logout
       // and set sessionExpired to `false` (prevent display warning on login form)

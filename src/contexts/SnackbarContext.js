@@ -26,6 +26,7 @@ const SNACKBAR_ACTIONS = {
   LOGIN_ERROR: "login error",
   LOGOUT_SUCCESS: "logout success",
   LOGOUT_ERROR: "logout error",
+  GENERIC_SUCCESS: "generic success",
   GENERIC_ERROR: "generic error",
   CLOSE: "close",
 };
@@ -190,6 +191,15 @@ const snackbarReducer = (state, action) => {
         open: true,
         success: false,
         message: "Error: User logout failed",
+      };
+    }
+    case SNACKBAR_ACTIONS.GENERIC_SUCCESS: {
+      return {
+        ...initialState,
+        open: true,
+        success: true,
+        message:
+          action.payload?.message || "The action was performed successfully!",
       };
     }
     case SNACKBAR_ACTIONS.GENERIC_ERROR: {

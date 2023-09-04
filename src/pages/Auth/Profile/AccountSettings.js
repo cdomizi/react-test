@@ -78,6 +78,7 @@ const AccountSettings = () => {
         if (response.status === 200) {
           // On correct password, set the new password
           try {
+            // eslint-disable-next-line no-unused-vars
             const response = await authApi.put(`users/${auth?.id}`, {
               password: newPassword,
               isAdmin: auth?.isAdmin,
@@ -85,16 +86,16 @@ const AccountSettings = () => {
 
             // On successful edit, notify the user
             snackbarDispatch({
-              type: SNACKBAR_ACTIONS.EDIT,
-              payload: response.data?.username,
+              type: SNACKBAR_ACTIONS.GENERIC_SUCCESS,
+              payload: { message: "Password changed successfully" },
             });
             return;
           } catch (err) {
             console.error(err);
             // On error, notify the user
             snackbarDispatch({
-              type: SNACKBAR_ACTIONS.EDIT_ERROR,
-              payload: { status: err.status, statusText: err.statusText },
+              type: SNACKBAR_ACTIONS.GENERIC_ERROR,
+              payload: { message: "Error: Could not change your password" },
             });
             return;
           }
@@ -228,6 +229,10 @@ const AccountSettings = () => {
             isAdmin: false,
           });
 
+          // Close the dialog & update auth context
+          dialogDispatch({ type: DIALOG_ACTIONS.CLOSE });
+          setAuth({ ...auth, isAdmin: false });
+
           // On success notify the user
           snackbarDispatch({
             type: SNACKBAR_ACTIONS.EDIT,
@@ -253,14 +258,7 @@ const AccountSettings = () => {
       passwordRef.current.value = null;
       return;
     },
-    [
-      auth?.id,
-      auth?.isAdmin,
-      auth?.username,
-      authApi,
-      dialogDispatch,
-      snackbarDispatch,
-    ]
+    [auth, authApi, dialogDispatch, setAuth, snackbarDispatch]
   );
 
   // Field to enter password for role change confirmation

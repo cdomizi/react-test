@@ -82,16 +82,7 @@ const AdminSection = memo(() => {
             error: err,
             data: undefined,
           }));
-          // Clean auth context
-          setAuth({});
-          // Redirect user to login page
-          navigate("/login", {
-            // Set sessionExpired to `true` to display warning on login form
-            state: { from: location, sessionExpired: true },
-            replace: true,
-          });
         }
-
         return;
       }
     };

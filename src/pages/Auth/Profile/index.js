@@ -77,7 +77,7 @@ const Profile = () => {
       ignore = true;
       abortController.abort();
     };
-  }, [auth?.username, authApi, location, navigate, setAuth, username]);
+  }, [auth, authApi, location, navigate, setAuth, username]);
 
   return (
     <Box>
