@@ -12,6 +12,10 @@ import { useLocation, useNavigate } from "react-router";
 // Project import
 import useAuthApi from "../../../hooks/useAuthApi";
 import AuthContext from "../../../contexts/AuthContext";
+import SnackbarContext, {
+  SNACKBAR_ACTIONS,
+} from "../../../contexts/SnackbarContext";
+import CustomSnackbar from "../../../components/CustomSnackbar";
 import DataTable from "../../../components/DataTable";
 
 // MUI components
@@ -35,6 +39,14 @@ const AdminSection = memo(() => {
 
   const authApi = useAuthApi();
 
+  // State to force reload on table data update
+  const [reload, setReload] = useState();
+
+  // Set up snackbar
+  const { snackbarState, dispatch } = useContext(SnackbarContext);
+  snackbarState.dataName = "user";
+
+  // Get users data
   useEffect(() => {
     // Initialize AbortController & variable for cleanup
     const abortController = new AbortController();
@@ -74,6 +86,7 @@ const AdminSection = memo(() => {
           setAuth({});
           // Redirect user to login page
           navigate("/login", {
+            // Set sessionExpired to `true` to display warning on login form
             state: { from: location, sessionExpired: true },
             replace: true,
           });
@@ -89,88 +102,59 @@ const AdminSection = memo(() => {
       ignore = true;
       abortController.abort();
     };
-  }, [auth?.username, authApi, location, navigate, setAuth]);
-
-  // // Set users upon fetching data from API
-  // useEffect(() => {
-  //   if (fetchState?.data) {
-  //     // Exclude current user from table data
-  //     const filteredUsers = fetchState.data.filter(
-  //       (user) => user.username !== props?.username
-  //     );
-  //     setfetchState((prevState) => ({
-  //       ...prevState,
-  //       loading: false,
-  //       error: false,
-  //       data: filteredUsers,
-  //     }));
-  //   }
-  // }, [fetchState?.data, props?.username]);
+    // Add `reload` to the dependencies to force reload
+  }, [auth?.username, authApi, location, navigate, setAuth, reload]);
 
   // Edit user
   const handleEditUser = useCallback(
-    async (formData) => {
-      // const response = await fetch(`${API_ENDPOINT}users/${formData.id}`, {
-      //   method: "PUT",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(formData),
-      // });
+    async (isAdmin, id) => {
+      try {
+        const response = await authApi.put(`users/${id}`, {
+          isAdmin: !isAdmin,
+        });
 
-      // if (response.ok) {
-      //   const data = await response.json();
-      //   // Return username to display on edit confirmation message
-      //   return data?.username;
-      // } else {
-      //   const error = await response;
-      //   return error;
-      // }
-      const editedUser =
-        fetchState?.data?.find((user) => user.id === formData?.id) || null;
-
-      return editedUser
-        ? editedUser?.username
-        : {
-            action: {
-              payload: {
-                status: 400,
-                statusText: `Could not edit user with id ${formData?.id}`,
-              },
-            },
-          };
+        // On success, force table reload & notify the user
+        setReload({ ...reload });
+        dispatch({
+          type: SNACKBAR_ACTIONS.EDIT,
+          payload: response.data?.username,
+        });
+        return;
+      } catch (err) {
+        // On error, return the error
+        dispatch({
+          type: SNACKBAR_ACTIONS.EDIT_ERROR,
+          payload: {
+            status: err.response.status,
+            statusText: err.response.statusText,
+          },
+        });
+        return err;
+      }
     },
-    [fetchState?.data]
+    [authApi, dispatch, reload]
   );
 
   // Delete user
   const handleDeleteUser = useCallback(
-    (userId) => {
-      // const response = await fetch(`${API_ENDPOINT}users/${userId}`, {
-      //   method: "DELETE",
-      // });
+    async (isAdmin, id) => {
+      try {
+        const response = await authApi.delete(`users/${id}`, {
+          isAdmin: !isAdmin,
+        });
 
-      // if (response.ok) {
-      //   const data = await response.json();
-      //   // Return username to display on delete confirmation message
-      //   return data?.username;
-      // } else {
-      //   const error = await response;
-      //   return error;
-      // }
-      const deletedUser =
-        fetchState?.data?.find((user) => user.id === userId) || null;
-
-      return deletedUser
-        ? deletedUser?.username
-        : {
-            action: {
-              payload: {
-                status: 400,
-                statusText: `Could not delete user with id ${userId}`,
-              },
-            },
-          };
+        // On success, force table reload & notify the user
+        setReload({ ...reload });
+        dispatch({
+          type: SNACKBAR_ACTIONS.DELETE,
+          payload: response.data?.username,
+        });
+        return;
+      } catch (err) {
+        return err.response;
+      }
     },
-    [fetchState?.data]
+    [authApi, dispatch, reload]
   );
 
   // Specify the name for table data
@@ -181,13 +165,13 @@ const AdminSection = memo(() => {
 
   // Format role cell for table row
   const roleCell = useCallback(
-    (userRole) => {
+    (userRole, id) => {
       const role = isAdmin(userRole);
       return (
         <Stack direction="row" justifyContent="center">
           <Typography color={userRole && "success.main"}>{role}</Typography>
           <Button
-            onClick={handleEditUser}
+            onClick={() => handleEditUser(userRole, id)}
             variant="outlined"
             size="small"
             sx={{ mx: 2 }}
@@ -216,7 +200,7 @@ const AdminSection = memo(() => {
       }),
       columnHelper.accessor("isAdmin", {
         header: () => "Role",
-        cell: (info) => roleCell(info.getValue()),
+        cell: (info) => roleCell(info.getValue(), info.row.original.id),
         enableColumnFilter: true,
         // Filter invoice by status
         filterFn: (row, columnId, value) =>
@@ -229,11 +213,6 @@ const AdminSection = memo(() => {
     ],
     [columnHelper, isAdmin, roleCell]
   );
-
-  // Go to customer page on row click
-  const handleRowClick = (event, rowData) => {
-    navigate(`${rowData.id}`, { state: { dataName } });
-  };
 
   return (
     <>
@@ -263,10 +242,10 @@ const AdminSection = memo(() => {
           globalSearch={false}
           defaultOrder={false}
           clickable={false}
-          onRowClick={handleRowClick}
           onDelete={handleDeleteUser}
         />
       </Card>
+      <CustomSnackbar {...snackbarState} />
     </>
   );
 });

@@ -57,8 +57,9 @@ const Login = () => {
         );
 
         // Update auth context with login response data
-        const { accessToken, isAdmin } = response.data;
+        const { accessToken, id, isAdmin } = response.data;
         setAuth({
+          id,
           username,
           password,
           isAdmin,

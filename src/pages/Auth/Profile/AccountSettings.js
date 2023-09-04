@@ -7,18 +7,36 @@ import {
   useState,
 } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 // Project import
+import useAuthApi from "../../../hooks/useAuthApi";
 import AuthContext from "../../../contexts/AuthContext";
 import DialogContext, { DIALOG_ACTIONS } from "../../../contexts/DialogContext";
+import SnackbarContext, {
+  SNACKBAR_ACTIONS,
+} from "../../../contexts/SnackbarContext";
+import CustomSnackbar from "../../../components/CustomSnackbar";
 
 // MUI components
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 
 const AccountSettings = () => {
-  const { auth } = useContext(AuthContext);
+  const { auth, setAuth } = useContext(AuthContext);
+
+  const authApi = useAuthApi();
+
+  const navigate = useNavigate();
 
   const [edit, setEdit] = useState(false);
+
+  // State and dispatch function for dialog component
+  const dialogDispatch = useContext(DialogContext);
+
+  // Set up snackbar
+  const { snackbarState, dispatch: snackbarDispatch } =
+    useContext(SnackbarContext);
+  snackbarState.dataName = "user";
 
   // ======== Password change section ======== //
   const {
@@ -29,19 +47,75 @@ const AccountSettings = () => {
     watch,
   } = useForm({
     defaultValues: {
-      currentPassword: "",
+      password: "",
       newPassword: "",
       confirmPassword: "",
     },
   });
 
   const onPasswordEditSubmit = useCallback(
-    (formData) => {
-      formData.currentPassword === auth?.password
-        ? console.log(formData)
-        : console.error("The password you entered is wrong");
+    async (formData) => {
+      try {
+        const { password, newPassword, confirmPassword } = formData;
+
+        if (newPassword !== confirmPassword) {
+          console.error("Error: Passwords do not match");
+          // On error, notify the user
+          snackbarDispatch({
+            type: SNACKBAR_ACTIONS.EDIT_ERROR,
+            payload: { status: 400, statusText: "Passwords do not match" },
+          });
+          return;
+        }
+
+        // Check correct password
+        const response = await authApi.post(`users/${auth?.id}/password`, {
+          id: auth?.id,
+          password: password,
+          isAdmin: auth?.isAdmin,
+        });
+
+        if (response.status === 200) {
+          // On correct password, set the new password
+          try {
+            const response = await authApi.put(`users/${auth?.id}`, {
+              password: newPassword,
+              isAdmin: auth?.isAdmin,
+            });
+
+            // On successful edit, notify the user
+            snackbarDispatch({
+              type: SNACKBAR_ACTIONS.EDIT,
+              payload: response.data?.username,
+            });
+            return;
+          } catch (err) {
+            console.error(err);
+            // On error, notify the user
+            snackbarDispatch({
+              type: SNACKBAR_ACTIONS.EDIT_ERROR,
+              payload: { status: err.status, statusText: err.statusText },
+            });
+            return;
+          }
+        } else {
+          // On wrong password, set the error state to `true`
+          dialogDispatch({ type: DIALOG_ACTIONS.CLOSE });
+          setdialogError(true);
+          return;
+        }
+      } catch (err) {
+        console.error(err);
+        // On error close the dialog and alert the user
+        dialogDispatch({ type: DIALOG_ACTIONS.CLOSE });
+        snackbarDispatch({
+          type: DIALOG_ACTIONS.GENERIC_ERROR,
+          payload: { message: "Error: Could not delete your account" },
+        });
+        return;
+      }
     },
-    [auth?.password]
+    [auth?.id, auth?.isAdmin, authApi, dialogDispatch, snackbarDispatch]
   );
 
   useEffect(() => {
@@ -56,13 +130,10 @@ const AccountSettings = () => {
   const passwordRef = useRef(null);
   const [dialogError, setdialogError] = useState(false);
 
-  // State and dispatch function for dialog component
-  const dispatch = useContext(DialogContext);
-
   // If the password is wrong, alert the user
   useEffect(() => {
     if (dialogError)
-      dispatch({
+      dialogDispatch({
         type: DIALOG_ACTIONS.OPEN,
         payload: {
           open: false,
@@ -72,7 +143,7 @@ const AccountSettings = () => {
           confirm: {
             buttonText: "Ok",
             onConfirm: () => {
-              dispatch({
+              dialogDispatch({
                 type: DIALOG_ACTIONS.CLOSE,
               });
               setdialogError(false);
@@ -81,30 +152,118 @@ const AccountSettings = () => {
           cancel: null,
         },
       });
-  }, [dialogError, dispatch]);
+  }, [dialogError, dialogDispatch]);
 
-  const onDialogSubmit = useCallback(
-    (event) => {
+  const onDeleteDialogSubmit = useCallback(
+    async (event) => {
       event.preventDefault();
       const submittedPassword = passwordRef.current.value;
 
-      // On correct password, delete the account
-      if (submittedPassword === auth?.password) {
-        console.log(submittedPassword);
-        // On wrong password, set the error state to `true`
-      } else {
-        dispatch({ type: DIALOG_ACTIONS.CLOSE });
-        setdialogError(true);
+      try {
+        // Check password confirmation
+        const response = await authApi.post(`users/${auth?.id}/password`, {
+          id: auth?.id,
+          password: submittedPassword,
+          isAdmin: auth?.isAdmin,
+        });
+        if (response.status === 200) {
+          // On correct password, delete the account
+          const response = await authApi.delete(`users/${auth?.id}`, {
+            id: auth?.id,
+          });
+
+          // On success notify the user, clear auth context and redirect to home
+          snackbarDispatch({
+            type: SNACKBAR_ACTIONS.DELETE,
+            payload: response.data?.username,
+          });
+          setAuth({});
+          navigate("/");
+          return;
+        } else {
+          // On wrong password, set the error state to `true`
+          dialogDispatch({ type: DIALOG_ACTIONS.CLOSE });
+          setdialogError(true);
+        }
+      } catch (err) {
+        console.error(err);
+        // On error close the dialog and notify the user
+        dialogDispatch({ type: DIALOG_ACTIONS.CLOSE });
+        snackbarDispatch({
+          type: SNACKBAR_ACTIONS.GENERIC_ERROR,
+          payload: { message: "Error: Could not delete your account" },
+        });
       }
 
       // Always clear input value
       passwordRef.current.value = null;
       return;
     },
-    [auth?.password, dispatch]
+    [
+      auth?.id,
+      auth?.isAdmin,
+      authApi,
+      dialogDispatch,
+      navigate,
+      setAuth,
+      snackbarDispatch,
+    ]
   );
 
-  // Field to enter password for delete confirmation
+  const onRoleDialogSubmit = useCallback(
+    async (event) => {
+      event.preventDefault();
+      const submittedPassword = passwordRef.current.value;
+
+      try {
+        // Check password confirmation
+        const response = await authApi.post(`users/${auth?.id}/password`, {
+          id: auth?.id,
+          password: submittedPassword,
+          isAdmin: auth?.isAdmin,
+        });
+        if (response.status === 200) {
+          // On correct password, change user role to "User"
+          const response = await authApi.put(`users/${auth?.id}`, {
+            isAdmin: false,
+          });
+
+          // On success notify the user
+          snackbarDispatch({
+            type: SNACKBAR_ACTIONS.EDIT,
+            payload: response.data?.username,
+          });
+          return;
+        } else {
+          // On wrong password, set the error state to `true`
+          dialogDispatch({ type: DIALOG_ACTIONS.CLOSE });
+          setdialogError(true);
+        }
+      } catch (err) {
+        console.error(err);
+        // On error close the dialog and notify the user
+        dialogDispatch({ type: DIALOG_ACTIONS.CLOSE });
+        snackbarDispatch({
+          type: SNACKBAR_ACTIONS.EDIT_ERROR,
+          payload: auth?.username,
+        });
+      }
+
+      // Always clear input value
+      passwordRef.current.value = null;
+      return;
+    },
+    [
+      auth?.id,
+      auth?.isAdmin,
+      auth?.username,
+      authApi,
+      dialogDispatch,
+      snackbarDispatch,
+    ]
+  );
+
+  // Field to enter password for role change confirmation
   const passwordField = useMemo(
     () => (
       <TextField
@@ -130,10 +289,13 @@ const AccountSettings = () => {
       contentText:
         "Are you sure you want to delete your account?\nEnter your password to confirm:",
       contentForm: passwordField,
-      confirm: { buttonText: "Delete my account", onConfirm: onDialogSubmit },
+      confirm: {
+        buttonText: "Delete my account",
+        onConfirm: onDeleteDialogSubmit,
+      },
       cancel: true,
     }),
-    [passwordField, onDialogSubmit]
+    [passwordField, onDeleteDialogSubmit]
   );
 
   // Initial state for role change confirmation dialog
@@ -144,10 +306,13 @@ const AccountSettings = () => {
       contentText:
         "Are you sure you want to change the role to User for your account?\nEnter your password to confirm:",
       contentForm: passwordField,
-      confirm: { buttonText: "Change role to User", onConfirm: onDialogSubmit },
+      confirm: {
+        buttonText: "Change role to User",
+        onConfirm: onRoleDialogSubmit,
+      },
       cancel: true,
     }),
-    [passwordField, onDialogSubmit]
+    [passwordField, onRoleDialogSubmit]
   );
   // ========== End dialog section =========== //
 
@@ -166,26 +331,22 @@ const AccountSettings = () => {
         >
           <Controller
             control={control}
-            name="currentPassword"
+            name="password"
             rules={{
               required: "Please enter your current password",
               minLength: {
                 value: 6,
                 message: "Password must be at least 6 characters",
               },
-              validate: (val) =>
-                val === auth?.password || "The password you entered is wrong",
             }}
             render={({ field }) => (
               <TextField
                 {...field}
-                id="currentPassword"
+                id="password"
                 label="Current Password"
                 type="password"
-                error={!!errors?.currentPassword}
-                helperText={
-                  errors?.currentPassword && errors?.currentPassword?.message
-                }
+                error={!!errors?.password}
+                helperText={errors?.password && errors?.password?.message}
                 InputLabelProps={{ required: true, shrink: true }}
                 disabled={!edit}
                 fullWidth
@@ -273,7 +434,7 @@ const AccountSettings = () => {
       {auth?.isAdmin && (
         <Button
           onClick={() =>
-            dispatch({
+            dialogDispatch({
               type: DIALOG_ACTIONS.OPEN,
               payload: initialRoleDialogState,
             })
@@ -286,7 +447,7 @@ const AccountSettings = () => {
       )}
       <Button
         onClick={() =>
-          dispatch({
+          dialogDispatch({
             type: DIALOG_ACTIONS.OPEN,
             payload: initialDeleteDialogState,
           })
@@ -297,6 +458,7 @@ const AccountSettings = () => {
       >
         Delete my account
       </Button>
+      <CustomSnackbar {...snackbarState} />
     </Box>
   );
 };

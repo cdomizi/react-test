@@ -47,7 +47,9 @@ const ProfileTab = ({ direction = "row", sx }) => {
       });
 
       // Redirect the user to the home page on successful logout
-      response?.status === 200 && navigate("/");
+      // and set sessionExpired to `false` (prevent display warning on login form)
+      response?.status === 200 &&
+        navigate("/", { state: { sessionExpired: false } });
     } catch (err) {
       // Display error message on failed logout
       dispatch({

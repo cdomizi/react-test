@@ -11,11 +11,18 @@ const useRefreshToken = () => {
       headers: { "Content-Type": "application/json" },
       withCredentials: true,
     });
-    const { isAdmin, accessToken: newAccessToken } = response.data;
+    const {
+      id,
+      username,
+      isAdmin,
+      accessToken: newAccessToken,
+    } = response.data;
 
     // Update the auth context with the new access token and admin status
     setAuth((prev) => ({
       ...prev,
+      id,
+      username,
       isAdmin,
       accessToken: newAccessToken,
     }));

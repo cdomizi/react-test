@@ -462,7 +462,9 @@ const DataTable = (props) => {
                       key={row.id}
                       hover={clickable}
                       sx={{ cursor: clickable ? "pointer" : "default" }}
-                      onClick={(event) => onRowClick(event, row.original)}
+                      onClick={(event) => {
+                        clickable && onRowClick(event, row.original);
+                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell

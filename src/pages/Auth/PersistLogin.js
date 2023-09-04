@@ -29,6 +29,7 @@ const PersistLogin = () => {
         setAuth({});
         // Redirect user to login
         navigate("/login", {
+          // Set sessionExpired to `true` to display warning on login form
           state: { from: location, sessionExpired: true },
           replace: true,
         });
