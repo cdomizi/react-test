@@ -43,8 +43,6 @@ const Login = () => {
 
   const onSubmit = useCallback(
     async (formData) => {
-      const { username, password } = formData;
-
       // Log the user in
       try {
         const response = await publicApi.post(
@@ -57,11 +55,10 @@ const Login = () => {
         );
 
         // Update auth context with login response data
-        const { accessToken, id, isAdmin } = response.data;
+        const { accessToken, id, username, isAdmin } = response.data;
         setAuth({
           id,
           username,
-          password,
           isAdmin,
           accessToken,
         });
@@ -74,6 +71,7 @@ const Login = () => {
 
         // Redirect user to previously requested route
         navigate(from, { replace: true });
+        return;
       } catch (err) {
         // Display error message on failed login
         dispatch({
@@ -82,7 +80,7 @@ const Login = () => {
             status: err?.response?.status,
             statusText: err?.response?.statusText,
             error: err,
-            user: username,
+            user: formData.username,
           },
         });
       }

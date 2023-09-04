@@ -1,5 +1,14 @@
+import { useCallback, useContext, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router";
+
+// Project import
+import publicApi from "../../api/axios";
+import AuthContext from "../../contexts/AuthContext";
+import SnackbarContext, {
+  SNACKBAR_ACTIONS,
+} from "../../contexts/SnackbarContext";
+import CustomSnackbar from "../../components/CustomSnackbar";
 
 // MUI components
 const {
@@ -14,18 +23,67 @@ const {
 const Register = () => {
   const navigate = useNavigate();
 
+  const { setAuth } = useContext(AuthContext);
+
+  const { dispatch } = useContext(SnackbarContext);
+
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
     watch,
+    reset,
   } = useForm({
     defaultValues: { username: "", password: "", confirmPassword: "" },
   });
 
-  const onSubmit = (formData) => {
-    console.log(formData);
-  };
+  const onSubmit = useCallback(
+    async (formData) => {
+      try {
+        const response = await publicApi.post(
+          "users",
+          JSON.stringify(formData),
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        // Update auth context with login response data
+        const { accessToken, id, username, isAdmin } = response.data;
+        setAuth({
+          id,
+          username,
+          isAdmin,
+          accessToken,
+        });
+
+        // On successful registration, notify the user
+        dispatch({
+          type: SNACKBAR_ACTIONS.REGISTER_SUCCESS,
+          payload: { username: username },
+        });
+
+        navigate("/");
+        return;
+      } catch (err) {
+        // On failed registration, notify the user
+        dispatch({
+          type: SNACKBAR_ACTIONS.REGISTER_ERROR,
+          payload: {
+            status: err.response?.status,
+            statusText: err.response?.statusText,
+            error: err,
+            user: formData.username,
+          },
+        });
+      }
+    },
+    [dispatch, navigate, setAuth]
+  );
+
+  useEffect(() => {
+    if (isSubmitSuccessful) reset();
+  }, [isSubmitSuccessful, reset]);
 
   return (
     <Box sx={{ maxWidth: "24rem", mx: "auto", mt: 6 }}>
@@ -120,6 +178,7 @@ const Register = () => {
       <Button onClick={() => navigate("/login")} variant="outlined" fullWidth>
         Log in
       </Button>
+      <CustomSnackbar />
     </Box>
   );
 };

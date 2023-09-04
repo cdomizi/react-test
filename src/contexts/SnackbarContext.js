@@ -22,6 +22,8 @@ const SNACKBAR_ACTIONS = {
   DELETE: "delete",
   DELETE_ERROR: "delete error",
   UNIQUE_FIELD_ERROR: "unique field error",
+  REGISTER_SUCCESS: "register success",
+  REGISTER_ERROR: "register error",
   LOGIN_SUCCESS: "login success",
   LOGIN_ERROR: "login error",
   LOGOUT_SUCCESS: "logout success",
@@ -31,22 +33,25 @@ const SNACKBAR_ACTIONS = {
   CLOSE: "close",
 };
 
-// Get login error message based on error status code
-const loginErrorMessage = (payload) => {
+// Get login/registration error message based on error status code
+const formatErrorMessage = (payload, isLogin) => {
+  // Set message action
+  const action = isLogin ? "Login" : "Registration";
+
   switch (payload?.status) {
     case 400: {
-      return "Login failed: Missing credentials";
+      return `${action} failed: Missing credentials`;
     }
     case 401: {
-      return `Login failed: Wrong password for user ${payload?.user}`;
+      return `${action} failed: Wrong password for user ${payload?.user}`;
     }
     case 404: {
-      return `Login failed: User ${payload?.user} does not exist`;
+      return `${action} failed: User ${payload?.user} does not exist`;
     }
     default: {
       return payload?.status >= 500
-        ? "Login failed: Service termporarily unavailable"
-        : "User login failed";
+        ? `${action} failed: Service termporarily unavailable`
+        : `User ${action.toLowerCase()} failed`;
     }
   }
 };
@@ -70,7 +75,7 @@ const snackbarReducer = (state, action) => {
       console.error(
         `Error while creating the ${
           action?.dataName || (state?.dataName ?? "item")
-        }: ${action.payload.status} - ${action.payload.statusText}`
+        }: ${action.payload?.status} - ${action.payload?.statusText}`
       );
       return {
         ...initialState,
@@ -99,7 +104,7 @@ const snackbarReducer = (state, action) => {
       console.error(
         `Error while editing the ${
           action?.dataName || (state?.dataName ?? "item")
-        }: ${action.payload.status} - ${action.payload.statusText}`
+        }: ${action.payload?.status} - ${action.payload?.statusText}`
       );
       return {
         ...initialState,
@@ -127,7 +132,7 @@ const snackbarReducer = (state, action) => {
       console.error(
         `Error while deleting the ${
           action?.dataName || (state?.dataName ?? "item")
-        }: ${action.payload.status} - ${action.payload.statusText}`
+        }: ${action.payload?.status} - ${action.payload?.statusText}`
       );
       return {
         ...initialState,
@@ -149,9 +154,29 @@ const snackbarReducer = (state, action) => {
         message: `${
           capitalize(action?.dataName) ||
           (capitalize(state?.dataName) ?? "item")
-        } with ${action.payload.field} "${
-          action.payload.value
+        } with ${action.payload?.field} "${
+          action.payload?.value
         }" already exists.`,
+      };
+    }
+    case SNACKBAR_ACTIONS.REGISTER_SUCCESS: {
+      return {
+        ...initialState,
+        open: true,
+        success: true,
+        message: `${action.payload.username} registered successfully!`,
+      };
+    }
+    case SNACKBAR_ACTIONS.REGISTER_ERROR: {
+      console.error(
+        `Error - User registration failed: ${action.payload?.status} ${action.payload?.statusText}`,
+        action.payload?.error
+      );
+      return {
+        ...initialState,
+        open: true,
+        success: false,
+        message: formatErrorMessage(action.payload, false),
       };
     }
     case SNACKBAR_ACTIONS.LOGIN_SUCCESS: {
@@ -164,14 +189,14 @@ const snackbarReducer = (state, action) => {
     }
     case SNACKBAR_ACTIONS.LOGIN_ERROR: {
       console.error(
-        `Error: User login failed: ${action.payload?.status} ${action.payload?.statusText}`,
+        `Error - User login failed: ${action.payload?.status} ${action.payload?.statusText}`,
         action.payload?.error
       );
       return {
         ...initialState,
         open: true,
         success: false,
-        message: loginErrorMessage(action.payload),
+        message: formatErrorMessage(action.payload, true),
       };
     }
     case SNACKBAR_ACTIONS.LOGOUT_SUCCESS: {

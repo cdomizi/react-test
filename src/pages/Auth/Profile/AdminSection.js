@@ -128,24 +128,19 @@ const AdminSection = memo(() => {
 
   // Delete user
   const handleDeleteUser = useCallback(
-    async (isAdmin, id) => {
+    async (id) => {
       try {
-        const response = await authApi.delete(`users/${id}`, {
-          isAdmin: !isAdmin,
-        });
+        const response = await authApi.delete(`users/${id}`);
 
-        // On success, force table reload & notify the user
+        // On success, force table reload
+        // & return username name to display on delete confirmation message
         setReload({ ...reload });
-        dispatch({
-          type: SNACKBAR_ACTIONS.DELETE,
-          payload: response.data?.username,
-        });
-        return;
+        return response.data?.username;
       } catch (err) {
-        return err.response;
+        return err?.response;
       }
     },
-    [authApi, dispatch, reload]
+    [authApi, reload]
   );
 
   // Specify the name for table data

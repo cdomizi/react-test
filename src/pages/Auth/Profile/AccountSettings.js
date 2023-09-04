@@ -169,16 +169,19 @@ const AccountSettings = () => {
         });
         if (response.status === 200) {
           // On correct password, delete the account
-          const response = await authApi.delete(`users/${auth?.id}`, {
-            id: auth?.id,
-          });
+          const response = await authApi.delete(`users/${auth?.id}`);
+
+          // Close the dialog & update auth context
+          dialogDispatch({ type: DIALOG_ACTIONS.CLOSE });
+          setAuth({});
 
           // On success notify the user, clear auth context and redirect to home
           snackbarDispatch({
             type: SNACKBAR_ACTIONS.DELETE,
             payload: response.data?.username,
           });
-          setAuth({});
+
+          // Redirect user to home page
           navigate("/");
           return;
         } else {
