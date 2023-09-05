@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Project import
 import AuthContext from "../contexts/AuthContext";
@@ -22,7 +22,9 @@ import useVerifyToken from "../hooks/useVerifyToken";
 
 const ProfileTab = ({ direction = "row", sx }) => {
   const theme = useTheme();
+
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { auth, setAuth } = useContext(AuthContext);
   const [retry, setRetry] = useState(false); // State to prevent endless loop
@@ -54,6 +56,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
       // Redirect the user to the home page on successful logout
       // and set sessionExpired to `false` (prevent display warning on login form)
       response?.status === 200 &&
+        location.pathname.match(/\/users\/.+/) &&
         navigate("/", { state: { sessionExpired: false } });
     } catch (err) {
       // Display error message on failed logout
@@ -61,7 +64,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
         type: SNACKBAR_ACTIONS.LOGOUT_ERROR,
       });
     }
-  }, [dispatch, navigate, setAuth]);
+  }, [dispatch, location.pathname, navigate, setAuth]);
 
   return (
     <Stack
@@ -111,7 +114,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
         <>
           <Button
             variant="contained"
-            onClick={() => navigate("/register")}
+            onClick={() => navigate("/register", { state: { from: location } })}
             sx={{
               ...(theme.palette.mode === "light" && {
                 ml: "auto",
@@ -128,7 +131,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
           </Button>
           <Button
             variant="outlined"
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/login", { state: { from: location } })}
             sx={{
               whiteSpace: "nowrap",
               ...(theme.palette.mode === "light" && {

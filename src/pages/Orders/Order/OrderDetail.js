@@ -1,5 +1,4 @@
 import {
-  memo,
   useCallback,
   useContext,
   useEffect,
@@ -13,15 +12,7 @@ import { useLocation, useNavigate } from "react-router";
 // Project import
 import useFetch from "../../../hooks/useFetch";
 import useRandomOrderData from "../../../hooks/useRandomOrderData";
-import {
-  handleEditOrder,
-  getInvoiceStatus,
-  setInvoiceColor,
-  getSubmitData,
-  handleCreateInvoice,
-  printInvoice,
-} from "../OrderActions";
-import useAuthApi from "../../../hooks/useAuthApi";
+import { handleEditOrder, getSubmitData } from "../OrderActions";
 import AuthContext from "../../../contexts/AuthContext";
 import useRefreshToken from "../../../hooks/useRefreshToken";
 import SnackbarContext, {
@@ -29,9 +20,11 @@ import SnackbarContext, {
 } from "../../../contexts/SnackbarContext";
 import CustomSnackbar from "../../../components/CustomSnackbar";
 import DialogContext, { DIALOG_ACTIONS } from "../../../contexts/DialogContext";
-import { formatLabel, formatOrderDate } from "../../../utils/formatStrings";
+import { formatLabel } from "../../../utils/formatStrings";
+import InvoiceSection from "./InvoiceSection";
 import InvoiceTemplate from "./InvoiceTemplate";
 import CustomDivider from "../../../components/CustomDivider";
+import OrderDetailSkeleton from "./OrderDetailSkeleton";
 
 // Mui components
 import {
@@ -47,7 +40,6 @@ import {
   FormControlLabel,
   IconButton,
   InputAdornment,
-  Skeleton,
   Stack,
   TextField,
   Tooltip,
@@ -55,12 +47,7 @@ import {
 } from "@mui/material";
 
 // MUI icons
-import {
-  Check as CheckIcon,
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-  Print as PrintIcon,
-} from "@mui/icons-material";
+import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 
 const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
   const [edit, setEdit] = useState(false);
@@ -77,7 +64,6 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
 
   const { auth } = useContext(AuthContext);
   const refreshToken = useRefreshToken();
-  const authApi = useAuthApi();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -207,155 +193,6 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
     [auth?.accessToken, dialogDispatch, location, navigate, refreshToken]
   );
 
-  const onCreateInvoice = useCallback(async () => {
-    const submitData = {
-      // Leave order data untouched
-      id: data?.id,
-      customerId: data?.customerId,
-      // Correctly format products
-      products: data?.products?.map((product) => ({
-        id: product.productId,
-        quantity: product.quantity,
-      })),
-      // Set invoice as true
-      invoice: true,
-    };
-    const response = await handleCreateInvoice(submitData);
-
-    if (response?.length) {
-      // Display confirmation message if the request was successful
-      snackbarDispatch({
-        type: SNACKBAR_ACTIONS.CREATE,
-        payload: response,
-        dataName: "invoice",
-      });
-      // Force refetch to get updated data
-      reload();
-    } else {
-      console.error(response);
-      // Display a generic error message
-      snackbarDispatch({
-        type: SNACKBAR_ACTIONS.CREATE_ERROR,
-        payload: response,
-        dataName: "invoice",
-      });
-    }
-  }, [data, snackbarDispatch, reload]);
-
-  const handleEditInvoice = useCallback(
-    async (invoiceId, paid) => {
-      try {
-        const response = await authApi.put(`invoices/${invoiceId}`, {
-          paid,
-        });
-
-        // Return invoice name to display on edit confirmation message
-        return `Invoice ${response.data?.id}`;
-      } catch (err) {
-        return err?.response;
-      }
-    },
-    [authApi]
-  );
-
-  const onEditInvoice = useCallback(async () => {
-    const needsLogin = await checkAuthentication("edit");
-
-    // Restrict delete invoice to authenticated users
-    if (!needsLogin) {
-      const response = await handleEditInvoice(data?.invoice?.id, true);
-
-      if (response?.length) {
-        // Display confirmation message if the request was successful
-        snackbarDispatch({
-          type: SNACKBAR_ACTIONS.EDIT,
-          payload: response,
-          dataName: "invoice",
-        });
-        // Force refetch to get updated data
-        reload();
-        return;
-      } else {
-        console.error(response);
-        // Display a generic error message
-        snackbarDispatch({
-          type: SNACKBAR_ACTIONS.EDIT_ERROR,
-          payload: response,
-          dataName: "invoice",
-        });
-      }
-    }
-
-    return;
-  }, [
-    checkAuthentication,
-    handleEditInvoice,
-    data?.invoice?.id,
-    snackbarDispatch,
-    reload,
-  ]);
-
-  const onPrintInvoice = useCallback(async () => {
-    const needsLogin = await checkAuthentication("print");
-
-    // Restrict printing invoice to authenticated users
-    if (!needsLogin) {
-      printInvoice(invoiceTemplateRef.current, data?.invoice?.idNumber);
-    }
-
-    return;
-  }, [checkAuthentication, data?.invoice?.idNumber]);
-
-  const handleDeleteInvoice = useCallback(
-    async (invoiceId) => {
-      try {
-        const response = await authApi.delete(`invoices/${invoiceId}`);
-
-        // Return invoice name to display on delete confirmation message
-        return `Invoice ${response.data?.id}`;
-      } catch (err) {
-        return err?.response;
-      }
-    },
-    [authApi]
-  );
-
-  const onDeleteInvoice = useCallback(async () => {
-    const needsLogin = await checkAuthentication("delete");
-
-    // Restrict marking invoice as paid to authenticated users
-    if (!needsLogin) {
-      const response = await handleDeleteInvoice(data?.invoice?.id);
-
-      if (response?.length) {
-        // Display confirmation message if the request was successful
-        snackbarDispatch({
-          type: SNACKBAR_ACTIONS.DELETE,
-          payload: response,
-          dataName: "invoice",
-        });
-        // Force refetch to get updated data
-        reload();
-      } else {
-        console.error(response);
-        // Display a generic error message
-        snackbarDispatch({
-          type: SNACKBAR_ACTIONS.DELETE_ERROR,
-          payload: response,
-          dataName: "invoice",
-        });
-      }
-    }
-
-    return;
-  }, [
-    checkAuthentication,
-    handleDeleteInvoice,
-    data?.invoice?.id,
-    snackbarDispatch,
-    reload,
-  ]);
-
   // Reload state to trigger new random data fetch
   const [randomReload, setRandomReload] = useState();
 
@@ -381,64 +218,6 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
       { keepDefaultValues: true }
     );
   }, [randomData, reset]);
-
-  const OrderSkeleton = useMemo(
-    () => (
-      <>
-        <Skeleton
-          variant="text"
-          sx={{ fontSize: "5rem", maxWidth: "16rem", marginBottom: "2rem" }}
-        />
-        <Stack direction="row" spacing={6}>
-          <Stack width="24rem">
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "3rem", width: "24rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "3rem", width: "24rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "3rem", width: "24rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "3rem", width: "24rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "7rem" }}
-            />
-          </Stack>
-          <Stack width="20rem" spacing={2}>
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "12rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "1rem", maxWidth: "10rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "1rem", maxWidth: "10rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "1rem", maxWidth: "10rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "1rem", maxWidth: "10rem" }}
-            />
-          </Stack>
-        </Stack>
-      </>
-    ),
-    []
-  );
 
   // Populate the products section on page load
   useEffect(() => {
@@ -874,111 +653,22 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
     </form>
   );
 
-  // Invoice detail item
-  const InvoiceItem = memo(({ name, value, id, color = "auto" }) => (
-    <Typography paragraph id={`invoice.${id}`}>
-      {`${name}: `}
-      <Box component="span" fontWeight="bold" color={color}>
-        {value}
-      </Box>
-    </Typography>
-  ));
-
-  // Invoice section
-  const OrderInvoice = useMemo(
-    () => (
-      <Box>
-        <Typography variant="h5" mb={4}>
-          Invoice
-        </Typography>
-        {data?.invoice ? (
-          <>
-            <InvoiceItem name="ID" value={data?.invoice?.id} id="id" />
-            <InvoiceItem
-              name="Due"
-              value={formatOrderDate(data?.invoice?.paymentDue)}
-              id="dueDate"
-            />
-            <InvoiceItem
-              name="Status"
-              value={getInvoiceStatus(data?.invoice)}
-              color={setInvoiceColor(data?.invoice)}
-              id="dueDate"
-            />
-            <Box width="14rem">
-              {!data?.invoice?.paid && (
-                <Button
-                  variant="outlined"
-                  color="success"
-                  size="small"
-                  onClick={onEditInvoice}
-                  endIcon={<CheckIcon />}
-                  sx={{
-                    mb: 1.5,
-                    "&, & .MuiButtonBase-root": { alignItems: "normal" },
-                  }}
-                  fullWidth
-                >
-                  Mark as paid
-                </Button>
-              )}
-              <Stack direction="row" spacing={2}>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={onPrintInvoice}
-                  endIcon={<PrintIcon />}
-                  sx={{
-                    "&, & .MuiButtonBase-root": { alignItems: "normal" },
-                  }}
-                  fullWidth
-                >
-                  Print
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  size="small"
-                  onClick={onDeleteInvoice}
-                  endIcon={<DeleteIcon />}
-                  sx={{
-                    "&, & .MuiButtonBase-root": { alignItems: "normal" },
-                  }}
-                  fullWidth
-                >
-                  Delete
-                </Button>
-              </Stack>
-            </Box>
-          </>
-        ) : (
-          <>
-            <Typography mb={2}>No invoice for this order.</Typography>
-            <Button variant="outlined" onClick={onCreateInvoice}>
-              Generate invoice
-            </Button>
-          </>
-        )}
-      </Box>
-    ),
-    [
-      data?.invoice,
-      onCreateInvoice,
-      onDeleteInvoice,
-      onEditInvoice,
-      onPrintInvoice,
-    ]
-  );
-
   return loading ? (
-    OrderSkeleton
+    <OrderDetailSkeleton />
   ) : (
     <Box>
       <Typography variant="h2" mb="3rem">{`Order #${data?.id}`}</Typography>
       <Stack direction={{ xs: "column", md: "row" }} spacing="5rem">
         {OrderEditForm}
         <CustomDivider flexItem />
-        {error ? null : OrderInvoice}
+        {error ? null : (
+          <InvoiceSection
+            data={data}
+            reload={reload}
+            checkAuthentication={checkAuthentication}
+            ref={invoiceTemplateRef}
+          />
+        )}
       </Stack>
       <Box display="none">
         <InvoiceTemplate

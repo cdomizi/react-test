@@ -7,7 +7,6 @@ import {
   useState,
 } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useLocation, useNavigate } from "react-router";
 
 // Project import
 import useAuthApi from "../../../hooks/useAuthApi";
@@ -22,9 +21,6 @@ import DataTable from "../../../components/DataTable";
 import { Box, Button, Card, Divider, Stack, Typography } from "@mui/material";
 
 const AdminSection = memo(() => {
-  const location = useLocation();
-  const navigate = useNavigate();
-
   const { auth, setAuth } = useContext(AuthContext);
 
   const fetchInitialState = useMemo(
@@ -94,7 +90,7 @@ const AdminSection = memo(() => {
       abortController.abort();
     };
     // Add `reload` to the dependencies to force reload
-  }, [auth?.username, authApi, location, navigate, setAuth, reload]);
+  }, [auth?.username, authApi, setAuth, reload]);
 
   // Edit user
   const handleEditUser = useCallback(
