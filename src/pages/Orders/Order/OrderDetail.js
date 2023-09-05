@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router";
 
 // Project import
 import useFetch from "../../../hooks/useFetch";
@@ -18,14 +19,16 @@ import {
   setInvoiceColor,
   getSubmitData,
   handleCreateInvoice,
-  handleEditInvoice,
-  handleDeleteInvoice,
   printInvoice,
 } from "../OrderActions";
+import useAuthApi from "../../../hooks/useAuthApi";
+import AuthContext from "../../../contexts/AuthContext";
+import useRefreshToken from "../../../hooks/useRefreshToken";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../../contexts/SnackbarContext";
 import CustomSnackbar from "../../../components/CustomSnackbar";
+import DialogContext, { DIALOG_ACTIONS } from "../../../contexts/DialogContext";
 import { formatLabel, formatOrderDate } from "../../../utils/formatStrings";
 import InvoiceTemplate from "./InvoiceTemplate";
 import CustomDivider from "../../../components/CustomDivider";
@@ -65,11 +68,19 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
   // Ref for the invoice template
   const invoiceTemplateRef = useRef(null);
 
-  // State and dispatch function for snackbar component
-  const { snackbarState, dispatch } = useContext(SnackbarContext);
-
-  // Set the `dataName` property for the snackbar
+  // Set up snackbar
+  const { snackbarState, dispatch: snackbarDispatch } =
+    useContext(SnackbarContext);
   snackbarState.dataName = dataName?.singular;
+
+  const dialogDispatch = useContext(DialogContext);
+
+  const { auth } = useContext(AuthContext);
+  const refreshToken = useRefreshToken();
+  const authApi = useAuthApi();
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const defaultValues = useMemo(
     () => ({
@@ -107,7 +118,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
       const response = await handleEditOrder(submitData);
       if (response?.length) {
         // Display confirmation message if the request was successful
-        dispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: response });
+        snackbarDispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: response });
         // Force refetch to get updated data
         reload();
       } else {
@@ -115,12 +126,12 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
         // Check if it's a unique field error
         response?.field
           ? // Display the specific error message
-            dispatch({
+            snackbarDispatch({
               type: SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR,
               payload: response,
             })
           : // Display a generic error message
-            dispatch({
+            snackbarDispatch({
               type: SNACKBAR_ACTIONS.EDIT_ERROR,
               payload: response,
             });
@@ -129,7 +140,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
       // Disable edit mode
       setEdit(false);
     },
-    [dispatch, reload]
+    [snackbarDispatch, reload]
   );
 
   const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
@@ -148,6 +159,54 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
     data: productsData,
   } = useFetch(`${API_ENDPOINT}products`);
 
+  const checkAuthentication = useCallback(
+    async (actionType) => {
+      if (auth?.accessToken) return false;
+      else {
+        try {
+          // Sets a new access token if expired
+          // as long as the refreshToken is valid
+          await refreshToken();
+        } catch (err) {
+          // Set message content based on action
+          const action =
+            actionType === "edit"
+              ? "edit"
+              : actionType === "print"
+              ? "print"
+              : "delete";
+
+          dialogDispatch({
+            type: DIALOG_ACTIONS.OPEN,
+            payload: {
+              open: false,
+              title: "Authentication required",
+              contentText: `You need to log in to ${action} the invoice.`,
+              contentForm: null,
+              confirm: {
+                buttonText: "Log in",
+                onConfirm: () => {
+                  dialogDispatch({
+                    type: DIALOG_ACTIONS.CLOSE,
+                  });
+                  // Redirect user to login page,
+                  // set sessionExpired to false to prevent displaying error message
+                  navigate("/login", {
+                    state: { from: location, sessionExpired: false },
+                  });
+                },
+              },
+              cancel: true,
+            },
+          });
+
+          return true;
+        }
+      }
+    },
+    [auth?.accessToken, dialogDispatch, location, navigate, refreshToken]
+  );
+
   const onCreateInvoice = useCallback(async () => {
     const submitData = {
       // Leave order data untouched
@@ -165,7 +224,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
 
     if (response?.length) {
       // Display confirmation message if the request was successful
-      dispatch({
+      snackbarDispatch({
         type: SNACKBAR_ACTIONS.CREATE,
         payload: response,
         dataName: "invoice",
@@ -175,59 +234,127 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
     } else {
       console.error(response);
       // Display a generic error message
-      dispatch({
+      snackbarDispatch({
         type: SNACKBAR_ACTIONS.CREATE_ERROR,
         payload: response,
         dataName: "invoice",
       });
     }
-  }, [data, dispatch, reload]);
+  }, [data, snackbarDispatch, reload]);
+
+  const handleEditInvoice = useCallback(
+    async (invoiceId, paid) => {
+      try {
+        const response = await authApi.put(`invoices/${invoiceId}`, {
+          paid,
+        });
+
+        // Return invoice name to display on edit confirmation message
+        return `Invoice ${response.data?.id}`;
+      } catch (err) {
+        return err?.response;
+      }
+    },
+    [authApi]
+  );
 
   const onEditInvoice = useCallback(async () => {
-    const response = await handleEditInvoice(data?.invoice?.id, true);
+    const needsLogin = await checkAuthentication("edit");
 
-    if (response?.length) {
-      // Display confirmation message if the request was successful
-      dispatch({
-        type: SNACKBAR_ACTIONS.EDIT,
-        payload: response,
-        dataName: "invoice",
-      });
-      // Force refetch to get updated data
-      reload();
-    } else {
-      console.error(response);
-      // Display a generic error message
-      dispatch({
-        type: SNACKBAR_ACTIONS.EDIT_ERROR,
-        payload: response,
-        dataName: "invoice",
-      });
+    // Restrict delete invoice to authenticated users
+    if (!needsLogin) {
+      const response = await handleEditInvoice(data?.invoice?.id, true);
+
+      if (response?.length) {
+        // Display confirmation message if the request was successful
+        snackbarDispatch({
+          type: SNACKBAR_ACTIONS.EDIT,
+          payload: response,
+          dataName: "invoice",
+        });
+        // Force refetch to get updated data
+        reload();
+        return;
+      } else {
+        console.error(response);
+        // Display a generic error message
+        snackbarDispatch({
+          type: SNACKBAR_ACTIONS.EDIT_ERROR,
+          payload: response,
+          dataName: "invoice",
+        });
+      }
     }
-  }, [data?.invoice?.id, dispatch, reload]);
+
+    return;
+  }, [
+    checkAuthentication,
+    handleEditInvoice,
+    data?.invoice?.id,
+    snackbarDispatch,
+    reload,
+  ]);
+
+  const onPrintInvoice = useCallback(async () => {
+    const needsLogin = await checkAuthentication("print");
+
+    // Restrict printing invoice to authenticated users
+    if (!needsLogin) {
+      printInvoice(invoiceTemplateRef.current, data?.invoice?.idNumber);
+    }
+
+    return;
+  }, [checkAuthentication, data?.invoice?.idNumber]);
+
+  const handleDeleteInvoice = useCallback(
+    async (invoiceId) => {
+      try {
+        const response = await authApi.delete(`invoices/${invoiceId}`);
+
+        // Return invoice name to display on delete confirmation message
+        return `Invoice ${response.data?.id}`;
+      } catch (err) {
+        return err?.response;
+      }
+    },
+    [authApi]
+  );
 
   const onDeleteInvoice = useCallback(async () => {
-    const response = await handleDeleteInvoice(data?.invoice?.id);
+    const needsLogin = await checkAuthentication("delete");
 
-    if (response?.length) {
-      // Display confirmation message if the request was successful
-      dispatch({
-        type: SNACKBAR_ACTIONS.DELETE,
-        payload: response,
-        dataName: "invoice",
-      });
-      // Force refetch to get updated data
-      reload();
-    } else {
-      console.error(response);
-      // Display a generic error message
-      dispatch({
-        type: SNACKBAR_ACTIONS.DELETE_ERROR,
-        payload: response,
-        dataName: "invoice",
-      });
+    // Restrict marking invoice as paid to authenticated users
+    if (!needsLogin) {
+      const response = await handleDeleteInvoice(data?.invoice?.id);
+
+      if (response?.length) {
+        // Display confirmation message if the request was successful
+        snackbarDispatch({
+          type: SNACKBAR_ACTIONS.DELETE,
+          payload: response,
+          dataName: "invoice",
+        });
+        // Force refetch to get updated data
+        reload();
+      } else {
+        console.error(response);
+        // Display a generic error message
+        snackbarDispatch({
+          type: SNACKBAR_ACTIONS.DELETE_ERROR,
+          payload: response,
+          dataName: "invoice",
+        });
+      }
     }
-  }, [data?.invoice?.id, dispatch, reload]);
+
+    return;
+  }, [
+    checkAuthentication,
+    handleDeleteInvoice,
+    data?.invoice?.id,
+    snackbarDispatch,
+    reload,
+  ]);
 
   // Reload state to trigger new random data fetch
   const [randomReload, setRandomReload] = useState();
@@ -799,12 +926,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                 <Button
                   variant="outlined"
                   size="small"
-                  onClick={() =>
-                    printInvoice(
-                      invoiceTemplateRef.current,
-                      data?.invoice?.idNumber
-                    )
-                  }
+                  onClick={onPrintInvoice}
                   endIcon={<PrintIcon />}
                   sx={{
                     "&, & .MuiButtonBase-root": { alignItems: "normal" },
@@ -839,7 +961,13 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
         )}
       </Box>
     ),
-    [data, onCreateInvoice, onDeleteInvoice, onEditInvoice]
+    [
+      data?.invoice,
+      onCreateInvoice,
+      onDeleteInvoice,
+      onEditInvoice,
+      onPrintInvoice,
+    ]
   );
 
   return loading ? (

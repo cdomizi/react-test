@@ -46,7 +46,7 @@ const CustomerDetail = ({
   const [randomLoading, setRandomLoading] = useState(false);
 
   // State and dispatch function for snackbar component
-  const [snackbarState, dispatch] = useContext(SnackbarContext);
+  const { snackbarState, dispatch } = useContext(SnackbarContext);
 
   // Set the `dataName` property for the snackbar
   snackbarState.dataName = dataName?.singular;

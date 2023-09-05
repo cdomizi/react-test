@@ -31,6 +31,7 @@ const Order = () => {
 
   // Get dataName and randomData from location
   const { dataName, randomData } = state || {};
+
   return (
     <OrderDetail
       {...order}

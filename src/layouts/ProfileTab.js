@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Project import
@@ -18,15 +18,20 @@ import {
 } from "@mui/material";
 import { useCallback } from "react";
 import CustomSnackbar from "../components/CustomSnackbar";
+import useVerifyToken from "../hooks/useVerifyToken";
 
 const ProfileTab = ({ direction = "row", sx }) => {
   const theme = useTheme();
   const navigate = useNavigate();
 
   const { auth, setAuth } = useContext(AuthContext);
+  const [retry, setRetry] = useState(false); // State to prevent endless loop
 
   // Set up snackbar
   const { snackbarState, dispatch } = useContext(SnackbarContext);
+
+  // Verify/refresh access token
+  useVerifyToken(false, false, retry, setRetry);
 
   const handleLogout = useCallback(async () => {
     // Delete `jwt` cookie containing the refreshToken

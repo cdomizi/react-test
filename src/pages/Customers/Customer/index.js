@@ -12,6 +12,7 @@ const Customer = () => {
   // State to force reload on data update
   const [reload, setReload] = useState();
 
+  // Fetch customer data from API
   const customer = useFetch(`${API_ENDPOINT}customers/${customerId}`, reload);
 
   const { state } = useLocation();
