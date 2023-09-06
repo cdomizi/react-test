@@ -83,10 +83,11 @@ const TableFilters = ({
 
   return (
     <Stack
+      id="table-filters-container"
       component="form"
       onSubmit={handleSubmit}
-      sx={{ py: "2rem", px: "1rem" }}
       spacing={1}
+      sx={{ py: "2rem", px: "1rem" }}
     >
       <Box
         sx={{ display: "flex", flexFlow: "row nowrap", alignItems: "center" }}
@@ -109,7 +110,7 @@ const TableFilters = ({
             sx={{
               display: "flex",
               flexGrow: 1,
-              flexFlow: "row wrap",
+              flexFlow: { xs: "column wrap", md: "row wrap" },
               alignItems: "baseline",
               gap: 2,
             }}

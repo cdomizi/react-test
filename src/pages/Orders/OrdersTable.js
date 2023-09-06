@@ -213,7 +213,7 @@ const OrdersTable = memo(() => {
         columns={columns}
         loading={loading || productLoading}
         error={error || productError}
-        orderBy={"updatedAt"}
+        orderBy="updatedAt"
         globalSearch={false}
         defaultOrder={true}
         clickable={true}

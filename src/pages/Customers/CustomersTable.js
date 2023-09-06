@@ -100,7 +100,7 @@ const CustomersTable = memo(() => {
         columns={columns}
         loading={loading}
         error={error}
-        orderBy={"id"}
+        orderBy="id"
         globalSearch={true}
         defaultOrder={true}
         clickable={true}

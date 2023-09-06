@@ -147,13 +147,13 @@ const AdminSection = memo(() => {
     (userRole, id) => {
       const role = isAdmin(userRole);
       return (
-        <Stack direction="row" justifyContent="center">
+        <Stack direction="row" justifyContent="center" alignItems="center">
           <Typography color={userRole && "success.main"}>{role}</Typography>
           <Button
             onClick={() => handleEditUser(userRole, id)}
             variant="outlined"
             size="small"
-            sx={{ mx: 2 }}
+            sx={{ mx: 2, minWidth: "fit-content" }}
           >
             Change to {role === "Admin" ? "User" : "Admin"}
           </Button>
@@ -188,14 +188,15 @@ const AdminSection = memo(() => {
           type: "select",
           options: ["Admin", "User"],
         },
+        style: { maxWidth: "13.5rem" },
       }),
     ],
     [columnHelper, isAdmin, roleCell]
   );
 
   return (
-    <>
-      <Divider sx={{ my: 7 }} />
+    <Box id="admin-section-container">
+      <Divider sx={{ my: 7, py: 1 }} />
       <Typography variant="h5" mb={5}>
         Admin Panel
       </Typography>
@@ -209,22 +210,21 @@ const AdminSection = memo(() => {
           }
         </Box>
       </Typography>
-      <Card sx={{ maxWidth: "fit-content" }}>
+      <Card sx={{ maxWidth: "90%", overflowX: "auto" }}>
         <DataTable
-          sx={{ maxWidth: "fit-content" }}
           data={fetchState?.data}
           dataName={dataName}
           columns={columns}
           loading={fetchState.loading}
           error={fetchState.error}
-          orderBy={"id"}
+          orderBy="id"
           globalSearch={false}
           defaultOrder={false}
           clickable={false}
           onDelete={handleDeleteUser}
         />
       </Card>
-    </>
+    </Box>
   );
 });
 

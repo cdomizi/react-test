@@ -1,7 +1,7 @@
 import { useState, useMemo, memo, useEffect, useRef } from "react";
 
 // project import
-import UpDownArrows from "../../components/UpDownArrows";
+import UpDownArrows from "./UpDownArrows";
 
 // mui components
 import {
@@ -63,7 +63,7 @@ const TodoItem = memo((props) => {
               sx={{
                 maxWidth: "13.5rem",
                 textDecoration: checked ? "line-through" : "inherit",
-                color: checked ? "rgba(255, 255, 255, 0.5)" : "inherit",
+                color: checked ? "text.disabled" : "inherit",
               }}
             />
             <Tooltip title="Edit">

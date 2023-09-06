@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 
 // project import
-import PicsList from "../../../components/PicsList";
+import PicsList from "./PicsList";
 
 const ProductDetail = ({ loading, error, data }) => {
   // Get discounted price

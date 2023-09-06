@@ -407,7 +407,7 @@ const DataTable = (props) => {
   );
 
   return (
-    <Box sx={{ minWidth: "auto", ...sx }}>
+    <Box sx={{ ...sx }}>
       {Filters}
       <Divider />
       <Paper>
@@ -496,6 +496,7 @@ const DataTable = (props) => {
                               lg: "12rem",
                               xl: "15rem",
                             },
+                            ...cell.column.columnDef?.style,
                           }}
                         >
                           {flexRender(
