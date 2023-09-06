@@ -19,7 +19,7 @@ import {
 import { useCallback } from "react";
 import useVerifyToken from "../hooks/useVerifyToken";
 
-const ProfileTab = ({ direction = "row", sx }) => {
+const ProfileTab = ({ direction = "row", isNavbarOpen, sx }) => {
   const theme = useTheme();
 
   const navigate = useNavigate();
@@ -80,7 +80,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
                 onClick={() => navigate(`users/${auth?.username}`)}
                 sx={{
                   ...(theme.palette.mode === "light" && {
-                    color: "inherit",
+                    color: isNavbarOpen ? "primary.main" : "inherit",
                     textDecorationColor: "inherit",
                   }),
                   cursor: "pointer",
@@ -95,14 +95,15 @@ const ProfileTab = ({ direction = "row", sx }) => {
             onClick={handleLogout}
             sx={{
               whiteSpace: "nowrap",
-              ...(theme.palette.mode === "light" && {
-                color: "primary.contrastText",
-                borderColor: "primary.contrastText",
-                "&:hover": {
+              ...(theme.palette.mode === "light" &&
+                !isNavbarOpen && {
+                  color: "primary.contrastText",
                   borderColor: "primary.contrastText",
-                  backgroundColor: "primary.light",
-                },
-              }),
+                  "&:hover": {
+                    borderColor: "primary.contrastText",
+                    backgroundColor: "primary.light",
+                  },
+                }),
             }}
           >
             Log out
@@ -115,7 +116,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
             onClick={() => navigate("/register", { state: { from: location } })}
             sx={{
               ...(theme.palette.mode === "light" && {
-                ml: "auto",
+                ml: isNavbarOpen ? "inherit" : "auto",
                 color: "primary.contrastText",
                 backgroundColor: "primary.dark",
                 "&:hover": {
@@ -132,14 +133,15 @@ const ProfileTab = ({ direction = "row", sx }) => {
             onClick={() => navigate("/login", { state: { from: location } })}
             sx={{
               whiteSpace: "nowrap",
-              ...(theme.palette.mode === "light" && {
-                color: "primary.contrastText",
-                borderColor: "primary.contrastText",
-                "&:hover": {
+              ...(theme.palette.mode === "light" &&
+                !isNavbarOpen && {
+                  color: "primary.contrastText",
                   borderColor: "primary.contrastText",
-                  backgroundColor: "primary.light",
-                },
-              }),
+                  "&:hover": {
+                    borderColor: "primary.contrastText",
+                    backgroundColor: "primary.light",
+                  },
+                }),
             }}
           >
             Log in
