@@ -89,7 +89,7 @@ const Login = () => {
   );
 
   useEffect(() => {
-    // Reset form fields on successful submit
+    // Reset form fields on successful login
     if (isSubmitSuccessful) reset();
   }, [isSubmitSuccessful, reset]);
 
@@ -124,11 +124,12 @@ const Login = () => {
               message: "Username must be at least 3 characters",
             },
           }}
-          render={({ field }) => (
+          render={({ field: { ref, ...fieldProps } }) => (
             <TextField
-              {...field}
+              {...fieldProps}
               id="username"
               label="Username"
+              inputRef={ref}
               error={!!errors?.username}
               helperText={errors?.username && errors?.username?.message}
               InputLabelProps={{ required: true }}
@@ -147,11 +148,12 @@ const Login = () => {
               message: "Password must be at least 6 characters",
             },
           }}
-          render={({ field }) => (
+          render={({ field: { ref, ...fieldProps } }) => (
             <TextField
-              {...field}
+              {...fieldProps}
               id="password"
               label="Password"
+              inputRef={ref}
               type="password"
               error={!!errors?.password}
               helperText={errors?.password && errors?.password?.message}

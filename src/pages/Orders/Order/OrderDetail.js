@@ -246,11 +246,12 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                 control={control}
                 name={key}
                 defaultValue={data[key]}
-                render={({ field }) => (
+                render={({ field: { ref, ...fieldProps } }) => (
                   <TextField
-                    {...field}
+                    {...fieldProps}
                     id={key}
                     label={formatLabel(key)}
+                    inputRef={ref}
                     type="text"
                     InputLabelProps={{ shrink: true }}
                     inputProps={{ readOnly: !edit }}
@@ -274,13 +275,13 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                 control={control}
                 name={key}
                 defaultValue={data[key]}
-                render={({ field }) => (
+                render={({ field: { ref, ...fieldProps } }) => (
                   <Autocomplete
                     handleHomeEndKeys
                     id={`${dataName.singular}-${key}`}
-                    value={field.value || null}
+                    value={fieldProps.value || null}
                     onChange={(event, value) => {
-                      field.onChange(value);
+                      fieldProps.onChange(value);
                     }}
                     options={customerData ?? []}
                     isOptionEqualToValue={(option, value) =>
@@ -298,6 +299,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                         {...params}
                         id={key}
                         label={formatLabel(key)}
+                        inputRef={ref}
                         error={!!(formState.errors[key] || customerError)}
                         helperText={
                           (formState.errors[key] &&
@@ -348,7 +350,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                     <Controller
                       control={control}
                       name={`products.${prodIndex}.product`}
-                      render={({ field }) => (
+                      render={({ field: { ref, ...fieldProps } }) => (
                         <Autocomplete
                           handleHomeEndKeys
                           {...register(`products.${prodIndex}.product`, {
@@ -357,7 +359,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                           id={`products.${prodIndex}.product-input`}
                           value={watch("products")[prodIndex].product || null}
                           onChange={(event, value) => {
-                            field.onChange(value);
+                            fieldProps.onChange(value);
                           }}
                           options={productsData ?? []}
                           filterOptions={(options, state) =>
@@ -384,6 +386,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                               {...params}
                               id={`products.${prodIndex}.product`}
                               label={`Product #${prodIndex + 1}`}
+                              inputRef={ref}
                               error={
                                 !!(
                                   formState.errors?.products?.[prodIndex]
@@ -536,11 +539,12 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                     control={control}
                     id={key}
                     name={key}
-                    render={({ field }) => (
+                    render={({ field: { ref, ...fieldProps } }) => (
                       <Checkbox
-                        {...field}
-                        checked={!!field.value}
-                        onChange={field.onChange}
+                        {...fieldProps}
+                        checked={!!fieldProps.value}
+                        onChange={fieldProps.onChange}
+                        inputRef={ref}
                         disabled={
                           formState.isLoading ||
                           formState.isSubmitting ||

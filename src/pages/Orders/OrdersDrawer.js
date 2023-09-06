@@ -167,13 +167,13 @@ const OrdersDrawer = (props) => {
                 key={index}
                 control={control}
                 name={column.columnDef.accessorKey}
-                render={({ field }) => (
+                render={({ field: { ref, ...fieldProps } }) => (
                   <Autocomplete
                     handleHomeEndKeys
                     id={`${props.dataName.singular}-${column.columnDef.accessorKey}`}
-                    value={field.value || null}
+                    value={fieldProps.value || null}
                     onChange={(event, value) => {
-                      field.onChange(value);
+                      fieldProps.onChange(value);
                     }}
                     options={customerData ?? []}
                     isOptionEqualToValue={(option, value) =>
@@ -190,6 +190,7 @@ const OrdersDrawer = (props) => {
                         {...params}
                         id={column.columnDef.accessorKey}
                         label={column.columnDef.header()}
+                        inputRef={ref}
                         error={
                           !!(
                             formState.errors[column.columnDef.accessorKey] ||
@@ -244,7 +245,7 @@ const OrdersDrawer = (props) => {
                     <Controller
                       control={control}
                       name={`products.${prodIndex}.product`}
-                      render={({ field }) => (
+                      render={({ field: { ref, ...fieldProps } }) => (
                         <Autocomplete
                           handleHomeEndKeys
                           {...register(`products.${prodIndex}.product`, {
@@ -253,7 +254,7 @@ const OrdersDrawer = (props) => {
                           id={`products-${prodIndex}.product`}
                           value={watch("products")[prodIndex].product || null}
                           onChange={(event, value) => {
-                            field.onChange(value);
+                            fieldProps.onChange(value);
                           }}
                           options={productsData ?? []}
                           filterOptions={(options, state) =>
@@ -279,6 +280,7 @@ const OrdersDrawer = (props) => {
                               {...params}
                               id={`products.${prodIndex}.product-input`}
                               label={`Product #${prodIndex + 1}`}
+                              inputRef={ref}
                               error={
                                 !!(
                                   formState.errors?.products?.[prodIndex]
@@ -419,11 +421,12 @@ const OrdersDrawer = (props) => {
                     control={control}
                     id={column.columnDef.accessorKey}
                     name={column.columnDef.accessorKey}
-                    render={({ field }) => (
+                    render={({ field: { ref, ...fieldProps } }) => (
                       <Checkbox
-                        {...field}
-                        checked={!!field.value}
-                        onChange={field.onChange}
+                        {...fieldProps}
+                        checked={!!fieldProps.value}
+                        onChange={fieldProps.onChange}
+                        inputRef={ref}
                       />
                     )}
                   />
@@ -447,11 +450,12 @@ const OrdersDrawer = (props) => {
                 control={control}
                 name={item.column.columnDef.accessorKey}
                 defaultValue={item?.getValue()}
-                render={({ field }) => (
+                render={({ field: { ref, ...fieldProps } }) => (
                   <TextField
-                    {...field}
+                    {...fieldProps}
                     id={item.column.columnDef.accessorKey}
                     label={item.column.columnDef.header()}
+                    inputRef={ref}
                     type="string"
                     InputLabelProps={{ shrink: true }}
                     margin="normal"
@@ -470,13 +474,13 @@ const OrdersDrawer = (props) => {
                 key={index}
                 control={control}
                 name={item.column.columnDef.accessorKey}
-                render={({ field }) => (
+                render={({ field: { ref, ...fieldProps } }) => (
                   <Autocomplete
                     handleHomeEndKeys
                     id={`${props.dataName.singular}-${item.column.columnDef.accessorKey}`}
-                    value={field.value || null}
+                    value={fieldProps.value || null}
                     onChange={(event, value) => {
-                      field.onChange(value);
+                      fieldProps.onChange(value);
                     }}
                     options={customerData ?? []}
                     isOptionEqualToValue={(option, value) =>
@@ -493,6 +497,7 @@ const OrdersDrawer = (props) => {
                         {...params}
                         id={item.column.columnDef.accessorKey}
                         label={item.column.columnDef.header()}
+                        inputRef={ref}
                         error={
                           !!(
                             formState.errors[
@@ -550,7 +555,7 @@ const OrdersDrawer = (props) => {
                     <Controller
                       control={control}
                       name={`products.${prodIndex}.product`}
-                      render={({ field }) => (
+                      render={({ field: { ref, ...fieldProps } }) => (
                         <Autocomplete
                           handleHomeEndKeys
                           {...register(`products.${prodIndex}.product`, {
@@ -559,7 +564,7 @@ const OrdersDrawer = (props) => {
                           id={`products.${prodIndex}.product-input`}
                           value={watch("products")[prodIndex].product || null}
                           onChange={(event, value) => {
-                            field.onChange(value);
+                            fieldProps.onChange(value);
                           }}
                           options={productsData ?? []}
                           filterOptions={(options, state) =>
@@ -585,6 +590,7 @@ const OrdersDrawer = (props) => {
                               {...params}
                               id={`products.${prodIndex}.product`}
                               label={`Product #${prodIndex + 1}`}
+                              inputRef={ref}
                               error={
                                 !!(
                                   formState.errors?.products?.[prodIndex]
@@ -726,11 +732,12 @@ const OrdersDrawer = (props) => {
                     control={control}
                     id={item.column.columnDef.accessorKey}
                     name={item.column.columnDef.accessorKey}
-                    render={({ field }) => (
+                    render={({ field: { ref, ...fieldProps } }) => (
                       <Checkbox
-                        {...field}
-                        checked={!!field.value}
-                        onChange={field.onChange}
+                        {...fieldProps}
+                        checked={!!fieldProps.value}
+                        onChange={fieldProps.onChange}
+                        inputRef={ref}
                         disabled={
                           formState.isLoading ||
                           formState.isSubmitting ||

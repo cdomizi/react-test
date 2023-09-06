@@ -181,19 +181,19 @@ const CustomerDetail = ({
                 control={control}
                 name={key}
                 defaultValue={data[key]}
-                render={({ field }) => (
+                render={({ field: { ref, ...fieldProps } }) => (
                   <TextField
-                    {...field}
+                    {...fieldProps}
                     id={key}
                     label={key}
-                    inputRef={field.ref}
+                    inputRef={ref}
                     InputLabelProps={{ shrink: true }}
                     disabled={
                       isLoading || isSubmitting || randomLoading || loading
                     }
                     inputProps={{ readOnly: !edit }}
                     InputProps={{
-                      ...field?.InputProps,
+                      ...fieldProps?.InputProps,
                       endAdornment: (
                         <>
                           {isLoading ||
@@ -223,18 +223,19 @@ const CustomerDetail = ({
                 control={control}
                 name={key}
                 defaultValue={data[key]}
-                render={({ field }) => (
+                render={({ field: { ref, ...fieldProps } }) => (
                   <TextField
-                    {...field}
+                    {...fieldProps}
                     id={formatLabel(key)}
                     label={formatLabel(key)}
+                    inputRef={ref}
                     InputLabelProps={{ shrink: true }}
                     disabled={
                       isLoading || isSubmitting || randomLoading || loading
                     }
                     inputProps={{ readOnly: !edit }}
                     InputProps={{
-                      ...field?.InputProps,
+                      ...fieldProps?.InputProps,
                       endAdornment: (
                         <>
                           {isLoading ||

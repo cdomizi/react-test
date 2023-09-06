@@ -85,7 +85,7 @@ const TableDrawer = (props) => {
             key={index}
             control={control}
             name={column.columnDef.accessorKey}
-            render={({ field }) => (
+            render={({ field: { ref, ...fieldProps } }) => (
               <Autocomplete
                 freeSolo
                 multiple
@@ -94,14 +94,15 @@ const TableDrawer = (props) => {
                   column.columnDef.accessorKey
                 }`}
                 options={[]}
-                value={field.value || []}
-                onChange={(event, value) => field.onChange(value)}
+                value={fieldProps.value || []}
+                onChange={(event, value) => fieldProps.onChange(value)}
                 noOptionsText={"No items"}
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     id={column.columnDef.accessorKey}
                     label={column.columnDef.header()}
+                    inputRef={ref}
                     error={!!formState.errors[column.columnDef.accessorKey]}
                     helperText={
                       formState.errors[column.columnDef.accessorKey] &&
@@ -143,12 +144,12 @@ const TableDrawer = (props) => {
             control={control}
             name={column.columnDef.accessorKey}
             defaultValue={""}
-            render={({ field }) => (
+            render={({ field: { ref, ...fieldProps } }) => (
               <TextField
-                {...field}
+                {...fieldProps}
                 id={column.columnDef.accessorKey}
                 label={column.columnDef.header()}
-                inputRef={field.ref}
+                inputRef={ref}
                 type={column.columnDef?.fieldFormat?.type ?? "string"}
                 error={!!formState.errors[column.columnDef.accessorKey]}
                 helperText={
@@ -204,7 +205,7 @@ const TableDrawer = (props) => {
             key={index}
             control={control}
             name={item.column.columnDef.accessorKey}
-            render={({ field }) => (
+            render={({ field: { ref, ...fieldProps } }) => (
               <Autocomplete
                 freeSolo
                 multiple
@@ -215,14 +216,15 @@ const TableDrawer = (props) => {
                     ? [item?.getValue()]
                     : item?.getValue()
                 }
-                value={field.value ?? item.getValue()}
-                onChange={(event, value) => field.onChange(value)}
+                value={fieldProps.value ?? item.getValue()}
+                onChange={(event, value) => fieldProps.onChange(value)}
                 noOptionsText={"No items"}
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     id={item.column.columnDef.accessorKey}
                     label={item.column.columnDef.header()}
+                    inputRef={ref}
                     error={
                       !!formState.errors[item.column.columnDef.accessorKey]
                     }
@@ -267,12 +269,12 @@ const TableDrawer = (props) => {
             control={control}
             name={item.column.columnDef.accessorKey}
             defaultValue={item?.getValue()}
-            render={({ field }) => (
+            render={({ field: { ref, ...fieldProps } }) => (
               <TextField
-                {...field}
+                {...fieldProps}
                 id={item.column.columnDef.accessorKey}
                 label={item.column.columnDef.header()}
-                inputRef={field.ref}
+                inputRef={ref}
                 type={item.column.columnDef?.fieldFormat?.type ?? "string"}
                 error={!!formState.errors[item.column.columnDef.accessorKey]}
                 helperText={

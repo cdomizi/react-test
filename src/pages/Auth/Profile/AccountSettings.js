@@ -41,8 +41,8 @@ const AccountSettings = () => {
   // ======== Password change section ======== //
   const {
     control,
-    handleSubmit,
     formState: { errors, isSubmitSuccessful },
+    handleSubmit,
     reset,
     watch,
   } = useForm({
@@ -269,9 +269,9 @@ const AccountSettings = () => {
     () => (
       <TextField
         id="edit-password"
-        inputRef={passwordRef}
         name="password"
         label="Password"
+        inputRef={passwordRef}
         type="password"
         InputLabelProps={{ shrink: true }}
         required
@@ -340,17 +340,19 @@ const AccountSettings = () => {
                 message: "Password must be at least 6 characters",
               },
             }}
-            render={({ field }) => (
+            render={({ field: { ref, ...fieldProps } }) => (
               <TextField
-                {...field}
+                {...fieldProps}
                 id="password"
                 label="Current Password"
+                inputRef={ref}
                 type="password"
                 error={!!errors?.password}
                 helperText={errors?.password && errors?.password?.message}
                 InputLabelProps={{ required: true, shrink: true }}
                 disabled={!edit}
                 fullWidth
+                autoFocus
                 margin="normal"
               />
             )}
@@ -365,11 +367,12 @@ const AccountSettings = () => {
                 message: "Password must be at least 6 characters",
               },
             }}
-            render={({ field }) => (
+            render={({ field: { ref, ...fieldProps } }) => (
               <TextField
-                {...field}
+                {...fieldProps}
                 id="newPassword"
                 label="New Password"
+                inputRef={ref}
                 type="password"
                 error={!!errors?.newPassword}
                 helperText={errors?.newPassword && errors?.newPassword?.message}
@@ -388,11 +391,12 @@ const AccountSettings = () => {
               validate: (val) =>
                 val === watch("newPassword") || "Passwords do not match",
             }}
-            render={({ field }) => (
+            render={({ field: { ref, ...fieldProps } }) => (
               <TextField
-                {...field}
+                {...fieldProps}
                 id="confirmPassword"
                 label="Confirm Password"
+                inputRef={ref}
                 type="password"
                 error={!!errors?.confirmPassword}
                 helperText={
