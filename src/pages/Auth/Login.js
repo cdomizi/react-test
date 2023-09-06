@@ -5,7 +5,6 @@ import { useNavigate, useLocation } from "react-router";
 // Project import
 import publicApi from "../../api/axios";
 import AuthContext from "../../contexts/AuthContext";
-import CustomSnackbar from "../../components/CustomSnackbar";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../contexts/SnackbarContext";
@@ -28,9 +27,7 @@ const Login = () => {
 
   const { setAuth } = useContext(AuthContext);
 
-  // Set up snackbar
-  const { snackbarState, dispatch } = useContext(SnackbarContext);
-  snackbarState.dataName = "user";
+  const dispatch = useContext(SnackbarContext);
 
   const {
     control,
@@ -177,7 +174,6 @@ const Login = () => {
       >
         Create an account
       </Button>
-      <CustomSnackbar {...snackbarState} />
     </Box>
   );
 };

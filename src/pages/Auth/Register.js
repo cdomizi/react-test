@@ -8,7 +8,6 @@ import AuthContext from "../../contexts/AuthContext";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../contexts/SnackbarContext";
-import CustomSnackbar from "../../components/CustomSnackbar";
 
 // MUI components
 const {
@@ -25,7 +24,7 @@ const Register = () => {
 
   const { setAuth } = useContext(AuthContext);
 
-  const { dispatch } = useContext(SnackbarContext);
+  const dispatch = useContext(SnackbarContext);
 
   const {
     control,
@@ -182,7 +181,6 @@ const Register = () => {
       <Button onClick={() => navigate("/login")} variant="outlined" fullWidth>
         Log in
       </Button>
-      <CustomSnackbar />
     </Box>
   );
 };

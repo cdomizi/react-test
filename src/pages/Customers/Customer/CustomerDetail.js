@@ -7,7 +7,6 @@ import { handleEditCustomer, customerSchema } from "../CustomerActions";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../../contexts/SnackbarContext";
-import CustomSnackbar from "../../../components/CustomSnackbar";
 import getRandomInt from "../../../utils/getRandomInt";
 import { formatLabel, formatOrderDate } from "../../../utils/formatStrings";
 
@@ -45,11 +44,7 @@ const CustomerDetail = ({
   // Loading state for setRandomData
   const [randomLoading, setRandomLoading] = useState(false);
 
-  // State and dispatch function for snackbar component
-  const { snackbarState, dispatch } = useContext(SnackbarContext);
-
-  // Set the `dataName` property for the snackbar
-  snackbarState.dataName = dataName?.singular;
+  const dispatch = useContext(SnackbarContext);
 
   const {
     control,
@@ -66,7 +61,11 @@ const CustomerDetail = ({
       const response = await handleEditCustomer(formData);
       if (response?.length) {
         // Display confirmation message if the request was successful
-        dispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: response });
+        dispatch({
+          type: SNACKBAR_ACTIONS.EDIT,
+          payload: response,
+          dataName: dataName?.singular,
+        });
         // Force refetch to get updated data
         reload();
       } else {
@@ -77,16 +76,18 @@ const CustomerDetail = ({
             dispatch({
               type: SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR,
               payload: response,
+              dataName: dataName?.singular,
             })
           : // Display a generic error message
             dispatch({
               type: SNACKBAR_ACTIONS.EDIT_ERROR,
               payload: response,
+              dataName: dataName?.singular,
             });
       }
       setEdit(false);
     },
-    [dispatch, reload]
+    [dataName?.singular, dispatch, reload]
   );
 
   // Fill with random data
@@ -390,7 +391,6 @@ const CustomerDetail = ({
         <Divider orientation="vertical" flexItem />
         {(!error && CustomerOrders) ?? null}
       </Stack>
-      <CustomSnackbar {...snackbarState} />
     </Box>
   );
 };

@@ -35,9 +35,10 @@ const InvoiceItem = memo(({ name, value, id, color = "auto" }) => (
 
 const InvoiceSection = forwardRef(
   ({ data, reload, checkAuthentication }, ref) => {
-    const { dispatch: snackbarDispatch } = useContext(SnackbarContext);
-
     const authApi = useAuthApi();
+
+    const dispatch = useContext(SnackbarContext);
+    const dataName = "invoice";
 
     const onCreateInvoice = useCallback(async () => {
       const submitData = {
@@ -56,23 +57,23 @@ const InvoiceSection = forwardRef(
 
       if (response?.length) {
         // Display confirmation message if the request was successful
-        snackbarDispatch({
+        dispatch({
           type: SNACKBAR_ACTIONS.CREATE,
           payload: response,
-          dataName: "invoice",
+          dataName,
         });
         // Force refetch to get updated data
         reload();
       } else {
         console.error(response);
         // Display a generic error message
-        snackbarDispatch({
+        dispatch({
           type: SNACKBAR_ACTIONS.CREATE_ERROR,
           payload: response,
-          dataName: "invoice",
+          dataName,
         });
       }
-    }, [data, snackbarDispatch, reload]);
+    }, [data, dispatch, reload]);
 
     const handleEditInvoice = useCallback(
       async (invoiceId, paid) => {
@@ -99,10 +100,10 @@ const InvoiceSection = forwardRef(
 
         if (response?.length) {
           // Display confirmation message if the request was successful
-          snackbarDispatch({
+          dispatch({
             type: SNACKBAR_ACTIONS.EDIT,
             payload: response,
-            dataName: "invoice",
+            dataName,
           });
           // Force refetch to get updated data
           reload();
@@ -110,10 +111,10 @@ const InvoiceSection = forwardRef(
         } else {
           console.error(response);
           // Display a generic error message
-          snackbarDispatch({
+          dispatch({
             type: SNACKBAR_ACTIONS.EDIT_ERROR,
             payload: response,
-            dataName: "invoice",
+            dataName,
           });
         }
       }
@@ -123,7 +124,7 @@ const InvoiceSection = forwardRef(
       checkAuthentication,
       handleEditInvoice,
       data?.invoice?.id,
-      snackbarDispatch,
+      dispatch,
       reload,
     ]);
 
@@ -161,20 +162,20 @@ const InvoiceSection = forwardRef(
 
         if (response?.length) {
           // Display confirmation message if the request was successful
-          snackbarDispatch({
+          dispatch({
             type: SNACKBAR_ACTIONS.DELETE,
             payload: response,
-            dataName: "invoice",
+            dataName,
           });
           // Force refetch to get updated data
           reload();
         } else {
           console.error(response);
           // Display a generic error message
-          snackbarDispatch({
+          dispatch({
             type: SNACKBAR_ACTIONS.DELETE_ERROR,
             payload: response,
-            dataName: "invoice",
+            dataName,
           });
         }
       }
@@ -184,7 +185,7 @@ const InvoiceSection = forwardRef(
       checkAuthentication,
       handleDeleteInvoice,
       data?.invoice?.id,
-      snackbarDispatch,
+      dispatch,
       reload,
     ]);
 

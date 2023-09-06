@@ -15,7 +15,7 @@ const CustomSnackbar = ({
   dataName = null,
 }) => {
   // State and dispatch function for snackbar component
-  const { dispatch } = useContext(SnackbarContext);
+  const dispatch = useContext(SnackbarContext);
 
   const handleClose = (event, reason) => {
     dispatch({ type: SNACKBAR_ACTIONS.CLOSE, payload: reason });

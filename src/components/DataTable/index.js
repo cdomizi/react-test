@@ -15,7 +15,6 @@ import TableDrawer from "./TableDrawer";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../contexts/SnackbarContext";
-import CustomSnackbar from "../CustomSnackbar";
 
 // MUI components
 import {
@@ -65,11 +64,7 @@ const DataTable = (props) => {
     customDrawer: CustomDrawer = null,
   } = props;
 
-  // State and dispatch function for snackbar component
-  const { snackbarState, dispatch } = useContext(SnackbarContext);
-
-  // Set the `dataName` property for the snackbar if provided
-  if (dataName?.singular) snackbarState.dataName = dataName.singular;
+  const dispatch = useContext(SnackbarContext);
 
   const defaultSorting = [{ id: orderBy, desc: defaultOrder }];
   const [sorting, setSorting] = useState(defaultSorting ?? []);
@@ -169,15 +164,23 @@ const DataTable = (props) => {
       const response = await onDelete(rowData?.id);
       if (response?.length) {
         // Display confirmation message if the request was successful
-        dispatch({ type: SNACKBAR_ACTIONS.DELETE, payload: response });
+        dispatch({
+          type: SNACKBAR_ACTIONS.DELETE,
+          payload: response,
+          dataName: dataName?.singular,
+        });
         // Force refetch to get updated data
         reload && reload();
       } else {
         // Display error message if the request failed
-        dispatch({ type: SNACKBAR_ACTIONS.DELETE_ERROR, payload: response });
+        dispatch({
+          type: SNACKBAR_ACTIONS.DELETE_ERROR,
+          payload: response,
+          dataName: dataName?.singular,
+        });
       }
     },
-    [onDelete, dispatch, reload]
+    [onDelete, dispatch, dataName?.singular, reload]
   );
 
   // Handle submit CreateDrawer form
@@ -187,7 +190,11 @@ const DataTable = (props) => {
       setDrawerState(initialDrawerState);
       if (typeof response === "string") {
         // Display confirmation message if the request was successful
-        dispatch({ type: SNACKBAR_ACTIONS.CREATE, payload: response });
+        dispatch({
+          type: SNACKBAR_ACTIONS.CREATE,
+          payload: response,
+          dataName: dataName?.singular,
+        });
         // Force refetch to get updated data
         reload && reload();
       } else {
@@ -197,15 +204,17 @@ const DataTable = (props) => {
             dispatch({
               type: SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR,
               payload: response,
+              dataName: dataName?.singular,
             })
           : // Display a generic error message
             dispatch({
               type: SNACKBAR_ACTIONS.CREATE_ERROR,
               payload: response,
+              dataName: dataName?.singular,
             });
       }
     },
-    [onCreate, initialDrawerState, dispatch, reload]
+    [onCreate, initialDrawerState, dispatch, dataName?.singular, reload]
   );
 
   // Handle submit EditDrawer form
@@ -215,7 +224,11 @@ const DataTable = (props) => {
       setDrawerState(initialDrawerState);
       if (response?.length) {
         // Display confirmation message if the request was successful
-        dispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: response });
+        dispatch({
+          type: SNACKBAR_ACTIONS.EDIT,
+          payload: response,
+          dataName: dataName?.singular,
+        });
         // Force refetch to get updated data
         reload && reload();
       } else {
@@ -225,15 +238,17 @@ const DataTable = (props) => {
             dispatch({
               type: SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR,
               payload: response,
+              dataName: dataName?.singular,
             })
           : // Display a generic error message
             dispatch({
               type: SNACKBAR_ACTIONS.EDIT_ERROR,
               payload: response,
+              dataName: dataName?.singular,
             });
       }
     },
-    [onEdit, initialDrawerState, dispatch, reload]
+    [onEdit, initialDrawerState, dispatch, dataName?.singular, reload]
   );
 
   // Conditionally render CustomDrawer if provided as props
@@ -548,7 +563,6 @@ const DataTable = (props) => {
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleRowsPerPageChange}
         />
-        <CustomSnackbar {...snackbarState} />
       </Paper>
       {drawerState.edit ? EditDrawer : CreateDrawer}
     </Box>

@@ -17,7 +17,6 @@ import {
   useTheme,
 } from "@mui/material";
 import { useCallback } from "react";
-import CustomSnackbar from "../components/CustomSnackbar";
 import useVerifyToken from "../hooks/useVerifyToken";
 
 const ProfileTab = ({ direction = "row", sx }) => {
@@ -29,8 +28,7 @@ const ProfileTab = ({ direction = "row", sx }) => {
   const { auth, setAuth } = useContext(AuthContext);
   const [retry, setRetry] = useState(false); // State to prevent endless loop
 
-  // Set up snackbar
-  const { snackbarState, dispatch } = useContext(SnackbarContext);
+  const dispatch = useContext(SnackbarContext);
 
   // Verify/refresh access token
   useVerifyToken(false, false, retry, setRetry);
@@ -148,7 +146,6 @@ const ProfileTab = ({ direction = "row", sx }) => {
           </Button>
         </>
       )}
-      <CustomSnackbar {...snackbarState} />
     </Stack>
   );
 };

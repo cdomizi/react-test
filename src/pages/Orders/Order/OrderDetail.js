@@ -18,7 +18,6 @@ import useRefreshToken from "../../../hooks/useRefreshToken";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../../contexts/SnackbarContext";
-import CustomSnackbar from "../../../components/CustomSnackbar";
 import DialogContext, { DIALOG_ACTIONS } from "../../../contexts/DialogContext";
 import { formatLabel } from "../../../utils/formatStrings";
 import InvoiceSection from "./InvoiceSection";
@@ -55,10 +54,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
   // Ref for the invoice template
   const invoiceTemplateRef = useRef(null);
 
-  // Set up snackbar
-  const { snackbarState, dispatch: snackbarDispatch } =
-    useContext(SnackbarContext);
-  snackbarState.dataName = dataName?.singular;
+  const snackbarDispatch = useContext(SnackbarContext);
 
   const dialogDispatch = useContext(DialogContext);
 
@@ -104,7 +100,11 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
       const response = await handleEditOrder(submitData);
       if (response?.length) {
         // Display confirmation message if the request was successful
-        snackbarDispatch({ type: SNACKBAR_ACTIONS.EDIT, payload: response });
+        snackbarDispatch({
+          type: SNACKBAR_ACTIONS.EDIT,
+          payload: response,
+          dataName: dataName?.singular,
+        });
         // Force refetch to get updated data
         reload();
       } else {
@@ -115,18 +115,20 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
             snackbarDispatch({
               type: SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR,
               payload: response,
+              dataName: dataName?.singular,
             })
           : // Display a generic error message
             snackbarDispatch({
               type: SNACKBAR_ACTIONS.EDIT_ERROR,
               payload: response,
+              dataName: dataName?.singular,
             });
       }
 
       // Disable edit mode
       setEdit(false);
     },
-    [snackbarDispatch, reload]
+    [snackbarDispatch, dataName?.singular, reload]
   );
 
   const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
@@ -680,7 +682,6 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
           data={{ data, products: getValues("products") }}
         />
       </Box>
-      <CustomSnackbar {...snackbarState} />
     </Box>
   );
 };

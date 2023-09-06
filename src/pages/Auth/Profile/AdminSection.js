@@ -14,7 +14,6 @@ import AuthContext from "../../../contexts/AuthContext";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../../contexts/SnackbarContext";
-import CustomSnackbar from "../../../components/CustomSnackbar";
 import DataTable from "../../../components/DataTable";
 
 // MUI components
@@ -38,9 +37,8 @@ const AdminSection = memo(() => {
   // State to force reload on table data update
   const [reload, setReload] = useState();
 
-  // Set up snackbar
-  const { snackbarState, dispatch } = useContext(SnackbarContext);
-  snackbarState.dataName = "user";
+  const dispatch = useContext(SnackbarContext);
+  const dataName = useMemo(() => ({ singular: "user", plural: "users" }), []);
 
   // Get users data
   useEffect(() => {
@@ -105,6 +103,7 @@ const AdminSection = memo(() => {
         dispatch({
           type: SNACKBAR_ACTIONS.EDIT,
           payload: response.data?.username,
+          dataName,
         });
         return;
       } catch (err) {
@@ -115,11 +114,12 @@ const AdminSection = memo(() => {
             status: err.response.status,
             statusText: err.response.statusText,
           },
+          dataName,
         });
         return err;
       }
     },
-    [authApi, dispatch, reload]
+    [authApi, dataName, dispatch, reload]
   );
 
   // Delete user
@@ -138,9 +138,6 @@ const AdminSection = memo(() => {
     },
     [authApi, reload]
   );
-
-  // Specify the name for table data
-  const dataName = useMemo(() => ({ singular: "user", plural: "users" }), []);
 
   // Get role value for table row
   const isAdmin = useCallback((value) => (value ? "Admin" : "User"), []);
@@ -227,7 +224,6 @@ const AdminSection = memo(() => {
           onDelete={handleDeleteUser}
         />
       </Card>
-      <CustomSnackbar {...snackbarState} />
     </>
   );
 });

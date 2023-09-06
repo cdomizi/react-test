@@ -16,7 +16,6 @@ import DialogContext, { DIALOG_ACTIONS } from "../../../contexts/DialogContext";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../../contexts/SnackbarContext";
-import CustomSnackbar from "../../../components/CustomSnackbar";
 
 // MUI components
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
@@ -33,10 +32,8 @@ const AccountSettings = () => {
   // State and dispatch function for dialog component
   const dialogDispatch = useContext(DialogContext);
 
-  // Set up snackbar
-  const { snackbarState, dispatch: snackbarDispatch } =
-    useContext(SnackbarContext);
-  snackbarState.dataName = "user";
+  const snackbarDispatch = useContext(SnackbarContext);
+  const dataName = "user";
 
   // ======== Password change section ======== //
   const {
@@ -63,7 +60,11 @@ const AccountSettings = () => {
           // On error, notify the user
           snackbarDispatch({
             type: SNACKBAR_ACTIONS.EDIT_ERROR,
-            payload: { status: 400, statusText: "Passwords do not match" },
+            payload: {
+              status: 400,
+              statusText: "Passwords do not match",
+              dataName,
+            },
           });
           return;
         }
@@ -179,6 +180,7 @@ const AccountSettings = () => {
           snackbarDispatch({
             type: SNACKBAR_ACTIONS.DELETE,
             payload: response.data?.username,
+            dataName,
           });
 
           // Redirect user to home page
@@ -240,6 +242,7 @@ const AccountSettings = () => {
           snackbarDispatch({
             type: SNACKBAR_ACTIONS.EDIT,
             payload: response.data?.username,
+            dataName,
           });
           return;
         } else {
@@ -254,6 +257,7 @@ const AccountSettings = () => {
         snackbarDispatch({
           type: SNACKBAR_ACTIONS.EDIT_ERROR,
           payload: auth?.username,
+          dataName,
         });
       }
 
@@ -463,7 +467,6 @@ const AccountSettings = () => {
       >
         Delete my account
       </Button>
-      <CustomSnackbar {...snackbarState} />
     </Box>
   );
 };
