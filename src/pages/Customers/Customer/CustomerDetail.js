@@ -8,7 +8,10 @@ import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../../contexts/SnackbarContext";
 import getRandomInt from "../../../utils/getRandomInt";
-import { formatLabel, formatOrderDate } from "../../../utils/formatStrings";
+import { formatLabel } from "../../../utils/formatStrings";
+import OrdersSection from "./OrdersSection";
+import CustomerDetailSkeleton from "./CustomerDetailSkeleton";
+import CustomDivider from "../../../components/CustomDivider";
 
 // MUI components
 import {
@@ -17,19 +20,14 @@ import {
   Box,
   Button,
   CircularProgress,
-  Divider,
   InputAdornment,
-  List,
-  ListItem,
-  ListItemIcon,
-  Skeleton,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 
 // MUI icons
-import { Circle as CircleIcon, Edit as EditIcon } from "@mui/icons-material";
+import { Edit as EditIcon } from "@mui/icons-material";
 
 const CustomerDetail = ({
   loading,
@@ -110,64 +108,6 @@ const CustomerDetail = ({
       setRandomLoading(false);
     }
   }, [randomData?.url, reset]);
-
-  const CustomerSkeleton = useMemo(
-    () => (
-      <>
-        <Skeleton
-          variant="text"
-          sx={{ fontSize: "5rem", maxWidth: "26rem", marginBottom: "2rem" }}
-        />
-        <Stack direction="row" spacing={2}>
-          <Stack width="20rem">
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "16rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "16rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "16rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "16rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "7rem" }}
-            />
-          </Stack>
-          <Stack width="20rem" spacing={2}>
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "3rem", maxWidth: "12rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "1rem", maxWidth: "10rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "1rem", maxWidth: "10rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "1rem", maxWidth: "10rem" }}
-            />
-            <Skeleton
-              variant="text"
-              sx={{ fontSize: "1rem", maxWidth: "10rem" }}
-            />
-          </Stack>
-        </Stack>
-      </>
-    ),
-    []
-  );
 
   // Customer details section
   const FormDetails = useMemo(
@@ -272,50 +212,12 @@ const CustomerDetail = ({
     ]
   );
 
-  // Customer orders section
-  const CustomerOrders = useMemo(
-    () => (
-      <Box>
-        <Typography variant="h5" mb={3}>
-          Orders by{" "}
-          {data?.firstName && data?.lastName
-            ? `${data.firstName} ${data.lastName}`
-            : `Customer ${data?.id}`}
-          :
-        </Typography>
-        {data?.orders?.length ? (
-          <List>
-            {data.orders.map((order) => (
-              <ListItem key={order.id} sx={{ display: "block" }}>
-                <ListItemIcon
-                  sx={{
-                    "&, & .MuiListItemIcon-root": { minWidth: "2rem" },
-                    verticalAlign: "sub",
-                  }}
-                >
-                  <CircleIcon fontSize="small" />
-                </ListItemIcon>
-                {`#${order.id} on `}
-                <Box component="span" fontWeight="bold">
-                  {`${formatOrderDate(order.createdAt)}`}
-                </Box>
-              </ListItem>
-            ))}
-          </List>
-        ) : (
-          "No orders"
-        )}
-      </Box>
-    ),
-    [data?.id, data?.firstName, data?.lastName, data?.orders]
-  );
-
   return loading ? (
-    CustomerSkeleton
+    <CustomerDetailSkeleton />
   ) : (
     <Box>
       <Typography variant="h2" mb="3rem">{`Customer #${data?.id}`}</Typography>
-      <Stack direction="row" spacing="2rem">
+      <Stack direction={{ xs: "column", md: "row" }} spacing="3.5rem">
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2} width="18rem">
             {error ? (
@@ -388,8 +290,8 @@ const CustomerDetail = ({
             )}
           </Stack>
         </form>
-        <Divider orientation="vertical" flexItem />
-        {(!error && CustomerOrders) ?? null}
+        <CustomDivider sx={{ display: error ? "none" : "block" }} />
+        {(!error && <OrdersSection data={data} />) ?? null}
       </Stack>
     </Box>
   );

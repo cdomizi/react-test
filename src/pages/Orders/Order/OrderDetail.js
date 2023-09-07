@@ -20,12 +20,13 @@ import SnackbarContext, {
 } from "../../../contexts/SnackbarContext";
 import DialogContext, { DIALOG_ACTIONS } from "../../../contexts/DialogContext";
 import { formatLabel } from "../../../utils/formatStrings";
+
 import InvoiceSection from "./InvoiceSection";
 import InvoiceTemplate from "./InvoiceTemplate";
-import CustomDivider from "../../../components/CustomDivider";
 import OrderDetailSkeleton from "./OrderDetailSkeleton";
+import CustomDivider from "../../../components/CustomDivider";
 
-// Mui components
+// MUI components
 import {
   Alert,
   AlertTitle,
@@ -666,7 +667,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
       <Typography variant="h2" mb="3rem">{`Order #${data?.id}`}</Typography>
       <Stack direction={{ xs: "column", md: "row" }} spacing="5rem">
         {OrderEditForm}
-        <CustomDivider flexItem />
+        <CustomDivider />
         {error ? null : (
           <InvoiceSection
             data={data}

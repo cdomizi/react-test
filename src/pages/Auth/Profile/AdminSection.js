@@ -210,7 +210,7 @@ const AdminSection = memo(() => {
           }
         </Box>
       </Typography>
-      <Card sx={{ maxWidth: "90%", overflowX: "auto" }}>
+      <Card>
         <DataTable
           data={fetchState?.data}
           dataName={dataName}

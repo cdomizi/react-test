@@ -7,6 +7,7 @@ const CustomDivider = (props) => {
 
   return (
     <Divider
+      sx={{ py: { xs: 1, md: 0 } }}
       {...props}
       orientation={
         // Make the divider horizontal up to a certain breakpoint (default: `md`),

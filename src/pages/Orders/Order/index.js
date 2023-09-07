@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-// project import
+// Project import
 import OrderDetail from "./OrderDetail";
 import useFetch from "../../../hooks/useFetch";
 
