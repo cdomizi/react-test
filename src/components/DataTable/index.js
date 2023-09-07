@@ -407,11 +407,11 @@ const DataTable = (props) => {
   );
 
   return (
-    <Box sx={{ ...sx }}>
+    <Box sx={{ maxWidth: "90vw", ...sx }}>
       {Filters}
       <Divider />
       <Paper>
-        <TableContainer>
+        <TableContainer sx={{ overflowX: "auto" }}>
           <Table
             size={
               // Automatically set table padding based on screen width

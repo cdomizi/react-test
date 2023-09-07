@@ -94,7 +94,6 @@ const CustomersTable = memo(() => {
   return (
     <Card>
       <DataTable
-        sx={{ minWidth: "700px" }}
         data={customers}
         dataName={dataName}
         columns={columns}
