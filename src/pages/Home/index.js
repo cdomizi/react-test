@@ -31,7 +31,7 @@ const Home = () => {
         Browse our website
       </Typography>
       <Stack
-        direction={{ xs: "column", sm: "row" }}
+        direction={{ xs: "column", md: "row" }}
         spacing={5}
         justifyContent="center"
       >

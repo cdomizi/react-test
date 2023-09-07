@@ -18,24 +18,25 @@ import SnackbarContext, {
 
 // MUI components
 import {
-  TableContainer,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TablePagination,
-  Paper,
-  Divider,
-  Skeleton,
   Alert,
   AlertTitle,
-  useMediaQuery,
+  Box,
+  Button,
+  Card,
+  Divider,
+  IconButton,
+  Paper,
+  Skeleton,
+  TableContainer,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TablePagination,
+  TableRow,
   TableSortLabel,
   Tooltip,
-  IconButton,
-  Button,
-  Box,
+  useMediaQuery,
 } from "@mui/material";
 
 // MUI icons
@@ -407,166 +408,168 @@ const DataTable = (props) => {
   );
 
   return (
-    <Box sx={{ maxWidth: "90vw", ...sx }}>
-      {Filters}
-      <Divider />
-      <Paper>
-        <TableContainer sx={{ overflowX: "auto" }}>
-          <Table
-            size={
-              // Automatically set table padding based on screen width
-              useMediaQuery("(min-width:600px)") ? "medium" : "small"
-            }
-          >
-            <TableHead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableCell
-                      key={header.id}
-                      onClick={header.column.getToggleSortingHandler()}
-                      align="center"
-                      sx={{ fontWeight: "bold", textTransform: "uppercase" }}
-                    >
-                      <TableSortLabel
-                        active={sorting[0]?.id === header.id}
-                        hideSortIcon
-                        direction={
-                          header.column.getIsSorted() === "desc"
-                            ? "desc"
-                            : "asc"
-                        }
+    <Card sx={{ maxWidth: "92vw", mx: "auto", ...sx }}>
+      <Box sx={{ mx: 0, px: 0 }}>
+        {Filters}
+        <Divider />
+        <Paper>
+          <TableContainer sx={{ overflowX: "auto" }}>
+            <Table
+              size={
+                // Automatically set table padding based on screen width
+                useMediaQuery("(min-width:600px)") ? "medium" : "small"
+              }
+            >
+              <TableHead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableCell
+                        key={header.id}
+                        onClick={header.column.getToggleSortingHandler()}
+                        align="center"
+                        sx={{ fontWeight: "bold", textTransform: "uppercase" }}
                       >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableSortLabel>
-                    </TableCell>
-                  ))}
-                  {(onEdit || onDelete) && <TableCell />}
-                </TableRow>
-              ))}
-            </TableHead>
-            <TableBody>
-              {loading && !data && SkeletonTable}
-              {!loading &&
-                (error ? (
-                  <TableRow>
-                    <TableCell colSpan={table.getFlatHeaders().length}>
-                      <Alert severity="error">
-                        <AlertTitle>Error</AlertTitle>
-                        Sorry, an error occurred while getting the data.
-                      </Alert>
-                    </TableCell>
-                  </TableRow>
-                ) : !data?.length ? (
-                  <TableRow>
-                    <TableCell colSpan={table.getFlatHeaders().length}>
-                      <Alert severity="info">
-                        <AlertTitle>No Data</AlertTitle>
-                        No records available.
-                      </Alert>
-                    </TableCell>
-                  </TableRow>
-                ) : table.getPrePaginationRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      hover={clickable}
-                      sx={{ cursor: clickable ? "pointer" : "default" }}
-                      onClick={(event) => {
-                        clickable && onRowClick(event, row.original);
-                      }}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell
-                          key={cell.id}
-                          align={cell.column.columnDef.align ?? "center"}
-                          sx={{
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                            textOverflow: "ellipsis",
-                            maxWidth: {
-                              xs: "8rem",
-                              sm: "9rem",
-                              md: "10rem",
-                              lg: "12rem",
-                              xl: "15rem",
-                            },
-                            ...cell.column.columnDef?.style,
-                          }}
+                        <TableSortLabel
+                          active={sorting[0]?.id === header.id}
+                          hideSortIcon
+                          direction={
+                            header.column.getIsSorted() === "desc"
+                              ? "desc"
+                              : "asc"
+                          }
                         >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-                      {(onEdit || onDelete) && (
-                        <TableCell
-                          sx={{ whiteSpace: "nowrap", textAlign: "right" }}
-                        >
-                          {onEdit && (
-                            <Tooltip
-                              title="Edit"
-                              onClick={(event) => handleOnEdit(event, row)}
-                            >
-                              <IconButton>
-                                <EditIcon />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                          {onDelete && (
-                            <Tooltip
-                              title="Delete"
-                              onClick={(event) =>
-                                handleOnDelete(event, row.original)
-                              }
-                            >
-                              <IconButton>
-                                <DeleteIcon />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                        </TableCell>
-                      )}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={table.getFlatHeaders().length}>
-                      <Alert severity="info">
-                        <AlertTitle>No Results Found</AlertTitle>
-                        {`Sorry, no ${
-                          dataName?.plural ?? "items"
-                        } match your search. Please try again with
-                        a different query.`}
-                      </Alert>
-                    </TableCell>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableSortLabel>
+                      </TableCell>
+                    ))}
+                    {(onEdit || onDelete) && <TableCell />}
                   </TableRow>
                 ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          component="div"
-          count={table.getPrePaginationRowModel().rows?.length ?? 0}
-          page={
-            table.getPrePaginationRowModel().rows?.length
-              ? table.getState().pagination.pageIndex
-              : 0
-          }
-          rowsPerPage={table.getState().pagination.pageSize}
-          rowsPerPageOptions={rowsPerPageOptions}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleRowsPerPageChange}
-        />
-      </Paper>
-      {drawerState.edit ? EditDrawer : CreateDrawer}
-    </Box>
+              </TableHead>
+              <TableBody>
+                {loading && !data && SkeletonTable}
+                {!loading &&
+                  (error ? (
+                    <TableRow>
+                      <TableCell colSpan={table.getFlatHeaders().length}>
+                        <Alert severity="error">
+                          <AlertTitle>Error</AlertTitle>
+                          Sorry, an error occurred while getting the data.
+                        </Alert>
+                      </TableCell>
+                    </TableRow>
+                  ) : !data?.length ? (
+                    <TableRow>
+                      <TableCell colSpan={table.getFlatHeaders().length}>
+                        <Alert severity="info">
+                          <AlertTitle>No Data</AlertTitle>
+                          No records available.
+                        </Alert>
+                      </TableCell>
+                    </TableRow>
+                  ) : table.getPrePaginationRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        hover={clickable}
+                        sx={{ cursor: clickable ? "pointer" : "default" }}
+                        onClick={(event) => {
+                          clickable && onRowClick(event, row.original);
+                        }}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell
+                            key={cell.id}
+                            align={cell.column.columnDef.align ?? "center"}
+                            sx={{
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              textOverflow: "ellipsis",
+                              maxWidth: {
+                                xs: "8rem",
+                                sm: "9rem",
+                                md: "10rem",
+                                lg: "12rem",
+                                xl: "15rem",
+                              },
+                              ...cell.column.columnDef?.style,
+                            }}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                        {(onEdit || onDelete) && (
+                          <TableCell
+                            sx={{ whiteSpace: "nowrap", textAlign: "right" }}
+                          >
+                            {onEdit && (
+                              <Tooltip
+                                title="Edit"
+                                onClick={(event) => handleOnEdit(event, row)}
+                              >
+                                <IconButton>
+                                  <EditIcon />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                            {onDelete && (
+                              <Tooltip
+                                title="Delete"
+                                onClick={(event) =>
+                                  handleOnDelete(event, row.original)
+                                }
+                              >
+                                <IconButton>
+                                  <DeleteIcon />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={table.getFlatHeaders().length}>
+                        <Alert severity="info">
+                          <AlertTitle>No Results Found</AlertTitle>
+                          {`Sorry, no ${
+                            dataName?.plural ?? "items"
+                          } match your search. Please try again with
+                        a different query.`}
+                        </Alert>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            component="div"
+            count={table.getPrePaginationRowModel().rows?.length ?? 0}
+            page={
+              table.getPrePaginationRowModel().rows?.length
+                ? table.getState().pagination.pageIndex
+                : 0
+            }
+            rowsPerPage={table.getState().pagination.pageSize}
+            rowsPerPageOptions={rowsPerPageOptions}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+          />
+        </Paper>
+        {drawerState.edit ? EditDrawer : CreateDrawer}
+      </Box>
+    </Card>
   );
 };
 

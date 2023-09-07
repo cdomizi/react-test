@@ -12,9 +12,6 @@ import {
   customerSchema,
 } from "./CustomerActions";
 
-// MUI components
-import { Card } from "@mui/material";
-
 const CustomersTable = memo(() => {
   const navigate = useNavigate();
 
@@ -92,26 +89,24 @@ const CustomersTable = memo(() => {
   };
 
   return (
-    <Card>
-      <DataTable
-        data={customers}
-        dataName={dataName}
-        columns={columns}
-        loading={loading}
-        error={error}
-        orderBy="id"
-        globalSearch={true}
-        defaultOrder={true}
-        clickable={true}
-        reload={() => setReload({})}
-        onRowClick={handleRowClick}
-        onCreate={handleCreateCustomer}
-        onEdit={handleEditCustomer}
-        onDelete={handleDeleteCustomer}
-        validation={customerSchema}
-        randomData={randomData}
-      />
-    </Card>
+    <DataTable
+      data={customers}
+      dataName={dataName}
+      columns={columns}
+      loading={loading}
+      error={error}
+      orderBy="id"
+      globalSearch={true}
+      defaultOrder={true}
+      clickable={true}
+      reload={() => setReload({})}
+      onRowClick={handleRowClick}
+      onCreate={handleCreateCustomer}
+      onEdit={handleEditCustomer}
+      onDelete={handleDeleteCustomer}
+      validation={customerSchema}
+      randomData={randomData}
+    />
   );
 });
 

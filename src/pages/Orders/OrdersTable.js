@@ -17,7 +17,7 @@ import {
 import { formatDate, formatMoney } from "../../utils/formatStrings";
 
 // MUI components
-import { Card, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 
 const OrdersTable = memo(() => {
   const navigate = useNavigate();
@@ -205,25 +205,23 @@ const OrdersTable = memo(() => {
   };
 
   return (
-    <Card>
-      <DataTable
-        data={orders}
-        dataName={dataName}
-        columns={columns}
-        loading={loading || productLoading}
-        error={error || productError}
-        orderBy="updatedAt"
-        globalSearch={false}
-        defaultOrder={true}
-        clickable={true}
-        reload={() => setReload({})}
-        onRowClick={handleRowClick}
-        onCreate={handleCreateOrder}
-        onEdit={handleEditOrder}
-        onDelete={handleDeleteOrder}
-        customDrawer={OrdersDrawer}
-      />
-    </Card>
+    <DataTable
+      data={orders}
+      dataName={dataName}
+      columns={columns}
+      loading={loading || productLoading}
+      error={error || productError}
+      orderBy="updatedAt"
+      globalSearch={false}
+      defaultOrder={true}
+      clickable={true}
+      reload={() => setReload({})}
+      onRowClick={handleRowClick}
+      onCreate={handleCreateOrder}
+      onEdit={handleEditOrder}
+      onDelete={handleDeleteOrder}
+      customDrawer={OrdersDrawer}
+    />
   );
 });
 

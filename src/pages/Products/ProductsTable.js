@@ -14,7 +14,7 @@ import {
 } from "./ProductActions";
 
 // MUI components
-import { Card, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 
 const ProductsTable = memo(() => {
   const navigate = useNavigate();
@@ -165,26 +165,24 @@ const ProductsTable = memo(() => {
   };
 
   return (
-    <Card>
-      <DataTable
-        data={products}
-        dataName={dataName}
-        columns={columns}
-        loading={loading}
-        error={error}
-        orderBy="id"
-        globalSearch={true}
-        defaultOrder={true}
-        clickable={true}
-        reload={() => setReload({})}
-        onRowClick={handleRowClick}
-        onCreate={handleCreateProduct}
-        onEdit={handleEditProduct}
-        onDelete={handleDeleteProduct}
-        validation={productSchema}
-        randomData={randomData}
-      />
-    </Card>
+    <DataTable
+      data={products}
+      dataName={dataName}
+      columns={columns}
+      loading={loading}
+      error={error}
+      orderBy="id"
+      globalSearch={true}
+      defaultOrder={true}
+      clickable={true}
+      reload={() => setReload({})}
+      onRowClick={handleRowClick}
+      onCreate={handleCreateProduct}
+      onEdit={handleEditProduct}
+      onDelete={handleDeleteProduct}
+      validation={productSchema}
+      randomData={randomData}
+    />
   );
 });
 

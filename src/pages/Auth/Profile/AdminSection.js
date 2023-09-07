@@ -17,7 +17,7 @@ import SnackbarContext, {
 import DataTable from "../../../components/DataTable";
 
 // MUI components
-import { Box, Button, Card, Divider, Stack, Typography } from "@mui/material";
+import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 
 const AdminSection = memo(() => {
   const { auth, setAuth } = useContext(AuthContext);
@@ -210,20 +210,19 @@ const AdminSection = memo(() => {
           }
         </Box>
       </Typography>
-      <Card>
-        <DataTable
-          data={fetchState?.data}
-          dataName={dataName}
-          columns={columns}
-          loading={fetchState.loading}
-          error={fetchState.error}
-          orderBy="id"
-          globalSearch={false}
-          defaultOrder={false}
-          clickable={false}
-          onDelete={handleDeleteUser}
-        />
-      </Card>
+      <DataTable
+        sx={{ maxWidth: "600px", ml: 0 }}
+        data={fetchState?.data}
+        dataName={dataName}
+        columns={columns}
+        loading={fetchState.loading}
+        error={fetchState.error}
+        orderBy="id"
+        globalSearch={false}
+        defaultOrder={false}
+        clickable={false}
+        onDelete={handleDeleteUser}
+      />
     </Box>
   );
 });
