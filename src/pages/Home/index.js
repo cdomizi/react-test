@@ -34,6 +34,8 @@ const Home = () => {
         direction={{ xs: "column", md: "row" }}
         spacing={5}
         justifyContent="center"
+        sx={{ flexWrap: { xs: "nowrap", md: "wrap" } }}
+        useFlexGap
       >
         {cards}
       </Stack>

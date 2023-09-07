@@ -217,9 +217,13 @@ const CustomerDetail = ({
   ) : (
     <Box>
       <Typography variant="h2" mb="3rem">{`Customer #${data?.id}`}</Typography>
-      <Stack direction={{ xs: "column", md: "row" }} spacing="3.5rem">
+      <Stack
+        direction={{ xs: "column", md: "row" }}
+        spacing="3.5rem"
+        useFlexGap
+      >
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={2} width="18rem">
+          <Stack spacing={2} width={{ xs: "18rem", md: "22rem" }}>
             {error ? (
               <Alert severity="error">
                 <AlertTitle>Error</AlertTitle>
@@ -290,7 +294,12 @@ const CustomerDetail = ({
             )}
           </Stack>
         </form>
-        <CustomDivider sx={{ display: error ? "none" : "block" }} />
+        <CustomDivider
+          sx={{
+            display: error ? "none" : "block",
+            px: { md: 1 },
+          }}
+        />
         {(!error && <OrdersSection data={data} />) ?? null}
       </Stack>
     </Box>

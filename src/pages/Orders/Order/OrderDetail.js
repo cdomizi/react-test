@@ -665,7 +665,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
   ) : (
     <Box>
       <Typography variant="h2" mb="3rem">{`Order #${data?.id}`}</Typography>
-      <Stack direction={{ xs: "column", md: "row" }} spacing="5rem">
+      <Stack direction={{ xs: "column", md: "row" }} spacing="5rem" useFlexGap>
         {OrderEditForm}
         <CustomDivider />
         {error ? null : (
