@@ -101,7 +101,7 @@ const ProfileTab = ({ direction = "row", isNavbarOpen, sx }) => {
                   borderColor: "primary.contrastText",
                   "&:hover": {
                     borderColor: "primary.contrastText",
-                    backgroundColor: "primary.light",
+                    bgcolor: "primary.light",
                   },
                 }),
             }}
@@ -118,10 +118,10 @@ const ProfileTab = ({ direction = "row", isNavbarOpen, sx }) => {
               ...(theme.palette.mode === "light" && {
                 ml: isNavbarOpen ? "inherit" : "auto",
                 color: "primary.contrastText",
-                backgroundColor: "primary.dark",
+                bgcolor: "primary.dark",
                 "&:hover": {
                   color: "primary.contrastText",
-                  backgroundColor: "primary.light",
+                  bgcolor: "primary.light",
                 },
               }),
             }}
@@ -139,7 +139,7 @@ const ProfileTab = ({ direction = "row", isNavbarOpen, sx }) => {
                   borderColor: "primary.contrastText",
                   "&:hover": {
                     borderColor: "primary.contrastText",
-                    backgroundColor: "primary.light",
+                    bgcolor: "primary.light",
                   },
                 }),
             }}

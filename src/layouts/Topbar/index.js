@@ -15,6 +15,7 @@ import {
   Typography,
   IconButton,
   Tooltip,
+  Container,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -30,50 +31,52 @@ const TopBar = ({ onToggle, menuItems }) => {
 
   return (
     <AppBar component="nav">
-      <Toolbar>
-        <IconButton
-          color="inherit"
-          edge="start"
-          sx={{ display: { md: "none" }, mr: 2 }}
-          onClick={onToggle(true)}
-        >
-          <MenuIcon />
-        </IconButton>
-        <Typography
-          onClick={() => navigate("/")}
-          variant="h6"
-          noWrap
-          component="a"
-          sx={{
-            color: "inherit",
-            textDecoration: "none",
-            flexGrow: 1,
-            cursor: "pointer",
-          }}
-        >
-          React Test
-        </Typography>
-        <Box sx={{ display: { xs: "none", md: "block" } }}>
-          {menuItems.map((item) => (
-            <MenuItem key={item.id} title={item.title} url={item.url} />
-          ))}
-        </Box>
-        <ProfileTab
-          direction="row"
-          sx={{ display: { xs: "none", sm: "flex" } }}
-        />
-        <Tooltip
-          title={theme.palette.mode === "dark" ? "Light Mode" : "Dark Mode"}
-        >
-          <IconButton onClick={colorMode.toggleColorMode} color="inherit">
-            {theme.palette.mode === "dark" ? (
-              <Brightness7Icon />
-            ) : (
-              <Brightness4Icon />
-            )}
+      <Container maxWidth="xl">
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            edge="start"
+            sx={{ display: { md: "none" }, mr: 2 }}
+            onClick={onToggle(true)}
+          >
+            <MenuIcon />
           </IconButton>
-        </Tooltip>
-      </Toolbar>
+          <Typography
+            onClick={() => navigate("/")}
+            variant="h6"
+            noWrap
+            component="a"
+            sx={{
+              color: "inherit",
+              textDecoration: "none",
+              flexGrow: 1,
+              cursor: "pointer",
+            }}
+          >
+            React Test
+          </Typography>
+          <Box sx={{ display: { xs: "none", md: "block" } }}>
+            {menuItems.map((item) => (
+              <MenuItem key={item.id} title={item.title} url={item.url} />
+            ))}
+          </Box>
+          <ProfileTab
+            direction="row"
+            sx={{ display: { xs: "none", sm: "flex" } }}
+          />
+          <Tooltip
+            title={theme.palette.mode === "dark" ? "Light Mode" : "Dark Mode"}
+          >
+            <IconButton onClick={colorMode.toggleColorMode} color="inherit">
+              {theme.palette.mode === "dark" ? (
+                <Brightness7Icon />
+              ) : (
+                <Brightness4Icon />
+              )}
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
+      </Container>
     </AppBar>
   );
 };
