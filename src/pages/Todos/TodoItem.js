@@ -1,28 +1,28 @@
 import { useState, useMemo, memo, useEffect, useRef } from "react";
 
-// project import
+// Project import
 import UpDownArrows from "./UpDownArrows";
 
-// mui components
+// MUI components
 import {
+  Checkbox,
+  IconButton,
   ListItem,
   ListItemIcon,
   ListItemText,
-  IconButton,
-  Tooltip,
   TextField,
-  Checkbox,
+  Tooltip,
 } from "@mui/material";
 
-// mui icons
+// MUI icons
 import {
   Delete as DeleteIcon,
   Edit as EditIcon,
   Done as DoneIcon,
 } from "@mui/icons-material";
 
-const TodoItem = memo((props) => {
-  const {
+const TodoItem = memo(
+  ({
     id,
     position,
     value,
@@ -31,91 +31,91 @@ const TodoItem = memo((props) => {
     onDeleteTodo,
     onEditTodo,
     onMove,
-  } = props;
-  const [editing, setEditing] = useState(false);
-  const [content, setContent] = useState(value);
-  const inputRef = useRef(null);
+  }) => {
+    const [editing, setEditing] = useState(false);
+    const [content, setContent] = useState(value);
+    const inputRef = useRef(null);
 
-  // update content as the user types
-  useEffect(() => setContent(value), [value]);
+    // update content as the user types
+    useEffect(() => setContent(value), [value]);
 
-  // handle moving todo up/down
-  const handleMove = (direction) => onMove(direction, id);
+    // handle moving todo up/down
+    const handleMove = (direction) => onMove(direction, id);
 
-  const todo = useMemo(() => {
-    // edit todo only if not empty, else keep previous content
-    const handleEdit = content.length
-      ? () => {
-          onEditTodo([id, content]);
-          setContent(value);
-          setEditing(false);
-        }
-      : () => {
-          setEditing(false);
-        };
+    const todo = useMemo(() => {
+      // edit todo only if not empty, else keep previous content
+      const handleEdit = content.length
+        ? () => {
+            onEditTodo([id, content]);
+            setContent(value);
+            setEditing(false);
+          }
+        : () => {
+            setEditing(false);
+          };
+
+      return (
+        <>
+          {!editing ? (
+            <>
+              <ListItemText
+                primary={value}
+                sx={{
+                  maxWidth: "13.5rem",
+                  textDecoration: checked ? "line-through" : "inherit",
+                  color: checked ? "text.disabled" : "inherit",
+                }}
+              />
+              <Tooltip title="Edit">
+                <IconButton
+                  aria-label="edit"
+                  sx={{ ml: 2 }}
+                  onClick={() => setEditing(true)}
+                >
+                  <EditIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            </>
+          ) : (
+            <>
+              <TextField
+                variant="standard"
+                value={content}
+                ref={inputRef}
+                onChange={(e) => setContent(e.target.value)}
+                onBlur={handleEdit}
+                autoFocus
+              />
+              <Tooltip title="Done">
+                <IconButton aria-label="done" color="success" sx={{ ml: 2 }}>
+                  <DoneIcon />
+                </IconButton>
+              </Tooltip>
+            </>
+          )}
+        </>
+      );
+    }, [content, editing, value, checked, onEditTodo, id]);
 
     return (
-      <>
-        {!editing ? (
-          <>
-            <ListItemText
-              primary={value}
-              sx={{
-                maxWidth: "13.5rem",
-                textDecoration: checked ? "line-through" : "inherit",
-                color: checked ? "text.disabled" : "inherit",
-              }}
-            />
-            <Tooltip title="Edit">
-              <IconButton
-                aria-label="edit"
-                size="small"
-                sx={{ ml: 2 }}
-                onClick={() => setEditing(true)}
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </>
-        ) : (
-          <>
-            <TextField
-              variant="standard"
-              value={content}
-              ref={inputRef}
-              onChange={(e) => setContent(e.target.value)}
-              onBlur={handleEdit}
-              autoFocus
-            />
-            <Tooltip title="Done">
-              <IconButton aria-label="done" size="small" sx={{ ml: 2 }}>
-                <DoneIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </>
-        )}
-      </>
+      <ListItem>
+        <ListItemIcon>
+          <Checkbox checked={checked} onChange={onToggleTodo} />
+        </ListItemIcon>
+        {todo}
+        <Tooltip title="Delete">
+          <IconButton aria-label="delete" onClick={onDeleteTodo}>
+            <DeleteIcon color="error" />
+          </IconButton>
+        </Tooltip>
+        <UpDownArrows
+          position={position}
+          moveUp={handleMove}
+          disabled={checked}
+        />
+      </ListItem>
     );
-  }, [editing, content, value, id, onEditTodo, checked]);
-
-  return (
-    <ListItem>
-      <ListItemIcon>
-        <Checkbox fontSize="small" checked={checked} onChange={onToggleTodo} />
-      </ListItemIcon>
-      {todo}
-      <Tooltip title="Delete">
-        <IconButton aria-label="delete" size="small" onClick={onDeleteTodo}>
-          <DeleteIcon fontSize="small" />
-        </IconButton>
-      </Tooltip>
-      <UpDownArrows
-        position={position}
-        moveUp={handleMove}
-        disabled={checked}
-      />
-    </ListItem>
-  );
-});
+  }
+);
 
 export default TodoItem;

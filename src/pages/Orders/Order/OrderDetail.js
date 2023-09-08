@@ -509,7 +509,7 @@ const OrderDetail = ({ loading, error, data, dataName, reload = null }) => {
                           disabled={!edit}
                           onClick={() => remove(prodIndex)}
                         >
-                          <DeleteIcon />
+                          <DeleteIcon color="error" />
                         </IconButton>
                       </>
                     </Tooltip>

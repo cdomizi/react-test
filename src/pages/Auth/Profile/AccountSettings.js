@@ -29,7 +29,6 @@ const AccountSettings = () => {
 
   const [edit, setEdit] = useState(false);
 
-  // State and dispatch function for dialog component
   const dialogDispatch = useContext(DialogContext);
 
   const snackbarDispatch = useContext(SnackbarContext);

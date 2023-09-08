@@ -15,6 +15,7 @@ import TableDrawer from "./TableDrawer";
 import SnackbarContext, {
   SNACKBAR_ACTIONS,
 } from "../../contexts/SnackbarContext";
+import DialogContext, { DIALOG_ACTIONS } from "../../contexts/DialogContext";
 
 // MUI components
 import {
@@ -22,6 +23,7 @@ import {
   AlertTitle,
   Box,
   Button,
+  capitalize,
   Card,
   Divider,
   IconButton,
@@ -65,7 +67,9 @@ const DataTable = (props) => {
     customDrawer: CustomDrawer = null,
   } = props;
 
-  const dispatch = useContext(SnackbarContext);
+  const snackbarDispatch = useContext(SnackbarContext);
+
+  const dialogDispatch = useContext(DialogContext);
 
   const defaultSorting = [{ id: orderBy, desc: defaultOrder }];
   const [sorting, setSorting] = useState(defaultSorting ?? []);
@@ -158,14 +162,13 @@ const DataTable = (props) => {
     [drawerState]
   );
 
-  // Handle delete button click
-  const handleOnDelete = useCallback(
-    async (event, rowData) => {
-      event.stopPropagation();
+  // Delete item upon user confirmation
+  const deleteItem = useCallback(
+    async (rowData) => {
       const response = await onDelete(rowData?.id);
       if (response?.length) {
         // Display confirmation message if the request was successful
-        dispatch({
+        snackbarDispatch({
           type: SNACKBAR_ACTIONS.DELETE,
           payload: response,
           dataName: dataName?.singular,
@@ -174,14 +177,44 @@ const DataTable = (props) => {
         reload && reload();
       } else {
         // Display error message if the request failed
-        dispatch({
+        snackbarDispatch({
           type: SNACKBAR_ACTIONS.DELETE_ERROR,
           payload: response,
           dataName: dataName?.singular,
         });
       }
+
+      // Close the dialog
+      dialogDispatch({ type: DIALOG_ACTIONS.CLOSE });
     },
-    [onDelete, dispatch, dataName?.singular, reload]
+    [dataName?.singular, dialogDispatch, onDelete, reload, snackbarDispatch]
+  );
+
+  // Handle delete button click
+  const handleOnDelete = useCallback(
+    async (event, rowData) => {
+      event.stopPropagation();
+
+      // Ask user to confirm deleting the item
+      dialogDispatch({
+        type: DIALOG_ACTIONS.OPEN,
+        payload: {
+          open: false,
+          title: `${
+            capitalize(dataName?.singular) || "Item"
+          } delete confirmation`,
+          contentText: `Are you sure you want to delete ${
+            dataName?.singular || "item"
+          } #${rowData?.id}?`,
+          confirm: {
+            buttonText: "Delete",
+            onConfirm: () => deleteItem(rowData),
+          },
+          cancel: true,
+        },
+      });
+    },
+    [dialogDispatch, dataName?.singular, deleteItem]
   );
 
   // Handle submit CreateDrawer form
@@ -191,7 +224,7 @@ const DataTable = (props) => {
       setDrawerState(initialDrawerState);
       if (typeof response === "string") {
         // Display confirmation message if the request was successful
-        dispatch({
+        snackbarDispatch({
           type: SNACKBAR_ACTIONS.CREATE,
           payload: response,
           dataName: dataName?.singular,
@@ -202,20 +235,20 @@ const DataTable = (props) => {
         // Check if it's a unique field error
         response?.field
           ? // Display the specific error message
-            dispatch({
+            snackbarDispatch({
               type: SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR,
               payload: response,
               dataName: dataName?.singular,
             })
           : // Display a generic error message
-            dispatch({
+            snackbarDispatch({
               type: SNACKBAR_ACTIONS.CREATE_ERROR,
               payload: response,
               dataName: dataName?.singular,
             });
       }
     },
-    [onCreate, initialDrawerState, dispatch, dataName?.singular, reload]
+    [onCreate, initialDrawerState, snackbarDispatch, dataName?.singular, reload]
   );
 
   // Handle submit EditDrawer form
@@ -225,7 +258,7 @@ const DataTable = (props) => {
       setDrawerState(initialDrawerState);
       if (response?.length) {
         // Display confirmation message if the request was successful
-        dispatch({
+        snackbarDispatch({
           type: SNACKBAR_ACTIONS.EDIT,
           payload: response,
           dataName: dataName?.singular,
@@ -236,20 +269,20 @@ const DataTable = (props) => {
         // Check if it's a unique field error
         response?.field
           ? // Display the specific error message
-            dispatch({
+            snackbarDispatch({
               type: SNACKBAR_ACTIONS.UNIQUE_FIELD_ERROR,
               payload: response,
               dataName: dataName?.singular,
             })
           : // Display a generic error message
-            dispatch({
+            snackbarDispatch({
               type: SNACKBAR_ACTIONS.EDIT_ERROR,
               payload: response,
               dataName: dataName?.singular,
             });
       }
     },
-    [onEdit, initialDrawerState, dispatch, dataName?.singular, reload]
+    [onEdit, initialDrawerState, snackbarDispatch, dataName?.singular, reload]
   );
 
   // Conditionally render CustomDrawer if provided as props
@@ -517,7 +550,7 @@ const DataTable = (props) => {
                                 onClick={(event) => handleOnEdit(event, row)}
                               >
                                 <IconButton>
-                                  <EditIcon />
+                                  <EditIcon color="primary" />
                                 </IconButton>
                               </Tooltip>
                             )}
@@ -529,7 +562,7 @@ const DataTable = (props) => {
                                 }
                               >
                                 <IconButton>
-                                  <DeleteIcon />
+                                  <DeleteIcon color="error" />
                                 </IconButton>
                               </Tooltip>
                             )}

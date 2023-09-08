@@ -391,7 +391,7 @@ const OrdersDrawer = (props) => {
                     />
                     <Tooltip title="Delete" onClick={() => remove(prodIndex)}>
                       <IconButton>
-                        <DeleteIcon />
+                        <DeleteIcon color="error" />
                       </IconButton>
                     </Tooltip>
                   </Stack>
@@ -701,7 +701,7 @@ const OrdersDrawer = (props) => {
                     />
                     <Tooltip title="Delete" onClick={() => remove(prodIndex)}>
                       <IconButton>
-                        <DeleteIcon />
+                        <DeleteIcon color="error" />
                       </IconButton>
                     </Tooltip>
                   </Stack>

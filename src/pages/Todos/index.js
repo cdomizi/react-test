@@ -1,24 +1,32 @@
 import { useReducer, useMemo, useEffect } from "react";
 import { nanoid } from "nanoid";
 
-// project import
+// Project import
 import NewTodo from "./NewTodo";
 import TodoItem from "./TodoItem";
 
-// mui imoport
+// MUI imoport
 import { Box } from "@mui/material";
 import { Typography } from "@mui/material";
 
 const Todos = () => {
-  // get list from localStorage
+  // Get list from localStorage
   const initialTodos = useMemo(
     () => JSON.parse(localStorage.getItem("todos")) || [],
     []
   );
 
+  const TODOS_ACTIONS = {
+    ADD: "add",
+    EDIT: "edit",
+    DELETE: "delete",
+    TOGGLE: "toggle",
+    MOVE: "move",
+  };
+
   const todosReducer = (todos, action) => {
     switch (action.type) {
-      case "add": {
+      case TODOS_ACTIONS.ADD: {
         return [
           {
             id: nanoid(12),
@@ -28,17 +36,17 @@ const Todos = () => {
           ...todos,
         ];
       }
-      case "edit": {
+      case TODOS_ACTIONS.EDIT: {
         return todos.map((todo) =>
           todo.id === action.id
             ? { ...todo, title: action.title.trim() }
             : { ...todo }
         );
       }
-      case "delete": {
+      case TODOS_ACTIONS.DELETE: {
         return todos.filter((todo) => todo.id !== action.id);
       }
-      case "toggle": {
+      case TODOS_ACTIONS.TOGGLE: {
         return todos.map(
           (todo) =>
             (todo =
@@ -47,7 +55,7 @@ const Todos = () => {
                 : { ...todo })
         );
       }
-      case "move": {
+      case TODOS_ACTIONS.MOVE: {
         const index = todos.findIndex((todo) => todo.id === action.id);
         const newList = [...todos];
         action.moveUp
@@ -69,40 +77,38 @@ const Todos = () => {
 
   const [todos, dispatch] = useReducer(todosReducer, initialTodos);
 
-  // update list in localStorage
+  // Update list in localStorage
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
-  // add a new todo
+  // Add a new todo
   const handleAddTodo = (value) => {
     dispatch({ type: "add", title: value.trim() });
   };
 
-  // edit a todo
+  // Edit a todo
   const handleEditTodo = (editedItem) => {
     const [id, title] = editedItem;
     dispatch({ type: "edit", id: id, title: title });
   };
 
-  // delete a todo
+  // Delete a todo
   const handleDeleteTodo = (id) => {
     dispatch({ type: "delete", id: id });
   };
 
-  // check/uncheck a todo
+  // Check/uncheck a todo
   const handleToggleTodo = (id, checked) => {
     dispatch({ type: "toggle", id: id, checked: checked });
   };
 
-  // move todos up/down
+  // Move todos up/down the list
   const handleMove = (moveUp, id) => {
     dispatch({ type: "move", moveUp: moveUp, id: id });
   };
 
-  // list todos
-  // sort by checked
-  // display completed tasks at the bottom of the list
+  // List todos, display checked at the bottom of the list
   const todoList = todos
     .sort((a, b) => a.checked - b.checked)
     .map((todo, index) => (
@@ -124,7 +130,7 @@ const Todos = () => {
 
   return (
     <Box sx={{ padding: "0px 12px" }}>
-      <Typography variant="h2" gutterBottom>
+      <Typography variant="h2" mb={6}>
         Todo List
       </Typography>
 

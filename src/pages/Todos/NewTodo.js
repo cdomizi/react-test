@@ -1,13 +1,12 @@
 import { useState, memo } from "react";
 
-//mui components
-import { Button, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 
 const NewTodo = memo((props) => {
   const [title, setTitle] = useState("");
   const [error, setError] = useState(false);
 
-  // add todo only if not empty
+  // Add todo only if not empty
   const handleSubmit = title.length
     ? () => {
         setError(false);
@@ -19,7 +18,7 @@ const NewTodo = memo((props) => {
       };
 
   return (
-    <>
+    <Box my={3}>
       <TextField
         placeholder="New todo"
         value={title}
@@ -30,7 +29,7 @@ const NewTodo = memo((props) => {
       <Button variant="outlined" sx={{ margin: "12px" }} onClick={handleSubmit}>
         Add
       </Button>
-    </>
+    </Box>
   );
 });
 
