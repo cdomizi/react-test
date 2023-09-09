@@ -10,7 +10,7 @@ import Routes from "./routes";
 // MUI components
 import { Box } from "@mui/material";
 
-function App() {
+const App = () => {
   return (
     <Box className="App">
       <ThemeCustomization>
