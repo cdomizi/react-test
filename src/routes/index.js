@@ -11,7 +11,7 @@ const ErrorPage = loadable(() => import("../pages/Error"));
 const PersistLogin = loadable(() => import("../pages/Auth/PersistLogin"));
 const RequireAuth = loadable(() => import("../pages/Auth/RequireAuth"));
 const Login = loadable(() => import("../pages/Auth/Login"));
-const Register = loadable(() => import("../pages/Auth/Register"));
+const Signup = loadable(() => import("../pages/Auth/Signup"));
 const Profile = loadable(() => import("../pages/Auth/Profile"));
 const Home = loadable(() => import("../pages/Home"));
 const Orders = loadable(() => import("../pages/Orders"));
@@ -23,13 +23,13 @@ const Customer = loadable(() => import("../pages/Customers/Customer"));
 const Todos = loadable(() => import("../pages/Todos"));
 const Shop = loadable(() => import("../pages/Shop"));
 
-const MainRoutes = createBrowserRouter(
+const Routes = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />} errorElement={<ErrorPage />}>
       <Route errorElement={<ErrorPage />}>
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
+        <Route path="register" element={<Signup />} />
         {/* Restrict access to user profile page */}
         <Route element={<PersistLogin />}>
           <Route element={<RequireAuth />}>
@@ -49,4 +49,4 @@ const MainRoutes = createBrowserRouter(
   )
 );
 
-export default MainRoutes;
+export default Routes;

@@ -19,7 +19,7 @@ const {
   Divider,
 } = require("@mui/material");
 
-const Register = () => {
+const Signup = () => {
   const navigate = useNavigate();
 
   const { setAuth } = useContext(AuthContext);
@@ -95,7 +95,7 @@ const Register = () => {
         autoComplete="off"
       >
         <Typography variant="h2" mx="auto">
-          Register
+          Sign up
         </Typography>
         <Controller
           control={control}
@@ -172,7 +172,7 @@ const Register = () => {
           )}
         />
         <Button type="submit" variant="contained">
-          Register
+          Create an account
         </Button>
       </Stack>
       <Divider sx={{ my: 3 }}>
@@ -185,4 +185,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Signup;

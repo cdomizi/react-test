@@ -1,11 +1,11 @@
+import { useMemo } from "react";
+
 // Project import
 import menuItems from "../../menu-items";
 import ContentCard from "../../components/ContentCard";
 
 // MUI components
-import { Box, Typography } from "@mui/material";
-import { Stack } from "@mui/system";
-import { useMemo } from "react";
+import { Box, Stack } from "@mui/material";
 
 const Home = () => {
   const cards = useMemo(
@@ -24,18 +24,13 @@ const Home = () => {
 
   return (
     <Box textAlign="center">
-      <Typography variant="h2" my={5}>
-        Welcome to React Test
-      </Typography>
-      <Typography variant="h5" mb={10}>
-        Browse our website
-      </Typography>
       <Stack
         direction={{ xs: "column", md: "row" }}
         spacing={5}
         justifyContent="center"
-        sx={{ flexWrap: { xs: "nowrap", md: "wrap" } }}
         useFlexGap
+        mt={4}
+        sx={{ flexWrap: { xs: "nowrap", md: "wrap" } }}
       >
         {cards}
       </Stack>

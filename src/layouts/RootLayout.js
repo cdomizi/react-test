@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
-// project import
+// Project import
 import Navbar from "./Navbar";
 import Topbar from "./Topbar";
 import menuItems from "../menu-items";
 
-// mui components
+// MUI components
 import { Box, Container, Toolbar } from "@mui/material";
 
 function RootLayout() {
@@ -31,7 +31,7 @@ function RootLayout() {
         menuItems={menuItems}
       />
       <Container maxWidth="xl">
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Box component="main" flexGrow={1} p={3}>
           <Toolbar />
           <Outlet />
         </Box>

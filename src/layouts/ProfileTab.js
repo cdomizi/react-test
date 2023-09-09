@@ -113,35 +113,17 @@ const ProfileTab = ({ direction = "row", isNavbarOpen, sx }) => {
         <>
           <Button
             variant="contained"
-            onClick={() => navigate("/register", { state: { from: location } })}
+            onClick={() => navigate("/login", { state: { from: location } })}
             sx={{
               ...(theme.palette.mode === "light" && {
                 ml: isNavbarOpen ? "inherit" : "auto",
-                color: "primary.contrastText",
-                bgcolor: "primary.dark",
+                color: "primary.main",
+                bgcolor: "primary.contrastText",
                 "&:hover": {
                   color: "primary.contrastText",
                   bgcolor: "primary.light",
                 },
               }),
-            }}
-          >
-            Register
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => navigate("/login", { state: { from: location } })}
-            sx={{
-              whiteSpace: "nowrap",
-              ...(theme.palette.mode === "light" &&
-                !isNavbarOpen && {
-                  color: "primary.contrastText",
-                  borderColor: "primary.contrastText",
-                  "&:hover": {
-                    borderColor: "primary.contrastText",
-                    bgcolor: "primary.light",
-                  },
-                }),
             }}
           >
             Log in

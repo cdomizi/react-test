@@ -5,7 +5,7 @@ import { DialogProvider } from "./contexts/DialogContext";
 import { AuthProvider } from "./contexts/AuthContext";
 
 // project import
-import MainRoutes from "./routes/MainRoutes";
+import Routes from "./routes";
 
 // mui components
 import { Box } from "@mui/material";
@@ -17,7 +17,7 @@ function App() {
         <SnackbarProvider>
           <DialogProvider>
             <AuthProvider>
-              <RouterProvider router={MainRoutes} />
+              <RouterProvider router={Routes} />
             </AuthProvider>
           </DialogProvider>
         </SnackbarProvider>

@@ -48,12 +48,13 @@ const TopBar = ({ onToggle, menuItems }) => {
             component="a"
             sx={{
               color: "inherit",
+              fontStyle: "italic",
               textDecoration: "none",
               flexGrow: 1,
               cursor: "pointer",
             }}
           >
-            React Test
+            myERP
           </Typography>
           <Box sx={{ display: { xs: "none", md: "block" } }}>
             {menuItems.map((item) => (

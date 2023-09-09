@@ -11,7 +11,10 @@ const ContentCard = ({ title, url, icon }) => {
   const itemIcon = icon ? <Icon sx={{ fontSize: "10rem" }} /> : false;
 
   return (
-    <Card sx={{ minWidth: 275, textAlign: "center" }}>
+    <Card
+      raised="true"
+      sx={{ minWidth: 275, textAlign: "center", borderRadius: "2%" }}
+    >
       <CardActionArea onClick={() => navigate(url)}>
         {itemIcon || <ArrowOutwardIcon />}
         <Typography variant="h3">{capitalize(title)}</Typography>
