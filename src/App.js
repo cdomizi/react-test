@@ -4,10 +4,10 @@ import { SnackbarProvider } from "./contexts/SnackbarContext";
 import { DialogProvider } from "./contexts/DialogContext";
 import { AuthProvider } from "./contexts/AuthContext";
 
-// project import
+// Project import
 import Routes from "./routes";
 
-// mui components
+// MUI components
 import { Box } from "@mui/material";
 
 function App() {

@@ -12,7 +12,7 @@ const ContentCard = ({ title, url, icon }) => {
 
   return (
     <Card
-      raised="true"
+      raised={true}
       sx={{ minWidth: 275, textAlign: "center", borderRadius: "2%" }}
     >
       <CardActionArea onClick={() => navigate(url)}>
