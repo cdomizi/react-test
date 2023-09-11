@@ -36,7 +36,7 @@ const Navbar = ({ open, onToggle, menuItems, window }) => {
       <Box onClick={onToggle(false)}>
         <ProfileTab direction="column" isNavbarOpen={open} sx={{ my: 3 }} />
         <Divider sx={{ borderWidth: "1px" }} />
-        <List>{items}</List>
+        <List sx={{ py: 0 }}>{items}</List>
       </Box>
     </Drawer>
   );

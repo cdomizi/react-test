@@ -9,13 +9,13 @@ import ProfileTab from "../ProfileTab";
 // MUI components & icons
 import {
   useTheme,
-  Box,
   AppBar,
   Toolbar,
   Typography,
   IconButton,
   Tooltip,
   Container,
+  Stack,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -50,17 +50,22 @@ const TopBar = ({ onToggle, menuItems }) => {
               color: "inherit",
               fontStyle: "italic",
               textDecoration: "none",
-              flexGrow: 1,
               cursor: "pointer",
+              mr: "auto",
             }}
           >
             myERP
           </Typography>
-          <Box sx={{ display: { xs: "none", md: "block" } }}>
+          <Stack
+            direction="row"
+            spacing={3}
+            sx={{ display: { xs: "none", md: "flex" } }}
+            mr={4}
+          >
             {menuItems.map((item) => (
               <MenuItem key={item.id} title={item.title} url={item.url} />
             ))}
-          </Box>
+          </Stack>
           <ProfileTab
             direction="row"
             sx={{ display: { xs: "none", sm: "flex" } }}
