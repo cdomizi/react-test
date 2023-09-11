@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 // Project import
 import Navbar from "./Navbar";
 import Topbar from "./Topbar";
-import menuItems from "../menu-items";
+import menuItems from "./menuItems";
 
 // MUI components
 import { Box, Container, Toolbar } from "@mui/material";

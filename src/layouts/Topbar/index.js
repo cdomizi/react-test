@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { useNavigate } from "react-router";
 
-// project import
+// Project import
 import ColorModeContext from "../../contexts/ColorModeContext";
 import MenuItem from "./MenuItem";
 import ProfileTab from "../ProfileTab";

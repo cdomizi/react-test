@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 // Project import
-import menuItems from "../../menu-items";
+import menuItems from "../../layouts/menuItems";
 import ContentCard from "../../components/ContentCard";
 
 // MUI components
