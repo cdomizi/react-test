@@ -30,13 +30,12 @@ const ProfileTab = ({ direction = "row", isNavbarOpen, sx }) => {
 
   const dispatch = useContext(SnackbarContext);
 
-  // Verify/refresh access token
+  // Verify refresh access token
   useVerifyToken(false, false, retry, setRetry);
 
   const handleLogout = useCallback(async () => {
     // Delete `jwt` cookie containing the refreshToken
     try {
-      // eslint-disable-next-line no-unused-vars
       const response = await publicApi.get("logout", {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
