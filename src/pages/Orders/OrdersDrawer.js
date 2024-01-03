@@ -1,13 +1,14 @@
 import PropTypes from "prop-types";
 import { useCallback, useEffect, useState } from "react";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 
 // Project import
-import useFetch from "../../hooks/useFetch";
-import useRandomOrderData from "../../hooks/useRandomOrderData";
+import useFetch from "hooks/useFetch";
+import useRandomOrderData from "hooks/useRandomOrderData";
 import { getSubmitData } from "./OrderActions";
 
 // MUI import
+import { Delete as DeleteIcon } from "@mui/icons-material";
 import {
   Alert,
   AlertTitle,
@@ -28,7 +29,6 @@ import {
   Typography,
   capitalize,
 } from "@mui/material";
-import { Delete as DeleteIcon } from "@mui/icons-material";
 
 const OrdersDrawer = (props) => {
   const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;

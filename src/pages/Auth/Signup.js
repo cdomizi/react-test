@@ -1,13 +1,11 @@
 import { useCallback, useContext, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 
 // Project import
-import publicApi from "../../api/axios";
-import AuthContext from "../../contexts/AuthContext";
-import SnackbarContext, {
-  SNACKBAR_ACTIONS,
-} from "../../contexts/SnackbarContext";
+import publicApi from "api/axios";
+import AuthContext from "contexts/AuthContext";
+import SnackbarContext, { SNACKBAR_ACTIONS } from "contexts/SnackbarContext";
 
 // MUI components
 const {

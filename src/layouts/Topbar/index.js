@@ -2,26 +2,26 @@ import { useContext } from "react";
 import { useNavigate } from "react-router";
 
 // Project import
-import ColorModeContext from "../../contexts/ColorModeContext";
-import MenuItem from "./MenuItem";
+import ColorModeContext from "contexts/ColorModeContext";
 import ProfileTab from "../ProfileTab";
+import MenuItem from "./MenuItem";
 
 // MUI components & icons
 import {
-  useTheme,
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  Tooltip,
-  Container,
-  Stack,
-} from "@mui/material";
-import {
-  Menu as MenuIcon,
   Brightness4 as Brightness4Icon,
   Brightness7 as Brightness7Icon,
+  Menu as MenuIcon,
 } from "@mui/icons-material";
+import {
+  AppBar,
+  Container,
+  IconButton,
+  Stack,
+  Toolbar,
+  Tooltip,
+  Typography,
+  useTheme,
+} from "@mui/material";
 
 const TopBar = ({ onToggle, menuItems }) => {
   const theme = useTheme();

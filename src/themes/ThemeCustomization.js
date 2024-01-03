@@ -1,12 +1,12 @@
-import { useState, useMemo, useLayoutEffect } from "react";
-import ColorModeContext from "../contexts/ColorModeContext";
+import ColorModeContext from "contexts/ColorModeContext";
+import { useLayoutEffect, useMemo, useState } from "react";
 
 // mui components
 import {
+  CssBaseline,
   ThemeProvider,
   createTheme,
   useMediaQuery,
-  CssBaseline,
 } from "@mui/material";
 
 const ThemeCustomization = ({ children }) => {

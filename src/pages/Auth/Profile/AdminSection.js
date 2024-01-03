@@ -1,3 +1,4 @@
+import { createColumnHelper } from "@tanstack/react-table";
 import {
   memo,
   useCallback,
@@ -6,15 +7,12 @@ import {
   useMemo,
   useState,
 } from "react";
-import { createColumnHelper } from "@tanstack/react-table";
 
 // Project import
-import useAuthApi from "../../../hooks/useAuthApi";
-import AuthContext from "../../../contexts/AuthContext";
-import SnackbarContext, {
-  SNACKBAR_ACTIONS,
-} from "../../../contexts/SnackbarContext";
-import DataTable from "../../../components/DataTable";
+import DataTable from "components/DataTable";
+import AuthContext from "contexts/AuthContext";
+import SnackbarContext, { SNACKBAR_ACTIONS } from "contexts/SnackbarContext";
+import useAuthApi from "hooks/useAuthApi";
 
 // MUI components
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";

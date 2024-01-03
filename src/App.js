@@ -1,11 +1,11 @@
+import { AuthProvider } from "contexts/AuthContext";
+import { DialogProvider } from "contexts/DialogContext";
+import { SnackbarProvider } from "contexts/SnackbarContext";
 import { RouterProvider } from "react-router-dom";
-import ThemeCustomization from "./themes/ThemeCustomization";
-import { SnackbarProvider } from "./contexts/SnackbarContext";
-import { DialogProvider } from "./contexts/DialogContext";
-import { AuthProvider } from "./contexts/AuthContext";
+import ThemeCustomization from "themes/ThemeCustomization";
 
 // Project import
-import Routes from "./routes";
+import Routes from "routes";
 
 // MUI components
 import { Box } from "@mui/material";
@@ -24,6 +24,6 @@ const App = () => {
       </ThemeCustomization>
     </Box>
   );
-}
+};
 
 export default App;

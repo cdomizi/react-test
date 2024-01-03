@@ -1,8 +1,7 @@
 import { forwardRef, memo, useCallback, useMemo } from "react";
-import { formatOrderDate, formatMoney } from "../../../utils/formatStrings";
+import { formatMoney, formatOrderDate } from "utils/formatStrings";
 
 // MUI components & icons
-import { styled } from "@mui/material/styles";
 import {
   Box,
   Divider,
@@ -14,6 +13,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 const InvoiceTemplate = forwardRef(function InvoiceTemplate(props, ref) {
   const { data, products } = props?.data;

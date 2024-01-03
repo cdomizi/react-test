@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // mui components
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
 // project import
+import getRandomInt from "utils/getRandomInt";
 import ProductDetail from "../Products/Product/ProductDetail";
-import getRandomInt from "../../utils/getRandomInt";
 
 const Shop = () => {
   const [loading, setLoading] = useState(false);

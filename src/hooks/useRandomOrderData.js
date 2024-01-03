@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import getRandomInt from "../utils/getRandomInt";
+import getRandomInt from "utils/getRandomInt";
 
 let state = { loading: false, data: undefined };
 

@@ -1,6 +1,6 @@
+import useVerifyToken from "hooks/useVerifyToken";
 import { useCallback, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router";
-import useVerifyToken from "../../hooks/useVerifyToken";
 
 import { Backdrop, CircularProgress } from "@mui/material";
 

@@ -1,5 +1,5 @@
+import checkUniqueField from "utils/checkUniqueField";
 import * as yup from "yup";
-import checkUniqueField from "../../utils/checkUniqueField";
 
 const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
 
@@ -113,7 +113,7 @@ const productSchema = yup
 
 export {
   handleCreateProduct,
-  handleEditProduct,
   handleDeleteProduct,
+  handleEditProduct,
   productSchema,
 };

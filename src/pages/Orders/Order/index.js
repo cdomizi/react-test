@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 // Project import
+import useFetch from "hooks/useFetch";
 import OrderDetail from "./OrderDetail";
-import useFetch from "../../../hooks/useFetch";
 
 const Order = () => {
   const { orderId } = useParams();

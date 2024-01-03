@@ -1,8 +1,8 @@
+import AuthContext from "contexts/AuthContext";
+import useRefreshToken from "hooks/useRefreshToken";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import AuthContext from "../contexts/AuthContext";
-import useRefreshToken from "../hooks/useRefreshToken";
 
 const useVerifyToken = (
   redirect,

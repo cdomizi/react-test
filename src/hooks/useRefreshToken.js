@@ -1,6 +1,6 @@
+import publicApi from "api/axios";
+import AuthContext from "contexts/AuthContext";
 import { useContext } from "react";
-import AuthContext from "../contexts/AuthContext";
-import publicApi from "../api/axios";
 
 const useRefreshToken = () => {
   const { setAuth } = useContext(AuthContext);

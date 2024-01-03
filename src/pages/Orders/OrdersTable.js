@@ -1,20 +1,20 @@
-import { useEffect, useState, useMemo, useCallback, memo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useNavigate } from "react-router-dom";
 import moment from "moment";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Project import
-import useFetch from "../../hooks/useFetch";
-import DataTable from "../../components/DataTable";
-import OrdersDrawer from "./OrdersDrawer";
+import DataTable from "components/DataTable";
+import useFetch from "hooks/useFetch";
+import { formatDate, formatMoney } from "utils/formatStrings";
 import {
-  handleCreateOrder,
-  handleEditOrder,
-  handleDeleteOrder,
   getInvoiceStatus,
+  handleCreateOrder,
+  handleDeleteOrder,
+  handleEditOrder,
   setInvoiceColor,
 } from "./OrderActions";
-import { formatDate, formatMoney } from "../../utils/formatStrings";
+import OrdersDrawer from "./OrdersDrawer";
 
 // MUI components
 import { Typography } from "@mui/material";

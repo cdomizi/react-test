@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
 // Project import
-import menuItems from "../../layouts/menuItems";
-import ContentCard from "../../components/ContentCard";
+import ContentCard from "components/ContentCard";
+import menuItems from "layouts/menuItems";
 
 // MUI components
 import { Box, Stack } from "@mui/material";

@@ -1,6 +1,6 @@
-import { createContext, useReducer } from "react";
 import { capitalize } from "@mui/material";
-import CustomSnackbar from "../components/CustomSnackbar";
+import CustomSnackbar from "components/CustomSnackbar";
+import { createContext, useReducer } from "react";
 
 const SnackbarContext = createContext(null);
 
@@ -253,4 +253,4 @@ const SnackbarProvider = ({ children }) => {
 };
 
 export default SnackbarContext;
-export { SnackbarProvider, SNACKBAR_ACTIONS };
+export { SNACKBAR_ACTIONS, SnackbarProvider };

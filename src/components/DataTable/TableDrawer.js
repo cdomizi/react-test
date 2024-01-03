@@ -1,10 +1,10 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import PropTypes from "prop-types";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, useForm } from "react-hook-form";
 
 // Project import
-import getRandomInt from "../../utils/getRandomInt";
+import getRandomInt from "utils/getRandomInt";
 
 import {
   Alert,

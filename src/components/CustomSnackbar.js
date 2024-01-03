@@ -1,10 +1,10 @@
+import SnackbarContext, { SNACKBAR_ACTIONS } from "contexts/SnackbarContext";
 import PropTypes from "prop-types";
 import { useContext } from "react";
-import SnackbarContext, { SNACKBAR_ACTIONS } from "../contexts/SnackbarContext";
 
 // MUI components & icons
-import { Alert, Snackbar, IconButton } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
+import { Alert, IconButton, Snackbar } from "@mui/material";
 
 const CustomSnackbar = ({
   open,

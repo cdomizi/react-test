@@ -1,15 +1,15 @@
-import { useEffect, useState, useMemo, useCallback, memo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Project import
-import useFetch from "../../hooks/useFetch";
-import { formatMoney } from "../../utils/formatStrings";
-import DataTable from "../../components/DataTable";
+import DataTable from "components/DataTable";
+import useFetch from "hooks/useFetch";
+import { formatMoney } from "utils/formatStrings";
 import {
   handleCreateProduct,
-  handleEditProduct,
   handleDeleteProduct,
+  handleEditProduct,
   productSchema,
 } from "./ProductActions";
 

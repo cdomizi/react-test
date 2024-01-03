@@ -3,9 +3,9 @@ import { useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 // Project import
-import AuthContext from "../contexts/AuthContext";
-import publicApi from "../api/axios";
-import SnackbarContext, { SNACKBAR_ACTIONS } from "../contexts/SnackbarContext";
+import publicApi from "api/axios";
+import AuthContext from "contexts/AuthContext";
+import SnackbarContext, { SNACKBAR_ACTIONS } from "contexts/SnackbarContext";
 
 // MUI components
 import {
@@ -16,8 +16,8 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import useVerifyToken from "hooks/useVerifyToken";
 import { useCallback } from "react";
-import useVerifyToken from "../hooks/useVerifyToken";
 
 const ProfileTab = ({ direction = "row", isNavbarOpen, sx }) => {
   const theme = useTheme();

@@ -1,6 +1,6 @@
+import { authApi } from "api/axios";
+import AuthContext from "contexts/AuthContext";
 import { useContext, useEffect } from "react";
-import { authApi } from "../api/axios";
-import AuthContext from "../contexts/AuthContext";
 import useRefreshToken from "./useRefreshToken";
 
 const useAuthApi = () => {

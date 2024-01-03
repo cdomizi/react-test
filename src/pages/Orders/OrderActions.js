@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import checkUniqueField from "../../utils/checkUniqueField";
+import checkUniqueField from "utils/checkUniqueField";
 
 const API_ENDPOINT = process.env.REACT_APP_BASE_API_URL;
 
@@ -151,12 +151,12 @@ const printInvoice = (invoiceTemplateRef, idNumber) => {
 };
 
 export {
-  handleCreateOrder,
-  handleEditOrder,
-  handleDeleteOrder,
+  getInvoiceStatus,
   getSubmitData,
   handleCreateInvoice,
-  getInvoiceStatus,
-  setInvoiceColor,
+  handleCreateOrder,
+  handleDeleteOrder,
+  handleEditOrder,
   printInvoice,
+  setInvoiceColor,
 };

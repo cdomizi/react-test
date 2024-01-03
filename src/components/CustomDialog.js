@@ -1,5 +1,5 @@
+import DialogContext, { DIALOG_ACTIONS } from "contexts/DialogContext";
 import { useContext } from "react";
-import DialogContext, { DIALOG_ACTIONS } from "../contexts/DialogContext";
 
 // MUI components
 import {

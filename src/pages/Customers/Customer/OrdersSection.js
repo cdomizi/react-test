@@ -1,9 +1,9 @@
 import { memo } from "react";
-import { formatOrderDate } from "../../../utils/formatStrings";
+import { formatOrderDate } from "utils/formatStrings";
 
 // MUI components & icons
-import { Box, List, ListItem, ListItemIcon, Typography } from "@mui/material";
 import { Circle as CircleIcon } from "@mui/icons-material";
+import { Box, List, ListItem, ListItemIcon, Typography } from "@mui/material";
 
 // Customer orders section
 const OrdersSection = memo(({ data }) => {

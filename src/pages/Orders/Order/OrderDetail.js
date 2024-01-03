@@ -6,25 +6,23 @@ import {
   useRef,
   useState,
 } from "react";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
 // Project import
-import useFetch from "../../../hooks/useFetch";
-import useRandomOrderData from "../../../hooks/useRandomOrderData";
-import { handleEditOrder, getSubmitData } from "../OrderActions";
-import AuthContext from "../../../contexts/AuthContext";
-import useRefreshToken from "../../../hooks/useRefreshToken";
-import SnackbarContext, {
-  SNACKBAR_ACTIONS,
-} from "../../../contexts/SnackbarContext";
-import DialogContext, { DIALOG_ACTIONS } from "../../../contexts/DialogContext";
-import { formatLabel } from "../../../utils/formatStrings";
+import AuthContext from "contexts/AuthContext";
+import DialogContext, { DIALOG_ACTIONS } from "contexts/DialogContext";
+import SnackbarContext, { SNACKBAR_ACTIONS } from "contexts/SnackbarContext";
+import useFetch from "hooks/useFetch";
+import useRandomOrderData from "hooks/useRandomOrderData";
+import useRefreshToken from "hooks/useRefreshToken";
+import { formatLabel } from "utils/formatStrings";
+import { getSubmitData, handleEditOrder } from "../OrderActions";
 
+import CustomDivider from "components/CustomDivider";
 import InvoiceSection from "./InvoiceSection";
 import InvoiceTemplate from "./InvoiceTemplate";
 import OrderDetailSkeleton from "./OrderDetailSkeleton";
-import CustomDivider from "../../../components/CustomDivider";
 
 // MUI components
 import {

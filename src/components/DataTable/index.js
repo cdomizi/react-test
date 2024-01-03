@@ -1,21 +1,19 @@
-import PropTypes from "prop-types";
-import { useMemo, useCallback, useContext, useState } from "react";
 import {
-  useReactTable,
+  flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  getFilteredRowModel,
-  flexRender,
+  useReactTable,
 } from "@tanstack/react-table";
+import PropTypes from "prop-types";
+import { useCallback, useContext, useMemo, useState } from "react";
 
 // Project imports
-import TableFilters from "./TableFilters";
+import DialogContext, { DIALOG_ACTIONS } from "contexts/DialogContext";
+import SnackbarContext, { SNACKBAR_ACTIONS } from "contexts/SnackbarContext";
 import TableDrawer from "./TableDrawer";
-import SnackbarContext, {
-  SNACKBAR_ACTIONS,
-} from "../../contexts/SnackbarContext";
-import DialogContext, { DIALOG_ACTIONS } from "../../contexts/DialogContext";
+import TableFilters from "./TableFilters";
 
 // MUI components
 import {
@@ -23,21 +21,21 @@ import {
   AlertTitle,
   Box,
   Button,
-  capitalize,
   Card,
   Divider,
   IconButton,
   Paper,
   Skeleton,
-  TableContainer,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TablePagination,
   TableRow,
   TableSortLabel,
   Tooltip,
+  capitalize,
   useMediaQuery,
 } from "@mui/material";
 

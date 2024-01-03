@@ -1,8 +1,8 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 
-import AuthContext from "../../../contexts/AuthContext";
-import useAuthApi from "../../../hooks/useAuthApi";
+import AuthContext from "contexts/AuthContext";
+import useAuthApi from "hooks/useAuthApi";
 import AccountSettings from "./AccountSettings";
 import AdminSection from "./AdminSection";
 

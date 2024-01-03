@@ -1,14 +1,12 @@
 import { forwardRef, memo, useCallback, useContext } from "react";
 
 // Project import
-import useAuthApi from "../../../hooks/useAuthApi";
-import SnackbarContext, {
-  SNACKBAR_ACTIONS,
-} from "../../../contexts/SnackbarContext";
-import { formatOrderDate } from "../../../utils/formatStrings";
+import SnackbarContext, { SNACKBAR_ACTIONS } from "contexts/SnackbarContext";
+import useAuthApi from "hooks/useAuthApi";
+import { formatOrderDate } from "utils/formatStrings";
 import {
-  handleCreateInvoice,
   getInvoiceStatus,
+  handleCreateInvoice,
   printInvoice,
   setInvoiceColor,
 } from "../OrderActions";

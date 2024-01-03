@@ -10,12 +10,10 @@ import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 
 // Project import
-import useAuthApi from "../../../hooks/useAuthApi";
-import AuthContext from "../../../contexts/AuthContext";
-import DialogContext, { DIALOG_ACTIONS } from "../../../contexts/DialogContext";
-import SnackbarContext, {
-  SNACKBAR_ACTIONS,
-} from "../../../contexts/SnackbarContext";
+import AuthContext from "contexts/AuthContext";
+import DialogContext, { DIALOG_ACTIONS } from "contexts/DialogContext";
+import SnackbarContext, { SNACKBAR_ACTIONS } from "contexts/SnackbarContext";
+import useAuthApi from "hooks/useAuthApi";
 
 // MUI components
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";

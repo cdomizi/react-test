@@ -1,15 +1,15 @@
-import { useEffect, useState, useMemo, memo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
+import { memo, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Project import
-import useFetch from "../../hooks/useFetch";
-import DataTable from "../../components/DataTable";
+import DataTable from "components/DataTable";
+import useFetch from "hooks/useFetch";
 import {
-  handleCreateCustomer,
-  handleEditCustomer,
-  handleDeleteCustomer,
   customerSchema,
+  handleCreateCustomer,
+  handleDeleteCustomer,
+  handleEditCustomer,
 } from "./CustomerActions";
 
 const CustomersTable = memo(() => {

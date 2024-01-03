@@ -1,17 +1,15 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useContext, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 
 // Project import
-import { handleEditCustomer, customerSchema } from "../CustomerActions";
-import SnackbarContext, {
-  SNACKBAR_ACTIONS,
-} from "../../../contexts/SnackbarContext";
-import getRandomInt from "../../../utils/getRandomInt";
-import { formatLabel } from "../../../utils/formatStrings";
-import OrdersSection from "./OrdersSection";
+import CustomDivider from "components/CustomDivider";
+import SnackbarContext, { SNACKBAR_ACTIONS } from "contexts/SnackbarContext";
+import { formatLabel } from "utils/formatStrings";
+import getRandomInt from "utils/getRandomInt";
+import { customerSchema, handleEditCustomer } from "../CustomerActions";
 import CustomerDetailSkeleton from "./CustomerDetailSkeleton";
-import CustomDivider from "../../../components/CustomDivider";
+import OrdersSection from "./OrdersSection";
 
 // MUI components
 import {
