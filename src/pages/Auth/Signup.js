@@ -91,10 +91,9 @@ const Signup = () => {
         id="register-form"
         spacing={3}
         autoComplete="off"
+        textAlign="center"
       >
-        <Typography variant="h2" mx="auto">
-          Sign up
-        </Typography>
+        <Typography variant="h2">Sign up</Typography>
         <Controller
           control={control}
           name="username"

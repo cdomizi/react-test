@@ -96,10 +96,9 @@ const Login = () => {
         id="login-form"
         spacing={3}
         autoComplete="off"
+        textAlign="center"
       >
-        <Typography variant="h2" mx="auto">
-          Log In
-        </Typography>
+        <Typography variant="h2">Log In</Typography>
         {location.state?.sessionExpired && (
           <Alert
             severity="error"
